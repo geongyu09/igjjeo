@@ -1,0 +1,30 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+
+.badge[data-variant="accent"] {
+  background: var(--accent-weak);
+  color: var(--accent-ink);
+}
+
+.badge[data-variant="accent-strong"] {
+  background: var(--accent);
+  color: var(--on-action);
+}
+
+.badge[data-variant="neutral"] {
+  background: var(--surface-3);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+}
+
+.badge[data-variant="success"] {
+  background: var(--success-weak);
+  color: var(--success);
+}

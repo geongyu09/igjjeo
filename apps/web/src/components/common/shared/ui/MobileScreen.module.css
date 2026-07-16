@@ -1,0 +1,39 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 430px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background: var(--bg);
+  position: relative;
+}
+
+.slot {
+  flex: none;
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screen[data-tone="dark"] {
+  background: oklch(0.16 0.01 264);
+  color: #fff;
+}
+
+/* 넓은 화면 — 디자인 캔버스처럼 디바이스 프레임으로 감싼다 */
+@media (min-width: 520px) {
+  .screen {
+    min-height: auto;
+    height: min(880px, calc(100dvh - 48px));
+    margin: 24px auto;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+}
