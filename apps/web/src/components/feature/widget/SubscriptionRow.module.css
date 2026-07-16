@@ -1,0 +1,33 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.row[data-subscribed] {
+  border-color: var(--ink);
+  background: var(--pub-bg);
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--pub);
+}
+
+.tagline {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-2);
+}

@@ -1,0 +1,55 @@
+.trustBar {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-2);
+  margin-bottom: 8px;
+}
+
+.verdict {
+  font-weight: 700;
+}
+
+.verdict[data-verdict="admit"] {
+  color: var(--success);
+}
+
+.verdict[data-verdict="really"] {
+  color: var(--accent-ink);
+}
+
+.verdict[data-verdict="tie"] {
+  color: var(--text-2);
+}
+
+.track {
+  display: flex;
+  height: 8px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--surface-3);
+}
+
+.fill[data-part="admit"] {
+  background: var(--success);
+}
+
+.fill[data-part="really"] {
+  background: var(--accent);
+}
+
+.counts {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin-top: 6px;
+}

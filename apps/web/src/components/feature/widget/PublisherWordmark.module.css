@@ -1,0 +1,36 @@
+.wordmark {
+  color: var(--pub);
+}
+
+/* 소모임일보 — 신문 마스트헤드 톤 */
+.wordmark[data-outlet="daily"] {
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+/* 데일리쇼크 — 무조건 세게 */
+.wordmark[data-outlet="shock"] {
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.04em;
+}
+
+/* 스터디경제 — 담백하게 분석하는 척 */
+.wordmark[data-outlet="economy"] {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* 모임과학 — 진지한 척 */
+.wordmark[data-outlet="science"] {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* 주간감성 — 여운 */
+.wordmark[data-outlet="emotion"] {
+  font-weight: 300;
+  letter-spacing: 0.1em;
+}

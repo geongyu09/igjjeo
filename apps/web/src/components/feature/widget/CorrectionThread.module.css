@@ -1,0 +1,63 @@
+.thread {
+  list-style: none;
+}
+
+.node {
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-md);
+  padding: 13px 14px;
+  background: var(--surface-2);
+}
+
+.node[data-kind="original"] {
+  background: var(--surface);
+}
+
+/* 노드 사이 연결선 */
+.node + .node {
+  margin-top: 16px;
+  position: relative;
+}
+
+.node + .node::before {
+  content: "";
+  position: absolute;
+  top: -17px;
+  left: 50%;
+  width: 2px;
+  height: 16px;
+  background: var(--border-2);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.replyIcon {
+  color: var(--text-3);
+  flex: none;
+}
+
+.headline {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.3;
+  margin: 9px 0 0;
+  color: var(--ink);
+}
+
+.body {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-2);
+  margin-top: 5px;
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin-top: 8px;
+}

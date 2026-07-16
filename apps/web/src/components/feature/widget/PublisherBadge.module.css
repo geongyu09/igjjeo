@@ -1,0 +1,26 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+}
+
+.badge[data-variant="soft"] {
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: var(--pub-bg);
+  color: var(--pub);
+}
+
+.badge[data-variant="solid"] {
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: var(--pub);
+  color: var(--on-action);
+}
+
+.badge[data-variant="text"] {
+  font-size: 10.5px;
+  color: var(--pub);
+}

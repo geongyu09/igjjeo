@@ -1,0 +1,77 @@
+.tabBar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 10px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.tab {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+.tab[data-active] {
+  color: var(--ink);
+}
+
+.tab[aria-disabled="true"] {
+  cursor: default;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.tab[data-active] .label {
+  font-weight: 700;
+}
+
+.fabSlot {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 54px;
+  height: 36px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--action);
+  color: var(--on-action);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.fab:hover {
+  opacity: 0.9;
+}
+
+.fab:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
