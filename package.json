@@ -1,0 +1,19 @@
+{
+  "name": "igjjeo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "bun run --cwd apps/web dev",
+    "dev:mobile": "bun run --cwd apps/mobile start",
+    "build:web": "bun run --cwd apps/web build",
+    "typecheck": "bun run --cwd apps/web typecheck && bun run --cwd apps/mobile typecheck",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "^5"
+  }
+}
