@@ -5,11 +5,9 @@ import { useState } from "react";
 import { useStackLinkRouter } from "stack-link";
 import { Button } from "@/components/common/shared/ui/Button";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
-import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { SegmentedControl } from "@/components/common/shared/ui/SegmentedControl";
 import { TextArea } from "@/components/common/shared/ui/TextArea";
 import { AssignedOutletList } from "@/components/feature/widget/AssignedOutletList";
-import { useStackBack } from "@/hooks/common/useStackBack";
 import { OUTLET_KEYS, type OutletKey } from "@/lib/publishers";
 import styles from "./page.module.css";
 
@@ -25,12 +23,16 @@ function pickThree(): OutletKey[] {
   return picked;
 }
 
+// 헤더(타이틀·닫기)는 네이티브 모달이 그린다 — apps/mobile의 ReportModal 스크린.
 export default function ReportPage() {
-  const back = useStackBack();
   const { navigate } = useStackLinkRouter({});
   const [text, setText] = useState("민규가 오늘도 지각했어요. 세 번째입니다.");
   const [mode, setMode] = useState<Mode>("random");
-  const [assigned, setAssigned] = useState<OutletKey[]>(["shock", "science", "emotion"]);
+  const [assigned, setAssigned] = useState<OutletKey[]>([
+    "shock",
+    "science",
+    "emotion",
+  ]);
 
   const footer = (
     <div className={styles.ctaBar}>
@@ -38,7 +40,9 @@ export default function ReportPage() {
         size="lg"
         className={styles.cta}
         disabled={text.trim().length === 0}
-        onClick={() => navigate({ href: "/report/preview", animation: "slide" })}
+        onClick={() =>
+          navigate({ href: "/report/preview", animation: "slide" })
+        }
       >
         기사 3개 만들기
         <ArrowRight size={17} aria-hidden />
@@ -47,10 +51,7 @@ export default function ReportPage() {
   );
 
   return (
-    <MobileScreen
-      header={<ScreenHeader title="제보하기" leading="close" onBack={back} />}
-      footer={footer}
-    >
+    <MobileScreen footer={footer}>
       <div className={styles.body}>
         <TextArea
           label="무엇이 일어났나요?"
@@ -79,8 +80,8 @@ export default function ReportPage() {
         {mode === "random" ? (
           <>
             <div className={styles.infoBox}>
-              이번 제보엔 <b>이 세 곳</b>이 무작위로 붙었어요. 발행하면 서로 다른 각도의 기사 3개가 한
-              번에 나와요.
+              이번 제보엔 <b>이 세 곳</b>이 무작위로 붙었어요. 발행하면 서로
+              다른 각도의 기사 3개가 한 번에 나와요.
             </div>
             <AssignedOutletList assigned={assigned} />
             <button
@@ -94,7 +95,8 @@ export default function ReportPage() {
           </>
         ) : (
           <div className={styles.infoBox}>
-            <Dices size={14} aria-hidden /> 직접 고르기는 준비 중이에요. 지금은 무작위 3곳으로 진행돼요.
+            <Dices size={14} aria-hidden /> 직접 고르기는 준비 중이에요. 지금은
+            무작위 3곳으로 진행돼요.
           </div>
         )}
       </div>

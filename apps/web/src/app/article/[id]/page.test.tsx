@@ -4,6 +4,26 @@ import { Suspense } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("stack-link", () => ({
+  StackLink: ({
+    href,
+    preLoad,
+    animation,
+    children,
+  }: {
+    href: string;
+    preLoad?: boolean;
+    animation?: string;
+    children: React.ReactNode;
+  }) => (
+    <div
+      data-testid="stack-link"
+      data-href={href}
+      data-preload={preLoad ? "" : undefined}
+      data-animation={animation}
+    >
+      {children}
+    </div>
+  ),
   useStackLinkRouter: () => ({ navigate: vi.fn(), isNavigating: false }),
   useStackLinkBack: () => ({ goBack: vi.fn(), canGoBack: true }),
 }));
@@ -23,7 +43,9 @@ async function renderPage(id = "1") {
 describe("ArticleDetailPage", () => {
   it("기사 헤드라인과 반응 바를 렌더링한다", async () => {
     await renderPage("1");
-    expect(screen.getByText("【단독】 상습 지각, 이대로 괜찮은가")).toBeInTheDocument();
+    expect(
+      screen.getByText("【단독】 상습 지각, 이대로 괜찮은가"),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /인정/ })).toBeInTheDocument();
   });
 
@@ -34,5 +56,13 @@ describe("ArticleDetailPage", () => {
     await userEvent.click(scoop);
     expect(scoop).toHaveTextContent("4");
     expect(scoop).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("정정 요청은 정정 연쇄 화면으로 가는 preLoad StackLink다", async () => {
+    await renderPage("1");
+    const link = screen.getByTestId("stack-link");
+    expect(link).toHaveAttribute("data-href", "/article/1/thread");
+    expect(link).toHaveAttribute("data-preload");
+    expect(link).toHaveTextContent("정정 요청");
   });
 });

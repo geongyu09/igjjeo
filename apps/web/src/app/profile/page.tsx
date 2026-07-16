@@ -5,7 +5,6 @@ import { useStackLinkRouter } from "stack-link";
 import { Avatar } from "@/components/common/shared/ui/Avatar";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
-import { BottomTabBar } from "@/components/feature/widget/BottomTabBar";
 import { PublisherBadge } from "@/components/feature/widget/PublisherBadge";
 import { MOCK_PROFILE } from "@/lib/mock";
 import { PUBLISHERS } from "@/lib/publishers";
@@ -29,7 +28,9 @@ export default function ProfilePage() {
           type="button"
           className={styles.settingsButton}
           aria-label="구독 설정"
-          onClick={() => navigate({ href: "/subscriptions", animation: "slide" })}
+          onClick={() =>
+            navigate({ href: "/subscriptions", animation: "slide" })
+          }
         >
           <Settings size={20} aria-hidden />
         </button>
@@ -38,7 +39,7 @@ export default function ProfilePage() {
   );
 
   return (
-    <MobileScreen header={header} footer={<BottomTabBar active="profile" />}>
+    <MobileScreen header={header}>
       <div className={styles.body}>
         <div className={styles.identity}>
           <Avatar name={profile.name} size="lg" emphasized />
@@ -72,9 +73,15 @@ export default function ProfilePage() {
         <div className={styles.sectionLabel}>내가 낸 제보</div>
         <ul className={styles.reports}>
           {profile.myReports.map((report) => (
-            <li key={report.headline} className={styles.reportRow} data-outlet={report.outlet}>
+            <li
+              key={report.headline}
+              className={styles.reportRow}
+              data-outlet={report.outlet}
+            >
               <div className={styles.reportInfo}>
-                <span className={styles.reportOutlet}>{PUBLISHERS[report.outlet].name}</span>
+                <span className={styles.reportOutlet}>
+                  {PUBLISHERS[report.outlet].name}
+                </span>
                 <div className={styles.reportHeadline}>{report.headline}</div>
               </div>
               <span className={styles.reportViews}>👀 {report.viewCount}</span>

@@ -9,9 +9,9 @@
 
   /* 폰트 */
   --font-sans:
-    'Pretendard Variable', Pretendard, -apple-system, system-ui,
-    'Apple SD Gothic Neo', sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+    "Pretendard Variable", Pretendard, -apple-system, system-ui,
+    "Apple SD Gothic Neo", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
   /* 중립 — Surface & Text */
   --bg: light-dark(oklch(0.984 0.002 264), oklch(0.172 0.006 264));
@@ -51,9 +51,12 @@
   --pub-emotion-bg: light-dark(oklch(0.955 0.03 312), oklch(0.31 0.06 312));
 
   /* 그림자 */
-  --shadow-sm: 0 1px 2px light-dark(oklch(0.2 0.02 264 / 0.06), rgb(0 0 0 / 0.4));
-  --shadow-md: 0 4px 18px light-dark(oklch(0.2 0.02 264 / 0.09), rgb(0 0 0 / 0.45));
-  --shadow-lg: 0 18px 48px light-dark(oklch(0.2 0.02 264 / 0.13), rgb(0 0 0 / 0.55));
+  --shadow-sm: 0 1px 2px
+    light-dark(oklch(0.2 0.02 264 / 0.06), rgb(0 0 0 / 0.4));
+  --shadow-md: 0 4px 18px
+    light-dark(oklch(0.2 0.02 264 / 0.09), rgb(0 0 0 / 0.45));
+  --shadow-lg: 0 18px 48px
+    light-dark(oklch(0.2 0.02 264 / 0.13), rgb(0 0 0 / 0.55));
 
   /* 라운드 */
   --r-sm: 8px;
@@ -73,11 +76,11 @@
 }
 
 /* 테마 강제 — data-theme이 없으면 시스템 설정을 따른다 */
-:root[data-theme='light'] {
+:root[data-theme="light"] {
   color-scheme: light;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
   color-scheme: dark;
 }
 
@@ -107,6 +110,22 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* 웹뷰에서 앱처럼: 더블탭 확대(300ms 지연) 제거 */
+  touch-action: manipulation;
+  /* 더블탭·롱프레스 시 글자 선택 방지 */
+  -webkit-user-select: none;
+  user-select: none;
+  /* iOS 롱프레스 콜아웃/링크 미리보기 방지 */
+  -webkit-touch-callout: none;
+}
+
+/* 입력·편집 요소는 선택/편집이 필요하므로 예외로 되살린다 */
+input,
+textarea,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 
 a {

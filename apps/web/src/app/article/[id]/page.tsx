@@ -2,7 +2,7 @@
 
 import { ArrowUp, MoreHorizontal } from "lucide-react";
 import { use, useState } from "react";
-import { useStackLinkRouter } from "stack-link";
+import { StackLink } from "stack-link";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { CommentThread } from "@/components/feature/widget/CommentThread";
@@ -14,10 +14,13 @@ import { ARTICLE_COMMENTS, FEED_ARTICLES, getArticle } from "@/lib/mock";
 import type { ReactionType } from "@/lib/reactions";
 import styles from "./page.module.css";
 
-export default function ArticleDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ArticleDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const back = useStackBack();
-  const { navigate } = useStackLinkRouter({});
   const article = getArticle(id) ?? FEED_ARTICLES[0];
 
   const [counts, setCounts] = useState(article.reactions);
@@ -47,8 +50,16 @@ export default function ArticleDetailPage({ params }: { params: Promise<{ id: st
 
   const footer = (
     <div className={styles.composer}>
-      <input className={styles.commentInput} placeholder="댓글 달기…" aria-label="댓글" />
-      <button type="button" className={styles.sendButton} aria-label="댓글 보내기">
+      <input
+        className={styles.commentInput}
+        placeholder="댓글 달기…"
+        aria-label="댓글"
+      />
+      <button
+        type="button"
+        className={styles.sendButton}
+        aria-label="댓글 보내기"
+      >
         <ArrowUp size={19} aria-hidden />
       </button>
     </div>
@@ -73,13 +84,12 @@ export default function ArticleDetailPage({ params }: { params: Promise<{ id: st
 
         <ReactionBar counts={counts} myReaction={mine} onReact={react} />
 
-        <button
-          type="button"
-          className={styles.correctionCta}
-          onClick={() => navigate({ href: `/article/${id}/thread`, animation: "slide" })}
-        >
-          사실과 다르다면? <span className={styles.correctionLink}>정정 요청 →</span>
-        </button>
+        <StackLink href={`/article/${id}/thread`} preLoad animation="slide">
+          <button type="button" className={styles.correctionCta}>
+            사실과 다르다면?{" "}
+            <span className={styles.correctionLink}>정정 요청 →</span>
+          </button>
+        </StackLink>
 
         <div className={styles.comments}>
           <CommentThread comments={ARTICLE_COMMENTS} />

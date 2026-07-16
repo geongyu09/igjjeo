@@ -1,13 +1,15 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "이거 진짜에요?",
+    "slug": "igjjeo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.geongyu09.igjjeo",
+      "appleTeamId": "3XD9F9256D"
     },
     "android": {
       "adaptiveIcon": {

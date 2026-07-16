@@ -1,22 +1,23 @@
 "use client";
 
 import { Eye, Flame, MessageCircle, Search } from "lucide-react";
-import { useStackLinkRouter } from "stack-link";
 import { Avatar } from "@/components/common/shared/ui/Avatar";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { ArticleCard } from "@/components/feature/widget/ArticleCard";
-import { BottomTabBar } from "@/components/feature/widget/BottomTabBar";
 import { PublisherBadge } from "@/components/feature/widget/PublisherBadge";
+import { useOpenScreen } from "@/hooks/common/useOpenScreen";
 import { FEED_ARTICLES } from "@/lib/mock";
 import { pressable } from "@/lib/interactive";
 import styles from "./page.module.css";
 
 export default function FeedPage() {
-  const { navigate } = useStackLinkRouter({});
-  const open = (id: string) => navigate({ href: `/article/${id}`, animation: "slide" });
+  const openScreen = useOpenScreen();
+  const open = (id: string) => openScreen(`/article/${id}`);
 
   const hero = FEED_ARTICLES.find((a) => a.id === "1")!;
-  const largeCards = FEED_ARTICLES.filter((a) => ["2", "3", "4"].includes(a.id));
+  const largeCards = FEED_ARTICLES.filter((a) =>
+    ["2", "3", "4"].includes(a.id),
+  );
   const compact = FEED_ARTICLES.find((a) => a.id === "5")!;
 
   const header = (
@@ -35,9 +36,13 @@ export default function FeedPage() {
   );
 
   return (
-    <MobileScreen header={header} footer={<BottomTabBar active="feed" />}>
+    <MobileScreen header={header}>
       <div className={styles.feed}>
-        <article className={styles.hero} data-outlet="shock" {...pressable(() => open(hero.id))}>
+        <article
+          className={styles.hero}
+          data-outlet="shock"
+          {...pressable(() => open(hero.id))}
+        >
           <div className={styles.heroPhoto} aria-hidden>
             사진
             <span className={styles.hotBadge}>

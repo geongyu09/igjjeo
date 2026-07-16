@@ -4,6 +4,7 @@
   align-items: center;
   padding: 14px 20px 13px;
   border-bottom: 1px solid var(--border);
+  background: var(--bg);
 }
 
 .appTitle {
