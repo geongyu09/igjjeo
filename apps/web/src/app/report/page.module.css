@@ -1,0 +1,80 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+}
+
+.photoAdd {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  align-self: flex-start;
+  width: 46px;
+  height: 46px;
+  margin-top: 9px;
+  border: 1.5px dashed var(--border-2);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-3);
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.photoAdd:hover {
+  background: var(--surface-2);
+}
+
+.sectionLabel {
+  margin: 20px 0 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.modeToggle {
+  align-self: flex-start;
+  margin-bottom: 13px;
+}
+
+.infoBox {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 12px 13px;
+  margin-bottom: 14px;
+  border: 1.5px dashed var(--border-2);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.infoBox b {
+  color: var(--ink);
+}
+
+.reshuffle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 13px;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+.ctaBar {
+  padding: 13px 18px 26px;
+  border-top: 1px solid var(--border);
+}
+
+.cta {
+  width: 100%;
+}

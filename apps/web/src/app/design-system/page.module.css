@@ -1,0 +1,535 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text-1);
+}
+
+/* ── 상단 바 ── */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 32px;
+  background: color-mix(in oklch, var(--bg), transparent 14%);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.brandName {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.brandSub {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 52px 32px 120px;
+}
+
+/* ── 히어로 ── */
+
+.hero {
+  margin-bottom: 64px;
+}
+
+.heroKicker {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  margin-bottom: 12px;
+}
+
+.heroTitle {
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+  color: var(--ink);
+}
+
+.heroDescription {
+  margin-top: 18px;
+  max-width: 560px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--text-2);
+}
+
+/* ── 섹션 공통 ── */
+
+.section {
+  margin-bottom: 60px;
+}
+
+.kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.kickerAccent {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.sectionTitle {
+  margin: 8px 0 4px;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.sectionDescription {
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.sectionDescription b {
+  color: var(--text-1);
+}
+
+.code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: 24px;
+}
+
+/* ── 색 스와치 ── */
+
+.swatchLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  margin: 16px 0 12px;
+}
+
+.swatchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.swatch {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.swatchColor {
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+}
+
+.swatchBody {
+  padding: 9px 11px;
+}
+
+.swatchName {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.swatchVar {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+}
+
+/* ── 언론사 정체성 ── */
+
+.pubGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+.pubCard {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.pubCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.pubWordmark {
+  font-size: 21px;
+}
+
+.pubSwatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--pub);
+}
+
+.pubTagline {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+/* ── 타이포그래피 ── */
+
+.typeTable {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.typeRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+}
+
+.typeRow + .typeRow {
+  border-top: 1px solid var(--border);
+}
+
+.typeRow > :first-child {
+  max-width: 560px;
+}
+
+.typeSpec {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  flex: none;
+}
+
+/* ── 간격 · 라운드 · 그림자 ── */
+
+.foundationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 22px;
+  margin-bottom: 72px;
+}
+
+.foundationGrid .sectionTitle {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.spaceList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.spaceRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spaceLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  width: 34px;
+}
+
+.spaceBar {
+  height: 11px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.radiusPanel {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 18px;
+}
+
+.radiusItem {
+  text-align: center;
+}
+
+.radiusBox {
+  width: 52px;
+  height: 52px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-2);
+}
+
+.radiusLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 6px;
+}
+
+.shadowPanel {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: var(--surface-2);
+  padding: 22px;
+}
+
+.shadowBox {
+  width: 58px;
+  height: 58px;
+  background: var(--surface);
+  border-radius: var(--r-md);
+}
+
+/* ── 컴포넌트 공통 ── */
+
+.componentsHeader {
+  border-top: 2px solid var(--ink);
+  padding-top: 24px;
+  margin-bottom: 40px;
+}
+
+.componentsTitle {
+  margin-top: 8px;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.componentSection {
+  margin-bottom: 44px;
+}
+
+.componentTitle {
+  margin-bottom: 4px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.componentDescription {
+  margin-bottom: 18px;
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+.demoRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.demoRow + .demoRow {
+  margin-top: 20px;
+}
+
+.demoNote {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  margin-left: 4px;
+}
+
+.demoLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  margin-bottom: 12px;
+}
+
+.demoLabel:not(:first-child) {
+  margin-top: 22px;
+}
+
+/* ── 입력 ── */
+
+.inputGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.inputColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── 토글 ── */
+
+.toggleList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggleName {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.toggleName[data-on] {
+  color: var(--text-1);
+}
+
+/* ── 반응 · 정정 · 빈 상태 ── */
+
+.narrowPanel {
+  max-width: 420px;
+}
+
+.trustBarDemo {
+  margin-bottom: 16px;
+}
+
+/* ── 기사 카드 ── */
+
+.cardShowcase {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.cardColumn {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardColumn .demoNote {
+  margin-left: 0;
+}
+
+.cardColumn .demoNote:not(:first-child) {
+  margin-top: 10px;
+}
+
+.listContainer {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: 4px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.listContainer > article + article {
+  border-top: 1px solid var(--border);
+}
+
+/* ── 아바타 · 프로필 ── */
+
+.avatarPanel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: center;
+}
+
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profileDemo {
+  flex: 1;
+  min-width: 240px;
+  border-left: 1px solid var(--border);
+  padding-left: 26px;
+}
+
+.profileHead {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 16px;
+}
+
+.profileName {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.profileMeta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-3);
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding: 13px 20px;
+  }
+
+  .container {
+    padding: 40px 20px 100px;
+  }
+
+  .heroTitle {
+    font-size: 34px;
+  }
+
+  .profileDemo {
+    border-left: none;
+    padding-left: 0;
+  }
+}

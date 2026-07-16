@@ -1,0 +1,87 @@
+"use client";
+
+import { PenLine, Settings } from "lucide-react";
+import { useStackLinkRouter } from "stack-link";
+import { Avatar } from "@/components/common/shared/ui/Avatar";
+import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
+import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
+import { BottomTabBar } from "@/components/feature/widget/BottomTabBar";
+import { PublisherBadge } from "@/components/feature/widget/PublisherBadge";
+import { MOCK_PROFILE } from "@/lib/mock";
+import { PUBLISHERS } from "@/lib/publishers";
+import styles from "./page.module.css";
+
+export default function ProfilePage() {
+  const { navigate } = useStackLinkRouter({});
+  const profile = MOCK_PROFILE;
+  const stats: { value: number; label: string }[] = [
+    { value: profile.stats.reports, label: "제보" },
+    { value: profile.stats.reactions, label: "받은 반응" },
+    { value: profile.stats.scoops, label: "특종" },
+  ];
+
+  const header = (
+    <ScreenHeader
+      title="프로필"
+      leading="none"
+      trailing={
+        <button
+          type="button"
+          className={styles.settingsButton}
+          aria-label="구독 설정"
+          onClick={() => navigate({ href: "/subscriptions", animation: "slide" })}
+        >
+          <Settings size={20} aria-hidden />
+        </button>
+      }
+    />
+  );
+
+  return (
+    <MobileScreen header={header} footer={<BottomTabBar active="profile" />}>
+      <div className={styles.body}>
+        <div className={styles.identity}>
+          <Avatar name={profile.name} size="lg" emphasized />
+          <div>
+            <div className={styles.name}>{profile.name}</div>
+            {profile.badge && (
+              <span className={styles.badge}>
+                <PenLine size={12} aria-hidden />
+                {profile.badge}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.stats}>
+          {stats.map((stat) => (
+            <div key={stat.label} className={styles.stat}>
+              <div className={styles.statValue}>{stat.value}</div>
+              <div className={styles.statLabel}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.sectionLabel}>구독 중 · 공개</div>
+        <div className={styles.chips}>
+          {profile.subscribed.map((outlet) => (
+            <PublisherBadge key={outlet} outlet={outlet} />
+          ))}
+        </div>
+
+        <div className={styles.sectionLabel}>내가 낸 제보</div>
+        <ul className={styles.reports}>
+          {profile.myReports.map((report) => (
+            <li key={report.headline} className={styles.reportRow} data-outlet={report.outlet}>
+              <div className={styles.reportInfo}>
+                <span className={styles.reportOutlet}>{PUBLISHERS[report.outlet].name}</span>
+                <div className={styles.reportHeadline}>{report.headline}</div>
+              </div>
+              <span className={styles.reportViews}>👀 {report.viewCount}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </MobileScreen>
+  );
+}
