@@ -50,18 +50,43 @@ const SEMANTIC_SWATCHES = [
 ] as const;
 
 const TYPE_SCALE = [
-  { className: "t-display", sample: "이거 진짜에요?", spec: "Display · 40 / 800" },
-  { className: "t-h1", sample: "상습 지각, 이대로 괜찮은가", spec: "H1 · 26 / 800" },
+  {
+    className: "t-display",
+    sample: "이거 진짜에요?",
+    spec: "Display · 40 / 800",
+  },
+  {
+    className: "t-h1",
+    sample: "상습 지각, 이대로 괜찮은가",
+    spec: "H1 · 26 / 800",
+  },
   { className: "t-h2", sample: "이번 주 결산", spec: "H2 · 20 / 700" },
-  { className: "t-title", sample: "기사 제목 / 리스트 타이틀", spec: "Title · 16 / 700" },
+  {
+    className: "t-title",
+    sample: "기사 제목 / 리스트 타이틀",
+    spec: "Title · 16 / 700",
+  },
   {
     className: "t-body",
-    sample: "충격. 또 늦었다. 벌써 세 번째. 조원들의 인내심이 한계에 다다랐다는 후문이다.",
+    sample:
+      "충격. 또 늦었다. 벌써 세 번째. 조원들의 인내심이 한계에 다다랐다는 후문이다.",
     spec: "Body · 15 / 400",
   },
-  { className: "t-body-s", sample: "보조 설명이나 캡션에 쓰는 작은 본문입니다.", spec: "Body S · 13 / 400" },
-  { className: "t-label", sample: "LABEL · 라벨", spec: "Label · 11 / 700 · +tracking" },
-  { className: "t-mono", sample: "👀 12 · 10:24 · 7K2Q", spec: "Mono · 시각·코드" },
+  {
+    className: "t-body-s",
+    sample: "보조 설명이나 캡션에 쓰는 작은 본문입니다.",
+    spec: "Body S · 13 / 400",
+  },
+  {
+    className: "t-label",
+    sample: "LABEL · 라벨",
+    spec: "Label · 11 / 700 · +tracking",
+  },
+  {
+    className: "t-mono",
+    sample: "👀 12 · 10:24 · 7K2Q",
+    spec: "Mono · 시각·코드",
+  },
 ] as const;
 
 const SPACES = [4, 8, 12, 16, 24, 32, 48] as const;
@@ -74,7 +99,12 @@ const RADII = [
   { label: "pill", varName: "--r-pill" },
 ] as const;
 
-const REACTION_COUNTS: Record<ReactionType, number> = { really: 2, shock: 5, admit: 7, scoop: 3 };
+const REACTION_COUNTS: Record<ReactionType, number> = {
+  really: 2,
+  shock: 5,
+  admit: 7,
+  scoop: 3,
+};
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
@@ -92,7 +122,15 @@ function usePrefersDark() {
   );
 }
 
-function SectionHeading({ kicker, title, children }: { kicker: string; title: string; children?: React.ReactNode }) {
+function SectionHeading({
+  kicker,
+  title,
+  children,
+}: {
+  kicker: string;
+  title: string;
+  children?: React.ReactNode;
+}) {
   return (
     <>
       <div className={styles.kicker}>{kicker}</div>
@@ -105,7 +143,9 @@ function SectionHeading({ kicker, title, children }: { kicker: string; title: st
 export default function DesignSystemPage() {
   const prefersDark = usePrefersDark();
   // data-theme 미지정 시 페이지는 시스템 테마를 따르므로, 토글 라벨도 시스템 값에서 출발한다
-  const [themeOverride, setThemeOverride] = useState<"light" | "dark" | null>(null);
+  const [themeOverride, setThemeOverride] = useState<"light" | "dark" | null>(
+    null,
+  );
   const theme = themeOverride ?? (prefersDark ? "dark" : "light");
   const [subscriptions, setSubscriptions] = useState<Record<string, boolean>>({
     shock: true,
@@ -114,7 +154,9 @@ export default function DesignSystemPage() {
   const [pickedOutlet, setPickedOutlet] = useState<OutletKey | null>("shock");
   const [pickMode, setPickMode] = useState("pick");
   const [target, setTarget] = useState("김*규");
-  const [reportText, setReportText] = useState("민규가 오늘도 지각했어요. 세 번째입니다.");
+  const [reportText, setReportText] = useState(
+    "민규가 오늘도 지각했어요. 세 번째입니다.",
+  );
   const [myReaction, setMyReaction] = useState<ReactionType | null>("admit");
 
   const toggleTheme = () => {
@@ -145,22 +187,27 @@ export default function DesignSystemPage() {
             디자인 시스템
           </h1>
           <p className={styles.heroDescription}>
-            와이어프레임의 골격 위에 얹는 실제 비주얼 언어예요. 토큰 한 벌과 자주 쓰는 공통
-            컴포넌트를 모아뒀습니다. 우상단에서 라이트·다크를 바꿔볼 수 있어요.
+            와이어프레임의 골격 위에 얹는 실제 비주얼 언어예요. 토큰 한 벌과
+            자주 쓰는 공통 컴포넌트를 모아뒀습니다. 우상단에서 라이트·다크를
+            바꿔볼 수 있어요.
           </p>
         </header>
 
         {/* ===== 색 ===== */}
         <section className={styles.section}>
           <SectionHeading kicker="Foundations" title="색">
-            중립 뉴트럴을 바탕으로, 강조는 시그널 레드 하나로 절제해서 씁니다. 모든 값은{" "}
-            <code className={styles.code}>oklch</code>로 정의돼 라이트·다크가 자동 전환돼요.
+            중립 뉴트럴을 바탕으로, 강조는 시그널 레드 하나로 절제해서 씁니다.
+            모든 값은 <code className={styles.code}>oklch</code>로 정의돼
+            라이트·다크가 자동 전환돼요.
           </SectionHeading>
           <div className={styles.swatchLabel}>중립 · Surface &amp; Text</div>
           <div className={styles.swatchGrid}>
             {NEUTRAL_SWATCHES.map((swatch) => (
               <div key={swatch.name} className={styles.swatch}>
-                <div className={styles.swatchColor} style={{ background: `var(${swatch.varName})` }} />
+                <div
+                  className={styles.swatchColor}
+                  style={{ background: `var(${swatch.varName})` }}
+                />
                 <div className={styles.swatchBody}>
                   <div className={styles.swatchName}>{swatch.name}</div>
                   <div className={styles.swatchVar}>{swatch.varName}</div>
@@ -172,7 +219,10 @@ export default function DesignSystemPage() {
           <div className={styles.swatchGrid}>
             {SEMANTIC_SWATCHES.map((swatch) => (
               <div key={swatch.name} className={styles.swatch}>
-                <div className={styles.swatchColor} style={{ background: `var(${swatch.varName})` }} />
+                <div
+                  className={styles.swatchColor}
+                  style={{ background: `var(${swatch.varName})` }}
+                />
                 <div className={styles.swatchBody}>
                   <div className={styles.swatchName}>{swatch.name}</div>
                   <div className={styles.swatchVar}>{swatch.note}</div>
@@ -185,17 +235,23 @@ export default function DesignSystemPage() {
         {/* ===== 언론사 정체성 ===== */}
         <section className={styles.section}>
           <SectionHeading kicker="Foundations" title="언론사 정체성">
-            같은 제보가 언론사를 거치면 전혀 다른 기사가 돼요. 색과 워드마크의 무게·자간·기울기로 각
-            언론사의 성격을 드러냅니다. (모임과학·주간감성은 v2 확장)
+            같은 제보가 언론사를 거치면 전혀 다른 기사가 돼요. 색과 워드마크의
+            무게·자간·기울기로 각 언론사의 성격을 드러냅니다.
+            (모임과학·주간감성은 v2 확장)
           </SectionHeading>
           <div className={styles.pubGrid}>
             {OUTLET_KEYS.map((outlet) => (
               <div key={outlet} className={styles.pubCard}>
                 <div className={styles.pubCardHead} data-outlet={outlet}>
-                  <PublisherWordmark outlet={outlet} className={styles.pubWordmark} />
+                  <PublisherWordmark
+                    outlet={outlet}
+                    className={styles.pubWordmark}
+                  />
                   <span className={styles.pubSwatch} />
                 </div>
-                <div className={styles.pubTagline}>{PUBLISHERS[outlet].tagline}</div>
+                <div className={styles.pubTagline}>
+                  {PUBLISHERS[outlet].tagline}
+                </div>
                 <PublisherBadge outlet={outlet} />
               </div>
             ))}
@@ -205,8 +261,8 @@ export default function DesignSystemPage() {
         {/* ===== 타이포그래피 ===== */}
         <section className={styles.section}>
           <SectionHeading kicker="Foundations" title="타이포그래피">
-            본문·헤드라인 모두 <b>Pretendard</b> 한 가족으로, 무게와 크기로만 위계를 만듭니다.
-            코드·시각 등 메타 정보는 모노스페이스.
+            본문·헤드라인 모두 <b>Pretendard</b> 한 가족으로, 무게와 크기로만
+            위계를 만듭니다. 코드·시각 등 메타 정보는 모노스페이스.
           </SectionHeading>
           <div className={styles.typeTable}>
             {TYPE_SCALE.map((row) => (
@@ -227,7 +283,10 @@ export default function DesignSystemPage() {
                 {SPACES.map((space) => (
                   <div key={space} className={styles.spaceRow}>
                     <span className={styles.spaceLabel}>{space}</span>
-                    <span className={styles.spaceBar} style={{ width: space }} />
+                    <span
+                      className={styles.spaceBar}
+                      style={{ width: space }}
+                    />
                   </div>
                 ))}
               </div>
@@ -238,7 +297,10 @@ export default function DesignSystemPage() {
             <div className={`${styles.panel} ${styles.radiusPanel}`}>
               {RADII.map((radius) => (
                 <div key={radius.label} className={styles.radiusItem}>
-                  <div className={styles.radiusBox} style={{ borderRadius: `var(${radius.varName})` }} />
+                  <div
+                    className={styles.radiusBox}
+                    style={{ borderRadius: `var(${radius.varName})` }}
+                  />
                   <div className={styles.radiusLabel}>{radius.label}</div>
                 </div>
               ))}
@@ -249,7 +311,10 @@ export default function DesignSystemPage() {
             <div className={`${styles.panel} ${styles.shadowPanel}`}>
               {(["sm", "md", "lg"] as const).map((size) => (
                 <div key={size} className={styles.radiusItem}>
-                  <div className={styles.shadowBox} style={{ boxShadow: `var(--shadow-${size})` }} />
+                  <div
+                    className={styles.shadowBox}
+                    style={{ boxShadow: `var(--shadow-${size})` }}
+                  />
                   <div className={styles.radiusLabel}>{size}</div>
                 </div>
               ))}
@@ -266,7 +331,9 @@ export default function DesignSystemPage() {
         {/* 언론사 태그 · 배지 */}
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>언론사 태그 · 배지</h3>
-          <p className={styles.componentDescription}>피드·상세 어디서나 출처를 즉시 알리는 최소 단위.</p>
+          <p className={styles.componentDescription}>
+            피드·상세 어디서나 출처를 즉시 알리는 최소 단위.
+          </p>
           <div className={styles.panel}>
             <div className={styles.demoRow}>
               {OUTLET_KEYS.map((outlet) => (
@@ -311,7 +378,9 @@ export default function DesignSystemPage() {
                 <Flag size={15} aria-hidden />
                 정정 요청
               </Button>
-              <span className={styles.demoNote}>primary · secondary · ghost · accent</span>
+              <span className={styles.demoNote}>
+                primary · secondary · ghost · accent
+              </span>
             </div>
             <div className={styles.demoRow}>
               <Button size="sm">Small</Button>
@@ -332,11 +401,17 @@ export default function DesignSystemPage() {
         {/* 입력 */}
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>입력 · 텍스트에어리어</h3>
-          <p className={styles.componentDescription}>제보 작성과 댓글의 기본. 포커스는 잉크 테두리로 또렷하게.</p>
+          <p className={styles.componentDescription}>
+            제보 작성과 댓글의 기본. 포커스는 잉크 테두리로 또렷하게.
+          </p>
           <div className={`${styles.panel} ${styles.inputGrid}`}>
             <div className={styles.inputColumn}>
               <TextField label="방 이름" placeholder="예: 3조 뉴스룸" />
-              <TextField label="초대 코드" defaultValue="7K2" error="코드는 4자리예요" />
+              <TextField
+                label="초대 코드"
+                defaultValue="7K2"
+                error="코드는 4자리예요"
+              />
             </div>
             <TextArea
               label="무엇이 일어났나요?"
@@ -350,7 +425,9 @@ export default function DesignSystemPage() {
         {/* 토글 · 라디오 · 칩 */}
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>토글 · 라디오 · 칩</h3>
-          <p className={styles.componentDescription}>구독 온/오프, 언론사 선택, 세그먼트 전환에 씁니다.</p>
+          <p className={styles.componentDescription}>
+            구독 온/오프, 언론사 선택, 세그먼트 전환에 씁니다.
+          </p>
           <div className={`${styles.panel} ${styles.inputGrid}`}>
             <div>
               <div className={styles.demoLabel}>토글</div>
@@ -365,7 +442,12 @@ export default function DesignSystemPage() {
                     </span>
                     <Toggle
                       checked={subscriptions[outlet]}
-                      onChange={(next) => setSubscriptions((prev) => ({ ...prev, [outlet]: next }))}
+                      onChange={(next) =>
+                        setSubscriptions((prev) => ({
+                          ...prev,
+                          [outlet]: next,
+                        }))
+                      }
                       aria-label={`${PUBLISHERS[outlet].name} 구독`}
                     />
                   </div>
@@ -393,7 +475,11 @@ export default function DesignSystemPage() {
               <div className={styles.demoLabel}>칩 (선택)</div>
               <div className={styles.demoRow}>
                 {["김*규", "이*아", "박*호"].map((name) => (
-                  <Chip key={name} selected={target === name} onClick={() => setTarget(name)}>
+                  <Chip
+                    key={name}
+                    selected={target === name}
+                    onClick={() => setTarget(name)}
+                  >
                     {name}
                   </Chip>
                 ))}
@@ -410,14 +496,22 @@ export default function DesignSystemPage() {
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>반응 4종 + 신뢰도 바</h3>
           <p className={styles.componentDescription}>
-            진짜? · 충격 · 인정 · 특종. 인정이 많으면 사실로 굳고, 진짜?가 많으면 정정 요청으로 유도.
+            진짜? · 충격 · 인정 · 특종. 인정이 많으면 사실로 굳고, 진짜?가
+            많으면 정정 요청으로 유도.
           </p>
           <div className={`${styles.panel} ${styles.narrowPanel}`}>
-            <TrustBar admitCount={7} reallyCount={2} total={10} className={styles.trustBarDemo} />
+            <TrustBar
+              admitCount={7}
+              reallyCount={2}
+              total={10}
+              className={styles.trustBarDemo}
+            />
             <ReactionBar
               counts={REACTION_COUNTS}
               myReaction={myReaction}
-              onReact={(type) => setMyReaction((prev) => (prev === type ? null : type))}
+              onReact={(type) =>
+                setMyReaction((prev) => (prev === type ? null : type))
+              }
             />
           </div>
         </section>
@@ -426,7 +520,8 @@ export default function DesignSystemPage() {
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>기사 카드</h3>
           <p className={styles.componentDescription}>
-            한 제보 = 한 언론사 기사 하나. 피드 밀도에 따라 큰 카드·리스트·톱기사·컴팩트를 골라 씁니다.
+            한 제보 = 한 언론사 기사 하나. 피드 밀도에 따라 큰
+            카드·리스트·톱기사·컴팩트를 골라 씁니다.
           </p>
           <div className={styles.cardShowcase}>
             <div className={styles.cardColumn}>
@@ -507,7 +602,9 @@ export default function DesignSystemPage() {
                 <Avatar name="이서아" size="lg" emphasized />
                 <div>
                   <div className={styles.profileName}>이*아</div>
-                  <div className={styles.profileMeta}>제보 9건 · 이번 주의 기자</div>
+                  <div className={styles.profileMeta}>
+                    제보 9건 · 이번 주의 기자
+                  </div>
                 </div>
               </div>
               <div className={styles.demoLabel}>구독 중</div>
@@ -523,7 +620,8 @@ export default function DesignSystemPage() {
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>정정보도 스레드</h3>
           <p className={styles.componentDescription}>
-            원본→정정→재정정이 한 줄기로 쌓여요. 노드가 이어질수록 사건이 겹겹이 부풀어 오릅니다.
+            원본→정정→재정정이 한 줄기로 쌓여요. 노드가 이어질수록 사건이 겹겹이
+            부풀어 오릅니다.
           </p>
           <div className={`${styles.panel} ${styles.narrowPanel}`}>
             <CorrectionThread
@@ -556,7 +654,8 @@ export default function DesignSystemPage() {
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>빈 상태</h3>
           <p className={styles.componentDescription}>
-            피드가 비었을 땐 서비스가 먼저 말을 겁니다. 부담 없이 첫 제보로 이어지게.
+            피드가 비었을 땐 서비스가 먼저 말을 겁니다. 부담 없이 첫 제보로
+            이어지게.
           </p>
           <div className={`${styles.panel} ${styles.narrowPanel}`}>
             <EmptyState

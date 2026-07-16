@@ -52,7 +52,9 @@ export default function LockScreenPage() {
           ))}
         </div>
 
-        <p className={styles.caption}>알림은 하루 1~2건만 · 반응 많은 기사 우선</p>
+        <p className={styles.caption}>
+          알림은 하루 1~2건만 · 반응 많은 기사 우선
+        </p>
 
         <div className={styles.controls}>
           <span className={styles.controlButton}>

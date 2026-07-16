@@ -3,7 +3,13 @@ import { MVP_OUTLETS, OUTLET_KEYS, PUBLISHERS } from "./publishers";
 
 describe("publishers", () => {
   it("다섯 언론사를 정의한다", () => {
-    expect(OUTLET_KEYS).toEqual(["daily", "shock", "economy", "science", "emotion"]);
+    expect(OUTLET_KEYS).toEqual([
+      "daily",
+      "shock",
+      "economy",
+      "science",
+      "emotion",
+    ]);
   });
 
   it("outlet_key로 언론사 이름을 찾을 수 있다", () => {

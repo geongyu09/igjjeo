@@ -25,7 +25,11 @@ export default function PublishPreviewPage() {
       <Button variant="secondary" size="lg" onClick={back}>
         언론사 변경
       </Button>
-      <Button size="lg" className={styles.publish} onClick={() => navigate({ href: "/", animation: "none" })}>
+      <Button
+        size="lg"
+        className={styles.publish}
+        onClick={() => navigate({ href: "/", animation: "none" })}
+      >
         3개 모두 발행
       </Button>
     </div>

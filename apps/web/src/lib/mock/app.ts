@@ -3,7 +3,12 @@
  */
 
 import type { OutletKey } from "@/lib/publishers";
-import type { MockDigest, MockGroup, MockLockScreen, MockProfile } from "./types";
+import type {
+  MockDigest,
+  MockGroup,
+  MockLockScreen,
+  MockProfile,
+} from "./types";
 
 /** 언론사 구독 초기 상태 (06) — 프로필에 공개되는 취향 */
 export const INITIAL_SUBSCRIPTIONS: Record<OutletKey, boolean> = {
@@ -21,8 +26,16 @@ export const MOCK_PROFILE: MockProfile = {
   stats: { reports: 9, reactions: 31, scoops: 2 },
   subscribed: ["shock", "emotion"],
   myReports: [
-    { outlet: "emotion", headline: "그날, 회의실엔 침묵만 흘렀다", viewCount: 5 },
-    { outlet: "economy", headline: "간식 예산 40% 삭감… 긴축 국면", viewCount: 7 },
+    {
+      outlet: "emotion",
+      headline: "그날, 회의실엔 침묵만 흘렀다",
+      viewCount: 5,
+    },
+    {
+      outlet: "economy",
+      headline: "간식 예산 40% 삭감… 긴축 국면",
+      viewCount: 7,
+    },
   ],
 };
 
@@ -31,7 +44,10 @@ export const MOCK_DIGEST: MockDigest = {
   weekLabel: "7월 2주차 · 3조 뉴스룸",
   roomLabel: "이번 주 결산",
   personOfWeek: { name: "김*규", note: "기사 6건에 등장 · 최다 화제" },
-  scoopOfWeek: { headline: "상습 지각, 이대로 괜찮은가", meta: "반응 27개 · 데일리쇼크" },
+  scoopOfWeek: {
+    headline: "상습 지각, 이대로 괜찮은가",
+    meta: "반응 27개 · 데일리쇼크",
+  },
   reporterOfWeek: { name: "이*아", note: "제보 9건" },
 };
 

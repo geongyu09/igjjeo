@@ -3,7 +3,13 @@
  * 원본 정의: .claude/skills/igjjeo-spec/references/ai-rules.md
  */
 
-export const OUTLET_KEYS = ["daily", "shock", "economy", "science", "emotion"] as const;
+export const OUTLET_KEYS = [
+  "daily",
+  "shock",
+  "economy",
+  "science",
+  "emotion",
+] as const;
 
 export type OutletKey = (typeof OUTLET_KEYS)[number];
 
@@ -49,4 +55,6 @@ export const PUBLISHERS: Record<OutletKey, Publisher> = {
   },
 };
 
-export const MVP_OUTLETS: OutletKey[] = OUTLET_KEYS.filter((key) => PUBLISHERS[key].mvp);
+export const MVP_OUTLETS: OutletKey[] = OUTLET_KEYS.filter(
+  (key) => PUBLISHERS[key].mvp,
+);

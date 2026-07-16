@@ -18,21 +18,30 @@ export default function CreateGroupPage() {
 
   const footer = (
     <div className={styles.ctaBar}>
-      <Button size="lg" className={styles.cta} onClick={() => navigate({ href: "/", animation: "none" })}>
+      <Button
+        size="lg"
+        className={styles.cta}
+        onClick={() => navigate({ href: "/", animation: "none" })}
+      >
         뉴스룸 시작하기
       </Button>
     </div>
   );
 
   return (
-    <MobileScreen header={<ScreenHeader title="새 뉴스룸" onBack={back} />} footer={footer}>
+    <MobileScreen
+      header={<ScreenHeader title="새 뉴스룸" onBack={back} />}
+      footer={footer}
+    >
       <div className={styles.body}>
         <TextField label="방 이름" defaultValue={group.name} />
 
         <div className={styles.codeBox}>
           <div className={styles.codeLabel}>초대 코드</div>
           <div className={styles.code}>{group.inviteCode}</div>
-          <div className={styles.codeHint}>코드를 아는 사람만 들어올 수 있어요</div>
+          <div className={styles.codeHint}>
+            코드를 아는 사람만 들어올 수 있어요
+          </div>
         </div>
 
         <div className={styles.shareRow}>
@@ -59,7 +68,9 @@ export default function CreateGroupPage() {
                 <Avatar name={member.label} emphasized />
                 <span className={styles.memberName}>
                   {member.label}
-                  {member.role && <span className={styles.roleBadge}>{member.role}</span>}
+                  {member.role && (
+                    <span className={styles.roleBadge}>{member.role}</span>
+                  )}
                 </span>
               </li>
             ),
