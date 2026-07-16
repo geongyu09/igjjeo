@@ -1,0 +1,214 @@
+/* ==========================================================================
+   이거 진짜에요? — 디자인 토큰
+   원본: claude.ai/design "앱 프로토타입 와이어프레임 / Design System.dc.html"
+   모든 색은 oklch + light-dark()로 정의 — 라이트/다크 자동 전환.
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* 폰트 */
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, system-ui,
+    'Apple SD Gothic Neo', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* 중립 — Surface & Text */
+  --bg: light-dark(oklch(0.984 0.002 264), oklch(0.172 0.006 264));
+  --surface: light-dark(oklch(1 0 0), oklch(0.208 0.007 264));
+  --surface-2: light-dark(oklch(0.972 0.003 264), oklch(0.238 0.008 264));
+  --surface-3: light-dark(oklch(0.955 0.004 264), oklch(0.27 0.009 264));
+  --border: light-dark(oklch(0.918 0.004 264), oklch(0.3 0.008 264));
+  --border-2: light-dark(oklch(0.865 0.006 264), oklch(0.385 0.01 264));
+  --ink: light-dark(oklch(0.235 0.012 264), oklch(0.95 0.004 264));
+  --text-1: light-dark(oklch(0.255 0.012 264), oklch(0.93 0.004 264));
+  --text-2: light-dark(oklch(0.475 0.01 264), oklch(0.72 0.008 264));
+  --text-3: light-dark(oklch(0.62 0.008 264), oklch(0.575 0.008 264));
+
+  /* 브랜드 & 시맨틱 */
+  --action: light-dark(oklch(0.235 0.012 264), oklch(0.95 0.003 264));
+  --on-action: light-dark(oklch(0.99 0 0), oklch(0.2 0.01 264));
+  --accent: light-dark(oklch(0.585 0.2 25), oklch(0.68 0.18 28));
+  --accent-weak: light-dark(oklch(0.955 0.04 25), oklch(0.32 0.07 28));
+  --accent-ink: light-dark(oklch(0.5 0.2 25), oklch(0.75 0.17 28));
+  --focus: oklch(0.6 0.16 250);
+  --success: light-dark(oklch(0.55 0.13 155), oklch(0.68 0.13 158));
+  --success-weak: light-dark(oklch(0.95 0.04 155), oklch(0.32 0.06 158));
+  --warning: oklch(0.72 0.13 75);
+
+  /* 언론사 정체성 — outlet_key 기준 (spec: ai-rules.md)
+     daily 소모임일보 · shock 데일리쇼크 · economy 스터디경제
+     science 모임과학(v2) · emotion 주간감성(v2) */
+  --pub-shock: light-dark(oklch(0.58 0.2 25), oklch(0.72 0.18 28));
+  --pub-shock-bg: light-dark(oklch(0.955 0.04 25), oklch(0.33 0.07 28));
+  --pub-economy: light-dark(oklch(0.53 0.14 252), oklch(0.72 0.13 252));
+  --pub-economy-bg: light-dark(oklch(0.955 0.03 252), oklch(0.3 0.06 252));
+  --pub-daily: light-dark(oklch(0.42 0.008 264), oklch(0.8 0.006 264));
+  --pub-daily-bg: light-dark(oklch(0.945 0.004 264), oklch(0.3 0.006 264));
+  --pub-science: light-dark(oklch(0.52 0.12 158), oklch(0.72 0.12 158));
+  --pub-science-bg: light-dark(oklch(0.955 0.035 158), oklch(0.3 0.05 158));
+  --pub-emotion: light-dark(oklch(0.55 0.15 312), oklch(0.74 0.13 312));
+  --pub-emotion-bg: light-dark(oklch(0.955 0.03 312), oklch(0.31 0.06 312));
+
+  /* 그림자 */
+  --shadow-sm: 0 1px 2px light-dark(oklch(0.2 0.02 264 / 0.06), rgb(0 0 0 / 0.4));
+  --shadow-md: 0 4px 18px light-dark(oklch(0.2 0.02 264 / 0.09), rgb(0 0 0 / 0.45));
+  --shadow-lg: 0 18px 48px light-dark(oklch(0.2 0.02 264 / 0.13), rgb(0 0 0 / 0.55));
+
+  /* 라운드 */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+  --r-pill: 999px;
+
+  /* 간격 스케일 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+}
+
+/* 테마 강제 — data-theme이 없으면 시스템 설정을 따른다 */
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-1);
+  background: var(--bg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--accent-ink);
+  text-decoration: none;
+}
+
+a:hover {
+  opacity: 0.75;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-action);
+}
+
+/* ==========================================================================
+   언론사 색 매핑 — data-outlet 속성이 붙은 요소 안에서 --pub / --pub-bg 사용
+   ========================================================================== */
+
+[data-outlet="daily"] {
+  --pub: var(--pub-daily);
+  --pub-bg: var(--pub-daily-bg);
+}
+
+[data-outlet="shock"] {
+  --pub: var(--pub-shock);
+  --pub-bg: var(--pub-shock-bg);
+}
+
+[data-outlet="economy"] {
+  --pub: var(--pub-economy);
+  --pub-bg: var(--pub-economy-bg);
+}
+
+[data-outlet="science"] {
+  --pub: var(--pub-science);
+  --pub-bg: var(--pub-science-bg);
+}
+
+[data-outlet="emotion"] {
+  --pub: var(--pub-emotion);
+  --pub-bg: var(--pub-emotion-bg);
+}
+
+/* ==========================================================================
+   타이포그래피 스케일 — Pretendard 한 가족, 무게·크기로만 위계
+   ========================================================================== */
+
+.t-display {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+  color: var(--ink);
+}
+
+.t-h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.t-h2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.t-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.t-body {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--text-1);
+}
+
+.t-body-s {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.t-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text-1);
+}
