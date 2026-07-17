@@ -1,21 +1,17 @@
 import {
   BadRequestException,
   ConflictException,
-  Inject,
   Injectable,
   NotFoundException,
-  ServiceUnavailableException,
-  UnprocessableEntityException,
 } from "@nestjs/common";
+import { QueryBus } from "@nestjs/cqrs";
 
-import { GroupsRepository } from "@/groups/groups.repository";
+import { FindMembershipQuery } from "@/groups/cqrs/find-membership.query";
 
-import { AdaptationUnavailableError } from "./adaptation/adaptation.logic";
-import {
-  ADAPTATION_PORT,
-  type AdaptationPort,
-  type DraftArticle,
-  type OutletKey,
+import { AdaptationService } from "./adaptation/adaptation.service";
+import type {
+  DraftArticle,
+  OutletKey,
 } from "./adaptation/adaptation.types";
 import {
   ReportsRepository,
@@ -56,8 +52,8 @@ export interface ReportDraftResponse {
 export class ReportsService {
   constructor(
     private readonly reports: ReportsRepository,
-    private readonly groups: GroupsRepository,
-    @Inject(ADAPTATION_PORT) private readonly adaptation: AdaptationPort,
+    private readonly queryBus: QueryBus,
+    private readonly adaptation: AdaptationService,
   ) {}
 
   async createReport(
@@ -65,7 +61,9 @@ export class ReportsService {
     groupId: string,
     input: CreateReportInput,
   ): Promise<ReportDraftResponse> {
-    const membership = await this.groups.findMembership(groupId, userId);
+    const membership = await this.queryBus.execute(
+      new FindMembershipQuery(groupId, userId),
+    );
     if (!membership) {
       throw notFound();
     }
@@ -77,11 +75,11 @@ export class ReportsService {
       photoUrl: input.photoUrl ?? null,
     });
 
-    const drafts = await this.adapt(
+    const drafts = await this.adaptation.adapt(
       groupId,
       input.rawText,
       input.outletKeys ?? [],
-      input.isSelfReport ?? false,
+      { isSelfReport: input.isSelfReport ?? false },
     );
     await this.reports.saveDraft(report.id, drafts);
 
@@ -95,11 +93,10 @@ export class ReportsService {
   ): Promise<ReportDraftResponse> {
     const report = await this.loadOwnedDraft(userId, reportId);
 
-    const drafts = await this.adapt(
+    const drafts = await this.adaptation.adapt(
       report.group_id,
       report.raw_text,
       outletKeys ?? [],
-      false,
     );
     await this.reports.saveDraft(report.id, drafts);
 
@@ -147,67 +144,14 @@ export class ReportsService {
     };
   }
 
-  /** 각색 실행: 방 멤버 매칭으로 실명→마스킹 subjects 구성 후 어댑터 호출. */
-  private async adapt(
-    groupId: string,
-    rawText: string,
-    outletKeys: OutletKey[],
-    isSelfReport: boolean,
-  ): Promise<DraftArticle[]> {
-    const subjects = await this.resolveSubjects(groupId, rawText);
-
-    let result;
-    try {
-      result = await this.adaptation.adaptReport({
-        rawText,
-        outletKeys,
-        subjects,
-        isSelfReport,
-      });
-    } catch (err) {
-      if (err instanceof AdaptationUnavailableError) {
-        throw new ServiceUnavailableException({
-          error: {
-            code: "ai_unavailable",
-            message: "각색 서버가 응답하지 않아요. 잠시 후 다시 시도해 주세요",
-          },
-        });
-      }
-      throw err;
-    }
-
-    if (result.status === "refused") {
-      throw new UnprocessableEntityException({
-        error: {
-          code: "adaptation_refused",
-          message: result.message,
-          details: { reason: result.reason },
-        },
-      });
-    }
-
-    return result.articles;
-  }
-
-  private async resolveSubjects(
-    groupId: string,
-    rawText: string,
-  ): Promise<{ rawName: string; maskedName: string }[]> {
-    const members = await this.groups.listMembers(groupId);
-    return members
-      .filter((m) => m.display_name && rawText.includes(m.display_name))
-      .map((m) => ({ rawName: m.display_name, maskedName: m.masked_name }));
-  }
-
   private async loadOwned(userId: string, reportId: string): Promise<ReportRow> {
     const report = await this.reports.getReport(reportId);
     // 미발행 초안은 제보자 본인에게만 존재한다 — 그 외에는 존재를 숨겨 404.
     if (!report) {
       throw notFound();
     }
-    const membership = await this.groups.findMembership(
-      report.group_id,
-      userId,
+    const membership = await this.queryBus.execute(
+      new FindMembershipQuery(report.group_id, userId),
     );
     if (!membership || report.reporter_id !== userId) {
       throw notFound();
