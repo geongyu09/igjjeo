@@ -5,7 +5,6 @@
 
 import { apiClient } from "@/lib/api/client";
 import type {
-  Article,
   DailyPrompt,
   DailyPromptAnswerResult,
   PublishResult,
