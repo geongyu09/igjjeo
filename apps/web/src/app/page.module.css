@@ -55,6 +55,10 @@
   padding: 14px 16px;
 }
 
+.empty {
+  padding: var(--sp-7) var(--sp-5);
+}
+
 /* ── 톱기사(hero) ── */
 
 .hero {
