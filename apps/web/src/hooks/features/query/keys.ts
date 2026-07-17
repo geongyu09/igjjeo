@@ -11,6 +11,9 @@ export const queryKeys = {
   group: (groupId: string) => ["groups", groupId] as const,
   groupMembers: (groupId: string) => ["groups", groupId, "members"] as const,
   feed: (groupId: string) => ["groups", groupId, "feed"] as const,
+  /** 날짜별 프롬프트 전체를 prefix로 묶는 무효화용 스코프 키 */
+  dailyPromptScope: (groupId: string) =>
+    ["groups", groupId, "daily-prompt"] as const,
   dailyPrompt: (groupId: string, date?: string) =>
     ["groups", groupId, "daily-prompt", date ?? "today"] as const,
 
