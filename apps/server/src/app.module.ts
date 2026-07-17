@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { CqrsModule } from "@nestjs/cqrs";
 
+import { ArticlesModule } from "@/articles/articles.module";
 import { AuthModule } from "@/auth/auth.module";
 import { validateEnv } from "@/config/env.validation";
 import { GroupsModule } from "@/groups/groups.module";
@@ -28,6 +29,7 @@ import { ReportsModule } from "@/reports/reports.module";
     HealthModule,
     GroupsModule,
     ReportsModule,
+    ArticlesModule,
   ],
 })
 export class AppModule {}
