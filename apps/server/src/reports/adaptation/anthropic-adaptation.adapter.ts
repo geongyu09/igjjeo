@@ -52,7 +52,8 @@ export class AnthropicAdaptationAdapter implements AdaptationPort {
   }
 
   async adaptReport(input: AdaptationInput): Promise<AdaptationResult> {
-    const outletKeys = input.outletKeys.length > 0 ? input.outletKeys : OUTLET_KEYS;
+    const outletKeys =
+      input.outletKeys.length > 0 ? input.outletKeys : OUTLET_KEYS;
     const request = { ...input, outletKeys };
     const system = buildSystemPrompt();
     const user = buildUserPrompt(request);
@@ -100,7 +101,9 @@ export class AnthropicAdaptationAdapter implements AdaptationPort {
     }
 
     return response.content
-      .filter((block) => block.type === "text" && typeof block.text === "string")
+      .filter(
+        (block) => block.type === "text" && typeof block.text === "string",
+      )
       .map((block) => block.text as string)
       .join("");
   }

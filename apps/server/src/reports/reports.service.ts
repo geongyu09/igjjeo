@@ -9,10 +9,7 @@ import { QueryBus } from "@nestjs/cqrs";
 import { FindMembershipQuery } from "@/groups/cqrs/find-membership.query";
 
 import { AdaptationService } from "./adaptation/adaptation.service";
-import type {
-  DraftArticle,
-  OutletKey,
-} from "./adaptation/adaptation.types";
+import type { DraftArticle, OutletKey } from "./adaptation/adaptation.types";
 import {
   ReportsRepository,
   type ArticleRow,
@@ -144,7 +141,10 @@ export class ReportsService {
     };
   }
 
-  private async loadOwned(userId: string, reportId: string): Promise<ReportRow> {
+  private async loadOwned(
+    userId: string,
+    reportId: string,
+  ): Promise<ReportRow> {
     const report = await this.reports.getReport(reportId);
     // 미발행 초안은 제보자 본인에게만 존재한다 — 그 외에는 존재를 숨겨 404.
     if (!report) {
@@ -174,7 +174,11 @@ export class ReportsService {
 }
 
 function toSummary(report: ReportRow): ReportSummary {
-  return { id: report.id, status: report.status, created_at: report.created_at };
+  return {
+    id: report.id,
+    status: report.status,
+    created_at: report.created_at,
+  };
 }
 
 function toArticleResponse(row: ArticleRow): ArticleResponse {

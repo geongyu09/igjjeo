@@ -23,7 +23,9 @@ function makeSupabase(result: { data: unknown; error: unknown }) {
 
 describe("CommentsRepository", () => {
   it("list 는 list_article_comments RPC 를 호출한다", async () => {
-    const rows = [{ id: "c1", masked_name: "이*아", body: "b", created_at: "t" }];
+    const rows = [
+      { id: "c1", masked_name: "이*아", body: "b", created_at: "t" },
+    ];
     const { rpc, service } = makeSupabase({ data: rows, error: null });
     const repo = new CommentsRepository(service);
 
@@ -65,7 +67,10 @@ describe("CommentsRepository", () => {
   });
 
   it("delete 는 comments 를 id 로 삭제한다", async () => {
-    const { from, builder, service } = makeSupabase({ data: null, error: null });
+    const { from, builder, service } = makeSupabase({
+      data: null,
+      error: null,
+    });
     const repo = new CommentsRepository(service);
 
     await repo.delete("c1");

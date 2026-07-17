@@ -83,7 +83,9 @@ describe("DailyPromptsService", () => {
       const { service, prompts } = makeService();
       (prompts.getPrompt as jest.Mock).mockResolvedValue(null);
 
-      await expect(service.getToday("u1", "g1", "2026-07-17")).resolves.toBeNull();
+      await expect(
+        service.getToday("u1", "g1", "2026-07-17"),
+      ).resolves.toBeNull();
     });
   });
 
@@ -175,7 +177,13 @@ describe("DailyPromptsService", () => {
       const { service, prompts } = makeService();
       (prompts.getPrompt as jest.Mock).mockResolvedValue(null);
 
-      const result = await service.seed("u1", "g1", "owner", "질문", "2026-07-17");
+      const result = await service.seed(
+        "u1",
+        "g1",
+        "owner",
+        "질문",
+        "2026-07-17",
+      );
 
       expect(prompts.create).toHaveBeenCalledWith("g1", "질문", "2026-07-17");
       expect(result).toEqual(promptRow);

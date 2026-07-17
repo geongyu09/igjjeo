@@ -1,5 +1,8 @@
 import type { GroupsRepository } from "../groups.repository";
-import { FindMembershipHandler, FindMembershipQuery } from "./find-membership.query";
+import {
+  FindMembershipHandler,
+  FindMembershipQuery,
+} from "./find-membership.query";
 
 describe("FindMembershipHandler", () => {
   it("GroupsRepository.findMembership 로 위임한다", async () => {

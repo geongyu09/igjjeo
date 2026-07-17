@@ -22,7 +22,10 @@ function makeSupabase(result: { data: unknown; error: unknown }) {
 
 describe("ReactionsRepository", () => {
   it("add 는 유니크 충돌을 무시하는 upsert 로 멱등하게 넣는다", async () => {
-    const { from, builder, service } = makeSupabase({ data: null, error: null });
+    const { from, builder, service } = makeSupabase({
+      data: null,
+      error: null,
+    });
     const repo = new ReactionsRepository(service);
 
     await repo.add("a1", "u1", "really");
@@ -30,12 +33,18 @@ describe("ReactionsRepository", () => {
     expect(from).toHaveBeenCalledWith("reactions");
     expect(builder.upsert).toHaveBeenCalledWith(
       { article_id: "a1", user_id: "u1", reaction_type: "really" },
-      { onConflict: "article_id,user_id,reaction_type", ignoreDuplicates: true },
+      {
+        onConflict: "article_id,user_id,reaction_type",
+        ignoreDuplicates: true,
+      },
     );
   });
 
   it("remove 는 (article, user, type) 로 삭제한다", async () => {
-    const { from, builder, service } = makeSupabase({ data: null, error: null });
+    const { from, builder, service } = makeSupabase({
+      data: null,
+      error: null,
+    });
     const repo = new ReactionsRepository(service);
 
     await repo.remove("a1", "u1", "shock");
@@ -47,7 +56,10 @@ describe("ReactionsRepository", () => {
   });
 
   it("getState 는 article_reaction_state RPC 를 호출한다", async () => {
-    const { rpc, service } = makeSupabase({ data: { article_id: "a1" }, error: null });
+    const { rpc, service } = makeSupabase({
+      data: { article_id: "a1" },
+      error: null,
+    });
     const repo = new ReactionsRepository(service);
 
     await repo.getState("a1", "u1");

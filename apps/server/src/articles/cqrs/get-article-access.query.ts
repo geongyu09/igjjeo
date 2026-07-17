@@ -21,9 +21,10 @@ export class GetArticleAccessQuery extends Query<ArticleAccess> {
 }
 
 @QueryHandler(GetArticleAccessQuery)
-export class GetArticleAccessHandler
-  implements IQueryHandler<GetArticleAccessQuery, ArticleAccess>
-{
+export class GetArticleAccessHandler implements IQueryHandler<
+  GetArticleAccessQuery,
+  ArticleAccess
+> {
   constructor(private readonly access: ArticleAccessService) {}
 
   execute(query: GetArticleAccessQuery): Promise<ArticleAccess> {

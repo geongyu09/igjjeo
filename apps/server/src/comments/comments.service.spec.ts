@@ -24,7 +24,11 @@ function makeService() {
   const queryBus = {
     execute: jest.fn().mockResolvedValue({ id: "a1", group_id: "g1" }),
   } as unknown as jest.Mocked<QueryBus>;
-  return { service: new CommentsService(comments, queryBus), comments, queryBus };
+  return {
+    service: new CommentsService(comments, queryBus),
+    comments,
+    queryBus,
+  };
 }
 
 describe("CommentsService", () => {
@@ -49,7 +53,10 @@ describe("CommentsService", () => {
     it("limit+1 건이면 next_cursor 를 발급한다", async () => {
       const { service, comments } = makeService();
       const rows = Array.from({ length: 21 }, (_, i) =>
-        commentRow(`c${i}`, `2026-07-17T00:00:${String(i).padStart(2, "0")}.000Z`),
+        commentRow(
+          `c${i}`,
+          `2026-07-17T00:00:${String(i).padStart(2, "0")}.000Z`,
+        ),
       );
       (comments.list as jest.Mock).mockResolvedValue(rows);
 

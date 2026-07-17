@@ -19,9 +19,10 @@ export class ListGroupMembersQuery extends Query<GroupMemberName[]> {
 }
 
 @QueryHandler(ListGroupMembersQuery)
-export class ListGroupMembersHandler
-  implements IQueryHandler<ListGroupMembersQuery, GroupMemberName[]>
-{
+export class ListGroupMembersHandler implements IQueryHandler<
+  ListGroupMembersQuery,
+  GroupMemberName[]
+> {
   constructor(private readonly groups: GroupsRepository) {}
 
   async execute(query: ListGroupMembersQuery): Promise<GroupMemberName[]> {

@@ -1,10 +1,18 @@
-import { AdaptContentCommand, AdaptContentHandler } from "./adapt-content.command";
+import {
+  AdaptContentCommand,
+  AdaptContentHandler,
+} from "./adapt-content.command";
 import type { AdaptationService } from "./adaptation.service";
 
 describe("AdaptContentHandler", () => {
   it("AdaptationService.adapt 로 위임한다(옵션 포함)", async () => {
     const drafts = [
-      { outlet_key: "daily" as const, headline: "H", body: "B", reporter_name: "R" },
+      {
+        outlet_key: "daily" as const,
+        headline: "H",
+        body: "B",
+        reporter_name: "R",
+      },
     ];
     const adaptation = {
       adapt: jest.fn().mockResolvedValue(drafts),

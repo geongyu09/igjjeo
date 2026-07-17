@@ -84,7 +84,12 @@ export class CorrectionsService {
   /** 당사자 정정: 원 기사와 같은 outlet 으로 "정정합니다" 기사 1건을 얹는다. */
   private async applySubjectCorrection(
     requestId: string,
-    article: { id: string; group_id: string; report_id: string; outlet_key: string },
+    article: {
+      id: string;
+      group_id: string;
+      report_id: string;
+      outlet_key: string;
+    },
     correctionText: string,
   ): Promise<CorrectionResult> {
     const drafts = await this.commandBus.execute(
@@ -107,7 +112,10 @@ export class CorrectionsService {
       correctsArticleId: article.id,
     });
 
-    return { correction_request_id: requestId, article: toArticleResponse(row) };
+    return {
+      correction_request_id: requestId,
+      article: toArticleResponse(row),
+    };
   }
 
   /** 제3자 정정: 원 기사를 부모로 하는 새 제보를 언론사 수만큼 즉시 발행한다. */

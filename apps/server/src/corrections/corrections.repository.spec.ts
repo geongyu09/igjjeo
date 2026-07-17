@@ -93,7 +93,12 @@ describe("CorrectionsRepository", () => {
     const repo = new CorrectionsRepository(service);
 
     const drafts = [
-      { outlet_key: "daily" as const, headline: "H", body: "B", reporter_name: "R" },
+      {
+        outlet_key: "daily" as const,
+        headline: "H",
+        body: "B",
+        reporter_name: "R",
+      },
     ];
     const result = await repo.publishThirdPartyCorrection({
       groupId: "g1",

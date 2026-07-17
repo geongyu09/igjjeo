@@ -38,9 +38,24 @@ describe("parseAdaptationResponse", () => {
     const raw = JSON.stringify({
       status: "ok",
       articles: [
-        { outlet_key: "daily", headline: "H1", body: "B1", reporter_name: "정확한" },
-        { outlet_key: "shock", headline: "H2", body: "B2", reporter_name: "특종" },
-        { outlet_key: "economy", headline: "H3", body: "B3", reporter_name: "분석" },
+        {
+          outlet_key: "daily",
+          headline: "H1",
+          body: "B1",
+          reporter_name: "정확한",
+        },
+        {
+          outlet_key: "shock",
+          headline: "H2",
+          body: "B2",
+          reporter_name: "특종",
+        },
+        {
+          outlet_key: "economy",
+          headline: "H3",
+          body: "B3",
+          reporter_name: "분석",
+        },
       ],
     });
 
@@ -48,8 +63,18 @@ describe("parseAdaptationResponse", () => {
     expect(result).toEqual({
       status: "ok",
       articles: [
-        { outlet_key: "daily", headline: "H1", body: "B1", reporter_name: "정확한" },
-        { outlet_key: "shock", headline: "H2", body: "B2", reporter_name: "특종" },
+        {
+          outlet_key: "daily",
+          headline: "H1",
+          body: "B1",
+          reporter_name: "정확한",
+        },
+        {
+          outlet_key: "shock",
+          headline: "H2",
+          body: "B2",
+          reporter_name: "특종",
+        },
       ],
     });
   });
@@ -90,9 +115,9 @@ describe("parseAdaptationResponse", () => {
   });
 
   it("JSON 이 아니면 AdaptationParseError", () => {
-    expect(() => parseAdaptationResponse("설명입니다...", [...requested])).toThrow(
-      AdaptationParseError,
-    );
+    expect(() =>
+      parseAdaptationResponse("설명입니다...", [...requested]),
+    ).toThrow(AdaptationParseError);
   });
 
   it("요청한 outlet 기사가 하나도 없으면 AdaptationParseError", () => {

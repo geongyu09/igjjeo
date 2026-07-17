@@ -12,8 +12,18 @@ import type { ReportsRepository } from "./reports.repository";
 import { ReportsService } from "./reports.service";
 
 const draftArticles = [
-  { outlet_key: "daily" as const, headline: "H1", body: "B1", reporter_name: "R1" },
-  { outlet_key: "shock" as const, headline: "H2", body: "B2", reporter_name: "R2" },
+  {
+    outlet_key: "daily" as const,
+    headline: "H1",
+    body: "B1",
+    reporter_name: "R1",
+  },
+  {
+    outlet_key: "shock" as const,
+    headline: "H2",
+    body: "B2",
+    reporter_name: "R2",
+  },
 ];
 
 const reportRow = {
@@ -28,7 +38,9 @@ const reportRow = {
 
 function makeService() {
   const reports = {
-    createReport: jest.fn().mockResolvedValue({ ...reportRow, draft_articles: null }),
+    createReport: jest
+      .fn()
+      .mockResolvedValue({ ...reportRow, draft_articles: null }),
     getReport: jest.fn().mockResolvedValue(reportRow),
     saveDraft: jest.fn().mockResolvedValue(undefined),
     publishReport: jest.fn(),
@@ -77,7 +89,9 @@ describe("ReportsService", () => {
     it("각색 성공 시 초안을 캐시하고 반환한다", async () => {
       const { service, reports } = makeService();
 
-      const result = await service.createReport("u1", "g1", { rawText: "원문" });
+      const result = await service.createReport("u1", "g1", {
+        rawText: "원문",
+      });
 
       expect(reports.saveDraft).toHaveBeenCalledWith(
         reportRow.id,

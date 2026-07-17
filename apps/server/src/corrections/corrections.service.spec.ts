@@ -48,7 +48,11 @@ function makeService() {
     createCorrectionRequest: jest.fn().mockResolvedValue("cr1"),
     insertSubjectCorrection: jest
       .fn()
-      .mockResolvedValue({ ...articleRow("a2", "r1"), is_correction: true, corrects_article_id: "a1" }),
+      .mockResolvedValue({
+        ...articleRow("a2", "r1"),
+        is_correction: true,
+        corrects_article_id: "a1",
+      }),
     publishThirdPartyCorrection: jest
       .fn()
       .mockResolvedValue([articleRow("a3", "r2"), articleRow("a4", "r2")]),
@@ -115,7 +119,11 @@ describe("CorrectionsService", () => {
   describe("제3자 정정", () => {
     it("원 기사를 부모로 새 제보를 언론사 수만큼 발행한다", async () => {
       const { service, commandBus, corrections } = makeService();
-      (commandBus.execute as jest.Mock).mockResolvedValue([draft, draft, draft]);
+      (commandBus.execute as jest.Mock).mockResolvedValue([
+        draft,
+        draft,
+        draft,
+      ]);
 
       const result = await service.requestCorrection("u1", "a1", {
         isSubject: false,
@@ -136,9 +144,7 @@ describe("CorrectionsService", () => {
         correction_request_id: "cr1",
         report_id: "r2",
       });
-      expect(
-        (result as { articles: unknown[] }).articles,
-      ).toHaveLength(2);
+      expect((result as { articles: unknown[] }).articles).toHaveLength(2);
     });
   });
 });
