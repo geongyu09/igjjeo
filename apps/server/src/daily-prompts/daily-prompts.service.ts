@@ -40,7 +40,11 @@ export class DailyPromptsService {
     groupId: string,
     date?: string,
   ): Promise<PromptResponse | null> {
-    const view = await this.prompts.getPrompt(groupId, resolveDate(date), userId);
+    const view = await this.prompts.getPrompt(
+      groupId,
+      resolveDate(date),
+      userId,
+    );
     if (!view) {
       return null;
     }
@@ -110,7 +114,10 @@ export class DailyPromptsService {
   ): Promise<PromptRow> {
     if (role !== "owner") {
       throw new ForbiddenException({
-        error: { code: "forbidden", message: "방 관리자만 질문을 띄울 수 있습니다" },
+        error: {
+          code: "forbidden",
+          message: "방 관리자만 질문을 띄울 수 있습니다",
+        },
       });
     }
 

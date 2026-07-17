@@ -9,7 +9,12 @@ import { AdaptationUnavailableError } from "./adaptation.logic";
 import type { AdaptationPort } from "./adaptation.types";
 
 const draftArticles = [
-  { outlet_key: "daily" as const, headline: "H1", body: "B1", reporter_name: "R1" },
+  {
+    outlet_key: "daily" as const,
+    headline: "H1",
+    body: "B1",
+    reporter_name: "R1",
+  },
 ];
 
 function makeService() {
@@ -83,9 +88,9 @@ describe("AdaptationService", () => {
       message: "안 돼요",
     });
 
-    await expect(service.adapt("g1", "못생겼다", ["daily"])).rejects.toBeInstanceOf(
-      UnprocessableEntityException,
-    );
+    await expect(
+      service.adapt("g1", "못생겼다", ["daily"]),
+    ).rejects.toBeInstanceOf(UnprocessableEntityException);
   });
 
   it("각색 upstream 장애면 503 ai_unavailable", async () => {

@@ -34,7 +34,10 @@ describe("ReportsRepository", () => {
         draft_articles: null,
         created_at: "2026-07-17T00:00:00.000Z",
       };
-      const { from, builder, service } = makeSupabase({ data: row, error: null });
+      const { from, builder, service } = makeSupabase({
+        data: row,
+        error: null,
+      });
       const repo = new ReportsRepository(service);
 
       const result = await repo.createReport({
@@ -57,8 +60,16 @@ describe("ReportsRepository", () => {
 
   describe("getReport", () => {
     it("id 로 제보를 조회한다", async () => {
-      const row = { id: "r1", group_id: "g1", reporter_id: "u1", status: "draft" };
-      const { from, builder, service } = makeSupabase({ data: row, error: null });
+      const row = {
+        id: "r1",
+        group_id: "g1",
+        reporter_id: "u1",
+        status: "draft",
+      };
+      const { from, builder, service } = makeSupabase({
+        data: row,
+        error: null,
+      });
       const repo = new ReportsRepository(service);
 
       const result = await repo.getReport("r1");
@@ -77,11 +88,19 @@ describe("ReportsRepository", () => {
 
   describe("saveDraft", () => {
     it("draft_articles 와 draft_generated_at 을 갱신한다", async () => {
-      const { from, builder, service } = makeSupabase({ data: null, error: null });
+      const { from, builder, service } = makeSupabase({
+        data: null,
+        error: null,
+      });
       const repo = new ReportsRepository(service);
 
       const drafts = [
-        { outlet_key: "daily" as const, headline: "H", body: "B", reporter_name: "R" },
+        {
+          outlet_key: "daily" as const,
+          headline: "H",
+          body: "B",
+          reporter_name: "R",
+        },
       ];
       await repo.saveDraft("r1", drafts);
 

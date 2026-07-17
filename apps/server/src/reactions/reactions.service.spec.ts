@@ -21,7 +21,11 @@ function makeService() {
   const queryBus = {
     execute: jest.fn().mockResolvedValue({ id: "a1", group_id: "g1" }),
   } as unknown as jest.Mocked<QueryBus>;
-  return { service: new ReactionsService(reactions, queryBus), reactions, queryBus };
+  return {
+    service: new ReactionsService(reactions, queryBus),
+    reactions,
+    queryBus,
+  };
 }
 
 describe("ReactionsService", () => {

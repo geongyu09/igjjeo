@@ -158,7 +158,8 @@ function safeParse(text: string): unknown {
 
 function extractArticles(parsed: unknown): unknown[] {
   if (Array.isArray(parsed)) return parsed;
-  if (isRecord(parsed) && Array.isArray(parsed.articles)) return parsed.articles;
+  if (isRecord(parsed) && Array.isArray(parsed.articles))
+    return parsed.articles;
   throw new AdaptationParseError("articles 배열을 찾을 수 없습니다");
 }
 

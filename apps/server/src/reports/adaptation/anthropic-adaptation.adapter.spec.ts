@@ -53,7 +53,12 @@ describe("AnthropicAdaptationAdapter", () => {
     expect(result).toEqual({
       status: "ok",
       articles: [
-        { outlet_key: "daily", headline: "김*규 씨 지각", body: "B", reporter_name: "정확한" },
+        {
+          outlet_key: "daily",
+          headline: "김*규 씨 지각",
+          body: "B",
+          reporter_name: "정확한",
+        },
       ],
     });
   });
@@ -64,7 +69,12 @@ describe("AnthropicAdaptationAdapter", () => {
         JSON.stringify({
           status: "ok",
           articles: [
-            { outlet_key: "daily", headline: "H", body: "B", reporter_name: "R" },
+            {
+              outlet_key: "daily",
+              headline: "H",
+              body: "B",
+              reporter_name: "R",
+            },
           ],
         }),
       ),
@@ -94,7 +104,9 @@ describe("AnthropicAdaptationAdapter", () => {
   });
 
   it("파싱 실패는 1회 재시도하고, 재시도도 실패하면 AdaptationUnavailableError", async () => {
-    const create = jest.fn().mockResolvedValue(textResponse("설명뿐 JSON 아님"));
+    const create = jest
+      .fn()
+      .mockResolvedValue(textResponse("설명뿐 JSON 아님"));
     const adapter = makeAdapter(create);
 
     await expect(adapter.adaptReport(input)).rejects.toBeInstanceOf(
@@ -112,7 +124,12 @@ describe("AnthropicAdaptationAdapter", () => {
           JSON.stringify({
             status: "ok",
             articles: [
-              { outlet_key: "daily", headline: "H", body: "B", reporter_name: "R" },
+              {
+                outlet_key: "daily",
+                headline: "H",
+                body: "B",
+                reporter_name: "R",
+              },
             ],
           }),
         ),

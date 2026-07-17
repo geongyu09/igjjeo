@@ -20,9 +20,10 @@ export class AdaptContentCommand extends Command<DraftArticle[]> {
 }
 
 @CommandHandler(AdaptContentCommand)
-export class AdaptContentHandler
-  implements ICommandHandler<AdaptContentCommand, DraftArticle[]>
-{
+export class AdaptContentHandler implements ICommandHandler<
+  AdaptContentCommand,
+  DraftArticle[]
+> {
   constructor(private readonly adaptation: AdaptationService) {}
 
   execute(command: AdaptContentCommand): Promise<DraftArticle[]> {

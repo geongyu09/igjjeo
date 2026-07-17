@@ -499,7 +499,11 @@ export type Database = {
         Returns: Json;
       };
       list_article_comments: {
-        Args: { p_article_id: string; p_limit: number; p_after?: string | null };
+        Args: {
+          p_article_id: string;
+          p_limit: number;
+          p_after?: string | null;
+        };
         Returns: {
           id: string;
           masked_name: string;

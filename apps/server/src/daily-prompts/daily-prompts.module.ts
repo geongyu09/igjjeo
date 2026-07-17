@@ -12,6 +12,10 @@ import { DailyPromptsService } from "./daily-prompts.service";
  */
 @Module({
   controllers: [DailyPromptsController],
-  providers: [DailyPromptsService, DailyPromptsRepository, GroupMembershipGuard],
+  providers: [
+    DailyPromptsService,
+    DailyPromptsRepository,
+    GroupMembershipGuard,
+  ],
 })
 export class DailyPromptsModule {}

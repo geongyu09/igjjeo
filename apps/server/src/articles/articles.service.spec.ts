@@ -103,7 +103,10 @@ describe("ArticlesService", () => {
       const result = await service.listCorrections("u1", "a1");
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0]).toMatchObject({ id: "a2", corrects_article_id: "a1" });
+      expect(result.items[0]).toMatchObject({
+        id: "a2",
+        corrects_article_id: "a1",
+      });
     });
   });
 });

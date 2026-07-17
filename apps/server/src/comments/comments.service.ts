@@ -8,10 +8,7 @@ import { QueryBus } from "@nestjs/cqrs";
 import { GetArticleAccessQuery } from "@/articles/cqrs/get-article-access.query";
 import { decodeCursor, encodeCursor } from "@/common/cursor";
 
-import {
-  CommentsRepository,
-  type CommentRow,
-} from "./comments.repository";
+import { CommentsRepository, type CommentRow } from "./comments.repository";
 
 export interface PageQuery {
   limit?: number;

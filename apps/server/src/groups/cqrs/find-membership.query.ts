@@ -19,9 +19,10 @@ export class FindMembershipQuery extends Query<MembershipResult> {
 }
 
 @QueryHandler(FindMembershipQuery)
-export class FindMembershipHandler
-  implements IQueryHandler<FindMembershipQuery, MembershipResult>
-{
+export class FindMembershipHandler implements IQueryHandler<
+  FindMembershipQuery,
+  MembershipResult
+> {
   constructor(private readonly groups: GroupsRepository) {}
 
   execute(query: FindMembershipQuery): Promise<MembershipResult> {

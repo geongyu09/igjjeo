@@ -19,7 +19,10 @@ export class ReactionsRepository {
       .from("reactions")
       .upsert(
         { article_id: articleId, user_id: userId, reaction_type: type },
-        { onConflict: "article_id,user_id,reaction_type", ignoreDuplicates: true },
+        {
+          onConflict: "article_id,user_id,reaction_type",
+          ignoreDuplicates: true,
+        },
       );
 
     if (error) {

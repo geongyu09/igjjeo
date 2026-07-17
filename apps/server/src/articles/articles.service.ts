@@ -4,10 +4,7 @@ import { decodeCursor, encodeCursor } from "@/common/cursor";
 import type { Json } from "@/infra/supabase/database.types";
 
 import { ArticleAccessService } from "./article-access.service";
-import {
-  ArticlesRepository,
-  type ArticleRow,
-} from "./articles.repository";
+import { ArticlesRepository, type ArticleRow } from "./articles.repository";
 
 export interface PageQuery {
   limit?: number;
@@ -50,7 +47,12 @@ export class ArticlesService {
     const limit = clampLimit(query.limit);
     const before = decodeCursor(query.cursor);
 
-    const rows = await this.articles.getFeed(groupId, userId, limit + 1, before);
+    const rows = await this.articles.getFeed(
+      groupId,
+      userId,
+      limit + 1,
+      before,
+    );
     const hasMore = rows.length > limit;
     const page = rows.slice(0, limit);
 
