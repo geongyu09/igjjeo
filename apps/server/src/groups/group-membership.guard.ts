@@ -5,10 +5,11 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { QueryBus } from "@nestjs/cqrs";
 
 import type { AuthUser } from "@/auth/current-user.decorator";
 
-import { GroupsRepository } from "./groups.repository";
+import { FindMembershipQuery } from "./cqrs/find-membership.query";
 
 /** 요청자의 방 멤버십. GroupMembershipGuard 가 request 에 실어 둔다. */
 export interface Membership {
@@ -29,7 +30,7 @@ interface GuardedRequest {
  */
 @Injectable()
 export class GroupMembershipGuard implements CanActivate {
-  constructor(private readonly groups: GroupsRepository) {}
+  constructor(private readonly queryBus: QueryBus) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<GuardedRequest>();
@@ -40,7 +41,9 @@ export class GroupMembershipGuard implements CanActivate {
       throw notFound();
     }
 
-    const membership = await this.groups.findMembership(groupId, userId);
+    const membership = await this.queryBus.execute(
+      new FindMembershipQuery(groupId, userId),
+    );
     if (!membership) {
       throw notFound();
     }
