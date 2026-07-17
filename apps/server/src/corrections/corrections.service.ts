@@ -1,0 +1,153 @@
+import { Injectable } from "@nestjs/common";
+import { CommandBus, QueryBus } from "@nestjs/cqrs";
+
+import { GetArticleAccessQuery } from "@/articles/cqrs/get-article-access.query";
+import type { ArticleRow } from "@/articles/articles.repository";
+import { AdaptContentCommand } from "@/reports/adaptation/adapt-content.command";
+import {
+  OUTLET_KEYS,
+  type OutletKey,
+} from "@/reports/adaptation/adaptation.types";
+import type { Json } from "@/infra/supabase/database.types";
+
+import { CorrectionsRepository } from "./corrections.repository";
+
+export interface CorrectionRequestInput {
+  isSubject: boolean;
+  correctionText: string;
+}
+
+export interface ArticleResponse {
+  id: string;
+  report_id: string;
+  outlet_key: string;
+  headline: string;
+  body: string;
+  reporter_name: string;
+  published_at: string;
+  is_correction: boolean;
+  corrects_article_id: string | null;
+  is_active: boolean;
+}
+
+export type CorrectionResult =
+  | { correction_request_id: string; article: ArticleResponse }
+  | {
+      correction_request_id: string;
+      report_id: string;
+      articles: ArticleResponse[];
+    };
+
+/**
+ * 정정·삭제(corrections-deletion.md). 삭제는 소프트 다운, 정정은 당사자/제3자로 분기한다.
+ * - 당사자 정정: 원 기사 유지 + 정정 기사 1건(같은 outlet, corrects_article_id 연결).
+ * - 제3자 정정: 원 기사 유지 + 새 제보(parent_article_id)에서 언론사 수만큼 새 기사.
+ */
+@Injectable()
+export class CorrectionsService {
+  constructor(
+    private readonly corrections: CorrectionsRepository,
+    private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
+  ) {}
+
+  async requestDeletion(userId: string, articleId: string): Promise<Json> {
+    await this.queryBus.execute(new GetArticleAccessQuery(userId, articleId));
+    return this.corrections.requestDeletion(articleId, userId);
+  }
+
+  async requestCorrection(
+    userId: string,
+    articleId: string,
+    input: CorrectionRequestInput,
+  ): Promise<CorrectionResult> {
+    const article = await this.queryBus.execute(
+      new GetArticleAccessQuery(userId, articleId),
+    );
+    const requestId = await this.corrections.createCorrectionRequest({
+      articleId,
+      userId,
+      isSubject: input.isSubject,
+      correctionText: input.correctionText,
+    });
+
+    return input.isSubject
+      ? this.applySubjectCorrection(requestId, article, input.correctionText)
+      : this.applyThirdPartyCorrection(
+          requestId,
+          userId,
+          article,
+          input.correctionText,
+        );
+  }
+
+  /** 당사자 정정: 원 기사와 같은 outlet 으로 "정정합니다" 기사 1건을 얹는다. */
+  private async applySubjectCorrection(
+    requestId: string,
+    article: { id: string; group_id: string; report_id: string; outlet_key: string },
+    correctionText: string,
+  ): Promise<CorrectionResult> {
+    const drafts = await this.commandBus.execute(
+      new AdaptContentCommand(
+        article.group_id,
+        correctionText,
+        [article.outlet_key as OutletKey],
+        { isSelfReport: true, isCorrection: true },
+      ),
+    );
+    const draft = drafts[0];
+
+    const row = await this.corrections.insertSubjectCorrection({
+      reportId: article.report_id,
+      groupId: article.group_id,
+      outletKey: draft.outlet_key,
+      headline: draft.headline,
+      body: draft.body,
+      reporterName: draft.reporter_name,
+      correctsArticleId: article.id,
+    });
+
+    return { correction_request_id: requestId, article: toArticleResponse(row) };
+  }
+
+  /** 제3자 정정: 원 기사를 부모로 하는 새 제보를 언론사 수만큼 즉시 발행한다. */
+  private async applyThirdPartyCorrection(
+    requestId: string,
+    userId: string,
+    article: { id: string; group_id: string },
+    correctionText: string,
+  ): Promise<CorrectionResult> {
+    const drafts = await this.commandBus.execute(
+      new AdaptContentCommand(article.group_id, correctionText, OUTLET_KEYS),
+    );
+
+    const rows = await this.corrections.publishThirdPartyCorrection({
+      groupId: article.group_id,
+      reporterId: userId,
+      parentArticleId: article.id,
+      rawText: correctionText,
+      articles: drafts,
+    });
+
+    return {
+      correction_request_id: requestId,
+      report_id: rows[0]?.report_id ?? "",
+      articles: rows.map(toArticleResponse),
+    };
+  }
+}
+
+function toArticleResponse(row: ArticleRow): ArticleResponse {
+  return {
+    id: row.id,
+    report_id: row.report_id,
+    outlet_key: row.outlet_key,
+    headline: row.headline,
+    body: row.body,
+    reporter_name: row.reporter_name,
+    published_at: row.published_at,
+    is_correction: row.is_correction,
+    corrects_article_id: row.corrects_article_id,
+    is_active: row.is_active,
+  };
+}
