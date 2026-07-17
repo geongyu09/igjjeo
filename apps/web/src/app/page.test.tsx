@@ -10,7 +10,7 @@ vi.mock("stack-link", () => ({
 }));
 
 // 브라우저(네이티브 셸 아님) 경로 검증 — bridge는 no-op으로 고정한다.
-vi.mock("@geongyu/bridge/web", () => ({
+vi.mock("@geongyu/react-native-bridge/web", () => ({
   useBridge: () => ({ request: vi.fn() }),
 }));
 

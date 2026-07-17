@@ -1,6 +1,6 @@
 "use client";
 
-import { useBridge } from "@geongyu/bridge/web";
+import { useBridge } from "@geongyu/react-native-bridge/web";
 import type {
   WebToNativeRequest,
   WebToNativeResponse,
@@ -12,7 +12,7 @@ import { useIsNativeShell } from "@/hooks/common/useIsNativeShell";
 /**
  * 탭 WebView에서 상세 화면으로 진입한다 (webview-architecture 네비게이션 플로우).
  *
- * - 네이티브 셸(앱 WebView) 안: @geongyu/bridge로 네이티브에 풀스크린 스크린 push를 요청한다
+ * - 네이티브 셸(앱 WebView) 안: @geongyu/react-native-bridge로 네이티브에 풀스크린 스크린 push를 요청한다
  *   (탭 바를 가리는 새 스크린 하나. 이후 전환은 그 스크린 안에서 stack-link).
  * - 브라우저 프로토타입: 네이티브가 없으므로 stack-link로 웹 내부 전환한다.
  *

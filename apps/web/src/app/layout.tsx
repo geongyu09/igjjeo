@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { StackLinkProvider } from "stack-link";
+import { NativeBackListener } from "@/components/common/shared/NativeBackListener";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,7 +36,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <StackLinkProvider>{children}</StackLinkProvider>
+        <StackLinkProvider>
+          <NativeBackListener />
+          {children}
+        </StackLinkProvider>
       </body>
     </html>
   );
