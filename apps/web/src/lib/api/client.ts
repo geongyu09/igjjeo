@@ -90,15 +90,17 @@ interface RetriableConfig extends AxiosRequestConfig {
 
 function isTokenExpired(error: AxiosError): boolean {
   const data = error.response?.data as
-    | { error?: { code?: string } }
-    | undefined;
-  return error.response?.status === 401 && data?.error?.code === "token_expired";
+    { error?: { code?: string } } | undefined;
+  return (
+    error.response?.status === 401 && data?.error?.code === "token_expired"
+  );
 }
 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const config = error.config as (RetriableConfig & InternalAxiosRequestConfig) | undefined;
+    const config = error.config as
+      (RetriableConfig & InternalAxiosRequestConfig) | undefined;
 
     // 만료된 액세스 토큰 → 1회 갱신 후 재시도
     if (config && !config._retried && isTokenExpired(error)) {

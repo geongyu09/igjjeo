@@ -22,7 +22,10 @@ describe("reactions 데이터 계층", () => {
     put.mockResolvedValue({
       data: { article_id: "a1", reaction_counts: {}, my_reactions: ["admit"] },
     });
-    const result = await addReaction({ articleId: "a1", reactionType: "admit" });
+    const result = await addReaction({
+      articleId: "a1",
+      reactionType: "admit",
+    });
 
     expect(put).toHaveBeenCalledWith("/articles/a1/reactions/admit");
     expect(result.my_reactions).toEqual(["admit"]);
