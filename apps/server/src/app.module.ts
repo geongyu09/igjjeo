@@ -10,6 +10,7 @@ import { GroupsModule } from "@/groups/groups.module";
 import { HealthModule } from "@/health/health.module";
 import { SupabaseModule } from "@/infra/supabase/supabase.module";
 import { ProfilesModule } from "@/profiles/profiles.module";
+import { ReactionsModule } from "@/reactions/reactions.module";
 import { ReportsModule } from "@/reports/reports.module";
 
 /**
@@ -31,6 +32,7 @@ import { ReportsModule } from "@/reports/reports.module";
     GroupsModule,
     ReportsModule,
     ArticlesModule,
+    ReactionsModule,
     CommentsModule,
   ],
 })
