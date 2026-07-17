@@ -1,18 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { getCorrections } from "@/lib/data/corrections";
 import { queryKeys } from "@/hooks/features/query/keys";
 
-interface UseArticleCorrectionsQueryProps {
+interface UseArticleCorrectionsSuspenseQueryProps {
   articleId: string;
 }
 
 /** 기사 정정 연쇄/관련 기사 목록 (GET /articles/{articleId}/corrections). */
-export function useArticleCorrectionsQuery({
+export function useArticleCorrectionsSuspenseQuery({
   articleId,
-}: UseArticleCorrectionsQueryProps) {
-  return useQuery({
+}: UseArticleCorrectionsSuspenseQueryProps) {
+  return useSuspenseQuery({
     queryKey: queryKeys.articleCorrections(articleId),
     queryFn: () => getCorrections({ articleId }),
-    enabled: Boolean(articleId),
   });
 }
