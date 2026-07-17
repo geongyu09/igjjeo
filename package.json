@@ -8,14 +8,25 @@
   "scripts": {
     "dev:web": "bun run --cwd apps/web dev",
     "dev:mobile": "bun run --cwd apps/mobile start",
+    "dev:server": "bun run --cwd apps/server dev",
     "build:ios": "bun run --cwd apps/mobile dev-build:ios",
     "build:android": "bun run --cwd apps/mobile dev-build:android",
     "build:web": "bun run --cwd apps/web build",
-    "typecheck": "bun run --cwd apps/web typecheck && bun run --cwd apps/mobile typecheck",
-    "format": "prettier --write ."
+    "build:server": "bun run --cwd apps/server build",
+    "test:server": "bun run --cwd apps/server test",
+    "typecheck": "bun run --cwd apps/web typecheck && bun run --cwd apps/mobile typecheck && bun run --cwd apps/server typecheck",
+    "format": "prettier --write .",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:push": "supabase db push",
+    "db:migration": "supabase migration new",
+    "db:types": "supabase gen types typescript --linked > apps/web/src/lib/supabase/database.types.ts",
+    "db:types:server": "supabase gen types typescript --linked > apps/server/src/infra/supabase/database.types.ts"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
+    "supabase": "^2.109.1",
     "typescript": "^5"
   },
   "version": "1.0.0",
