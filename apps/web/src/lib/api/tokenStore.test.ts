@@ -37,4 +37,32 @@ describe("tokenStore", () => {
     tokenStore.reset();
     expect(tokenStore.getAccessToken()).toBeNull();
   });
+
+  describe("subscribe", () => {
+    it("set·clear 시 구독자에게 알린다", () => {
+      let calls = 0;
+      const unsubscribe = tokenStore.subscribe(() => {
+        calls += 1;
+      });
+
+      tokenStore.set({ access_token: "a", refresh_token: "r" });
+      expect(calls).toBe(1);
+
+      tokenStore.clear();
+      expect(calls).toBe(2);
+
+      unsubscribe();
+    });
+
+    it("구독 해제 후에는 알리지 않는다", () => {
+      let calls = 0;
+      const unsubscribe = tokenStore.subscribe(() => {
+        calls += 1;
+      });
+      unsubscribe();
+
+      tokenStore.set({ access_token: "a", refresh_token: "r" });
+      expect(calls).toBe(0);
+    });
+  });
 });

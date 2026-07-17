@@ -27,6 +27,13 @@ let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let hydrated = false;
 
+/** 토큰 변경 구독자 — useSyncExternalStore 기반 세션 게이트가 반응하도록. */
+const listeners = new Set<() => void>();
+
+function notify(): void {
+  for (const listener of listeners) listener();
+}
+
 /** 첫 접근 시 localStorage에서 메모리 캐시로 1회 로드한다. */
 function hydrate(): void {
   if (hydrated) return;
@@ -55,6 +62,7 @@ export const tokenStore = {
     const storage = getStorage();
     storage?.setItem(ACCESS_KEY, access_token);
     storage?.setItem(REFRESH_KEY, refresh_token);
+    notify();
   },
 
   clear(): void {
@@ -64,6 +72,7 @@ export const tokenStore = {
     const storage = getStorage();
     storage?.removeItem(ACCESS_KEY);
     storage?.removeItem(REFRESH_KEY);
+    notify();
   },
 
   /** 메모리 캐시를 버리고 다음 접근 때 저장소에서 다시 읽게 한다(테스트·다탭 동기화용). */
@@ -71,5 +80,14 @@ export const tokenStore = {
     accessToken = null;
     refreshToken = null;
     hydrated = false;
+    notify();
+  },
+
+  /** 토큰 변경을 구독한다. 반환된 함수로 해제. useSyncExternalStore 계약을 따른다. */
+  subscribe(listener: () => void): () => void {
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
   },
 };
