@@ -12,7 +12,8 @@ import { queryKeys } from "@/hooks/features/query/keys";
 export function usePublishDailyPromptMutation() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (params: PublishDailyPromptParams) => publishDailyPrompt(params),
+    mutationFn: (params: PublishDailyPromptParams) =>
+      publishDailyPrompt(params),
     onSuccess: (_data, { groupId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.feed(groupId) });
       queryClient.invalidateQueries({

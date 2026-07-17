@@ -103,6 +103,7 @@ export function normalizeApiError(error: unknown): ApiError {
   return new ApiError({
     status: 0,
     code: "internal_error",
-    message: error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다",
+    message:
+      error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다",
   });
 }

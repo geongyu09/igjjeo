@@ -4,20 +4,13 @@
  */
 
 import { apiClient } from "@/lib/api/client";
-import type {
-  Group,
-  Member,
-  Paginated,
-  PageParams,
-} from "@/lib/api/types";
+import type { Group, Member, Paginated, PageParams } from "@/lib/api/types";
 
 export interface CreateGroupParams {
   name: string;
 }
 
-export async function createGroup({
-  name,
-}: CreateGroupParams): Promise<Group> {
+export async function createGroup({ name }: CreateGroupParams): Promise<Group> {
   const { data } = await apiClient.post<Group>("/groups", { name });
   return data;
 }

@@ -185,8 +185,7 @@ export interface ThirdPartyCorrectionResult {
 }
 
 export type CorrectionResult =
-  | SubjectCorrectionResult
-  | ThirdPartyCorrectionResult;
+  SubjectCorrectionResult | ThirdPartyCorrectionResult;
 
 // ── 7. 데일리 프롬프트 ──────────────────────────────────────────
 

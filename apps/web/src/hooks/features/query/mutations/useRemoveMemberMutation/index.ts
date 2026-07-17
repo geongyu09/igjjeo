@@ -8,7 +8,9 @@ export function useRemoveMemberMutation() {
   return useMutation({
     mutationFn: (params: RemoveMemberParams) => removeMember(params),
     onSuccess: (_data, { groupId }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.groupMembers(groupId) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.groupMembers(groupId),
+      });
       queryClient.invalidateQueries({ queryKey: queryKeys.groups() });
     },
   });

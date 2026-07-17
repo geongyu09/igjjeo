@@ -50,7 +50,11 @@ describe("normalizeApiError", () => {
   });
 
   it("이미 ApiError면 그대로 반환한다", () => {
-    const original = new ApiError({ status: 409, code: "conflict", message: "x" });
+    const original = new ApiError({
+      status: 409,
+      code: "conflict",
+      message: "x",
+    });
     expect(normalizeApiError(original)).toBe(original);
   });
 
@@ -63,9 +67,9 @@ describe("normalizeApiError", () => {
 
 describe("isApiError", () => {
   it("ApiError 인스턴스만 true", () => {
-    expect(isApiError(new ApiError({ status: 400, code: "x", message: "y" }))).toBe(
-      true,
-    );
+    expect(
+      isApiError(new ApiError({ status: 400, code: "x", message: "y" })),
+    ).toBe(true);
     expect(isApiError(new Error("nope"))).toBe(false);
     expect(isApiError(null)).toBe(false);
   });
