@@ -7,6 +7,7 @@ import { AuthModule } from "@/auth/auth.module";
 import { CommentsModule } from "@/comments/comments.module";
 import { CorrectionsModule } from "@/corrections/corrections.module";
 import { validateEnv } from "@/config/env.validation";
+import { DailyPromptsModule } from "@/daily-prompts/daily-prompts.module";
 import { GroupsModule } from "@/groups/groups.module";
 import { HealthModule } from "@/health/health.module";
 import { SupabaseModule } from "@/infra/supabase/supabase.module";
@@ -36,6 +37,7 @@ import { ReportsModule } from "@/reports/reports.module";
     ReactionsModule,
     CommentsModule,
     CorrectionsModule,
+    DailyPromptsModule,
   ],
 })
 export class AppModule {}
