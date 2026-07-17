@@ -1,6 +1,6 @@
 "use client";
 
-import { useBridge } from "@geongyu/bridge/web";
+import { useBridge } from "@geongyu/react-native-bridge/web";
 import type {
   WebToNativeRequest,
   WebToNativeResponse,
@@ -14,7 +14,7 @@ import { useIsNativeShell } from "@/hooks/common/useIsNativeShell";
  *
  * - 웹 stack-link 스택이 남아 있으면 한 단계 되돌린다.
  * - 스택이 비면(canGoBack=false):
- *   - 네이티브 셸 안: @geongyu/bridge로 네이티브 스크린 pop을 요청해 탭으로 복귀한다.
+ *   - 네이티브 셸 안: @geongyu/react-native-bridge로 네이티브 스크린 pop을 요청해 탭으로 복귀한다.
  *   - 브라우저 프로토타입: 되돌아갈 곳이 없으므로 no-op.
  */
 export function useStackBack() {

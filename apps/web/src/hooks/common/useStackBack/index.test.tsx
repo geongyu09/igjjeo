@@ -11,7 +11,7 @@ vi.mock("stack-link", () => ({
   useStackLinkBack: () => ({ goBack, canGoBack: state.canGoBack }),
 }));
 
-vi.mock("@geongyu/bridge/web", () => ({
+vi.mock("@geongyu/react-native-bridge/web", () => ({
   useBridge: () => ({ request }),
 }));
 
