@@ -7,7 +7,9 @@ import { Button } from "@/components/common/shared/ui/Button";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { SegmentedControl } from "@/components/common/shared/ui/SegmentedControl";
 import { TextArea } from "@/components/common/shared/ui/TextArea";
+import { useSession } from "@/components/common/shared/SessionProvider";
 import { AssignedOutletList } from "@/components/feature/widget/AssignedOutletList";
+import { useCreateReportMutation } from "@/hooks/features/query/mutations/useCreateReportMutation";
 import { OUTLET_KEYS, type OutletKey } from "@/lib/publishers";
 import styles from "./page.module.css";
 
@@ -26,25 +28,46 @@ function pickThree(): OutletKey[] {
 // 헤더(타이틀·닫기)는 네이티브 모달이 그린다 — apps/mobile의 ReportModal 스크린.
 export default function ReportPage() {
   const { navigate } = useStackLinkRouter({});
-  const [text, setText] = useState("민규가 오늘도 지각했어요. 세 번째입니다.");
+  const { activeGroupId } = useSession();
+  const createReport = useCreateReportMutation();
+  const [text, setText] = useState("");
   const [mode, setMode] = useState<Mode>("random");
-  const [assigned, setAssigned] = useState<OutletKey[]>([
-    "shock",
-    "science",
-    "emotion",
-  ]);
+  const [assigned, setAssigned] = useState<OutletKey[]>(() => pickThree());
+
+  const canSubmit =
+    text.trim().length > 0 && !!activeGroupId && !createReport.isPending;
+
+  const submit = () => {
+    if (!activeGroupId || createReport.isPending) return;
+    const rawText = text.trim();
+    if (!rawText) return;
+    createReport.mutate(
+      {
+        groupId: activeGroupId,
+        rawText,
+        outletKeys: assigned,
+        idempotencyKey: crypto.randomUUID(),
+      },
+      {
+        onSuccess: (draft) => {
+          navigate({
+            href: `/report/preview?reportId=${draft.report.id}`,
+            animation: "slide",
+          });
+        },
+      },
+    );
+  };
 
   const footer = (
     <div className={styles.ctaBar}>
       <Button
         size="lg"
         className={styles.cta}
-        disabled={text.trim().length === 0}
-        onClick={() =>
-          navigate({ href: "/report/preview", animation: "slide" })
-        }
+        disabled={!canSubmit}
+        onClick={submit}
       >
-        기사 3개 만들기
+        {createReport.isPending ? "기사 만드는 중…" : "기사 3개 만들기"}
         <ArrowRight size={17} aria-hidden />
       </Button>
     </div>
@@ -64,6 +87,12 @@ export default function ReportPage() {
           <ImageIcon size={17} aria-hidden />
           <span>사진</span>
         </button>
+
+        {createReport.isError && (
+          <div className={styles.infoBox} role="alert">
+            기사를 만들지 못했어요. 잠시 후 다시 시도해 주세요.
+          </div>
+        )}
 
         <div className={styles.sectionLabel}>누가 기사를 쓸까요?</div>
         <SegmentedControl<Mode>

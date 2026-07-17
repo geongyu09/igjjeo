@@ -10,6 +10,22 @@ vi.mock("@geongyu/react-native-bridge/web", () => ({
   useBridge: () => ({ request: vi.fn() }),
 }));
 
+vi.mock("@/components/common/shared/SessionProvider", () => ({
+  useSession: () => ({
+    me: { display_name: "나" },
+    groups: [{ id: "g1", name: "3조", member_count: 9 }],
+    activeGroupId: "g1",
+  }),
+}));
+
+vi.mock("@/hooks/features/query/mutations/useCreateReportMutation", () => ({
+  useCreateReportMutation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+  }),
+}));
+
 import ReportPage from "./page";
 
 describe("ReportPage", () => {
