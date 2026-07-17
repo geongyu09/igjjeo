@@ -10,6 +10,7 @@ export interface ReportRow {
   id: string;
   group_id: string;
   reporter_id: string;
+  raw_text: string;
   status: string;
   draft_articles: DraftArticle[] | null;
   created_at: string;
@@ -32,7 +33,7 @@ export interface ArticleRow {
 }
 
 const REPORT_COLUMNS =
-  "id, group_id, reporter_id, status, draft_articles, created_at";
+  "id, group_id, reporter_id, raw_text, status, draft_articles, created_at";
 
 @Injectable()
 export class ReportsRepository {
