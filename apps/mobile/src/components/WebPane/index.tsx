@@ -7,10 +7,7 @@ import type { Ref } from "react";
 import { StyleSheet } from "react-native";
 import type WebView from "react-native-webview";
 
-import {
-  handleBridgeMessage,
-  logBridge,
-} from "../../bridge/handleBridgeMessage";
+import { handleBridgeMessage } from "../../bridge/handleBridgeMessage";
 import { NATIVE_SHELL_UA_TOKEN, WEB_BG, WEB_URL } from "../../config/env";
 
 // 웹 라우트 하나를 렌더하는 WebView. 스크린 종류(탭·스택·모달)와 무관하게 공통이다.
@@ -38,40 +35,12 @@ export function WebPane({
       // 스크롤 끝에서 탄력적으로 튕기는 오버스크롤 제거 (iOS bounces / Android overScrollMode)
       bounces={false}
       overScrollMode="never"
-      // [디버그] iOS 16.4+/Android는 이걸 켜야 WebView가 Safari·Chrome 원격 인스펙터에
-      // 잡힌다(isInspectable=true). dev에서만.
-      webviewDebuggingEnabled={__DEV__}
+      // 웹뷰 자체 로딩 인디케이터(로딩 뷰) 비활성화 — 로딩 UI는 웹(Suspense)에 위임한다.
+      // startInLoadingState=false로 초기 로드 시 로딩 뷰를 띄우지 않고,
+      // reload 등으로 viewState가 LOADING이 되는 경우까지 renderLoading을 빈 요소로 덮어 막는다.
+      startInLoadingState={false}
+      renderLoading={() => <></>}
       onBridgeMessage={onBridgeMessage}
-      // [디버그] handshake(syn→syn-ack→ack)가 끝나면 호출 — 이게 안 뜨면 네이티브가
-      // 웹 SYN을 못 받았거나 응답이 웹에 안 닿은 것.
-      onReadyToMessage={() =>
-        logBridge("✅ handshake 완료 (onReadyToMessage):", path)
-      }
-      // [디버그] WebView가 웹 페이지를 실제로 불러왔는지 — 로드 실패면 브리지 이전 문제.
-      onLoadStart={(e) => logBridge("WebView onLoadStart:", e.nativeEvent.url)}
-      onLoadEnd={(e) =>
-        logBridge(
-          "WebView onLoadEnd:",
-          e.nativeEvent.url,
-          "loading=",
-          e.nativeEvent.loading,
-        )
-      }
-      onError={(e) =>
-        logBridge(
-          "❌ WebView onError:",
-          e.nativeEvent.code,
-          e.nativeEvent.description,
-          e.nativeEvent.url,
-        )
-      }
-      onHttpError={(e) =>
-        logBridge(
-          "❌ WebView onHttpError:",
-          e.nativeEvent.statusCode,
-          e.nativeEvent.url,
-        )
-      }
     />
   );
 }
