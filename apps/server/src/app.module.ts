@@ -8,6 +8,7 @@ import { GroupsModule } from "@/groups/groups.module";
 import { HealthModule } from "@/health/health.module";
 import { SupabaseModule } from "@/infra/supabase/supabase.module";
 import { ProfilesModule } from "@/profiles/profiles.module";
+import { ReportsModule } from "@/reports/reports.module";
 
 /**
  * CqrsModule.forRoot() 는 CommandBus·QueryBus 를 전역 제공하고, 부팅 시 모든 모듈의
@@ -26,6 +27,7 @@ import { ProfilesModule } from "@/profiles/profiles.module";
     ProfilesModule,
     HealthModule,
     GroupsModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}

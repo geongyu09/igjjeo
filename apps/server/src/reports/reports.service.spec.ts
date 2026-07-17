@@ -5,10 +5,9 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 
-import type { GroupsRepository } from "@/groups/groups.repository";
+import type { QueryBus } from "@nestjs/cqrs";
 
-import { AdaptationUnavailableError } from "./adaptation/adaptation.logic";
-import type { AdaptationPort } from "./adaptation/adaptation.types";
+import type { AdaptationService } from "./adaptation/adaptation.service";
 import type { ReportsRepository } from "./reports.repository";
 import { ReportsService } from "./reports.service";
 
@@ -35,49 +34,43 @@ function makeService() {
     publishReport: jest.fn(),
   } as unknown as jest.Mocked<ReportsRepository>;
 
-  const groups = {
-    findMembership: jest.fn().mockResolvedValue({ role: "member" }),
-    listMembers: jest.fn().mockResolvedValue([
-      {
-        user_id: "u9",
-        display_name: "김건규",
-        masked_name: "김*규",
-        role: "member",
-        joined_at: reportRow.created_at,
-      },
-    ]),
-  } as unknown as jest.Mocked<GroupsRepository>;
+  const queryBus = {
+    execute: jest.fn().mockResolvedValue({ role: "member" }),
+  } as unknown as jest.Mocked<QueryBus>;
 
   const adaptation = {
-    adaptReport: jest
-      .fn()
-      .mockResolvedValue({ status: "ok", articles: draftArticles }),
-  } as unknown as jest.Mocked<AdaptationPort>;
+    adapt: jest.fn().mockResolvedValue(draftArticles),
+  } as unknown as jest.Mocked<AdaptationService>;
 
-  const service = new ReportsService(reports, groups, adaptation);
-  return { service, reports, groups, adaptation };
+  const service = new ReportsService(reports, queryBus, adaptation);
+  return { service, reports, queryBus, adaptation };
 }
 
 describe("ReportsService", () => {
   describe("createReport", () => {
     it("방 멤버가 아니면 404", async () => {
-      const { service, groups } = makeService();
-      (groups.findMembership as jest.Mock).mockResolvedValue(null);
+      const { service, queryBus } = makeService();
+      (queryBus.execute as jest.Mock).mockResolvedValue(null);
 
       await expect(
         service.createReport("u1", "g1", { rawText: "x" }),
       ).rejects.toBeInstanceOf(NotFoundException);
     });
 
-    it("등장인물 실명을 방 멤버 매칭으로 마스킹해 어댑터에 넘긴다", async () => {
+    it("원문·언론사·자기제보 여부로 각색 서비스를 호출한다", async () => {
       const { service, adaptation } = makeService();
 
-      await service.createReport("u1", "g1", { rawText: "김건규가 또 지각했다" });
+      await service.createReport("u1", "g1", {
+        rawText: "김건규가 또 지각했다",
+        outletKeys: ["daily"],
+        isSelfReport: true,
+      });
 
-      expect(adaptation.adaptReport).toHaveBeenCalledWith(
-        expect.objectContaining({
-          subjects: [{ rawName: "김건규", maskedName: "김*규" }],
-        }),
+      expect(adaptation.adapt).toHaveBeenCalledWith(
+        "g1",
+        "김건규가 또 지각했다",
+        ["daily"],
+        { isSelfReport: true },
       );
     });
 
@@ -94,23 +87,21 @@ describe("ReportsService", () => {
       expect(result.report.status).toBe("draft");
     });
 
-    it("각색 거부면 422 adaptation_refused", async () => {
+    it("각색 거부(422)를 그대로 전파한다", async () => {
       const { service, adaptation } = makeService();
-      (adaptation.adaptReport as jest.Mock).mockResolvedValue({
-        status: "refused",
-        reason: "appearance_or_ability",
-        message: "안 돼요",
-      });
+      (adaptation.adapt as jest.Mock).mockRejectedValue(
+        new UnprocessableEntityException(),
+      );
 
       await expect(
         service.createReport("u1", "g1", { rawText: "못생겼다" }),
       ).rejects.toBeInstanceOf(UnprocessableEntityException);
     });
 
-    it("각색 upstream 장애면 503", async () => {
+    it("각색 upstream 장애(503)를 그대로 전파한다", async () => {
       const { service, adaptation } = makeService();
-      (adaptation.adaptReport as jest.Mock).mockRejectedValue(
-        new AdaptationUnavailableError("down"),
+      (adaptation.adapt as jest.Mock).mockRejectedValue(
+        new ServiceUnavailableException(),
       );
 
       await expect(
@@ -199,8 +190,8 @@ describe("ReportsService", () => {
     });
 
     it("멤버가 아니면 404", async () => {
-      const { service, groups } = makeService();
-      (groups.findMembership as jest.Mock).mockResolvedValue(null);
+      const { service, queryBus } = makeService();
+      (queryBus.execute as jest.Mock).mockResolvedValue(null);
       await expect(service.getReport("u1", "r1")).rejects.toBeInstanceOf(
         NotFoundException,
       );
