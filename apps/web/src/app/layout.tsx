@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { StackLinkProvider } from "stack-link";
 import { NativeBackListener } from "@/components/common/shared/NativeBackListener";
+import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
+import { QueryProvider } from "@/components/common/shared/QueryProvider";
+import { SessionProvider } from "@/components/common/shared/SessionProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -36,10 +39,14 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <StackLinkProvider>
-          <NativeBackListener />
-          {children}
-        </StackLinkProvider>
+        <QueryProvider>
+          <StackLinkProvider>
+            <NativeBackListener />
+            <QueryBoundary>
+              <SessionProvider>{children}</SessionProvider>
+            </QueryBoundary>
+          </StackLinkProvider>
+        </QueryProvider>
       </body>
     </html>
   );
