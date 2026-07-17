@@ -4,6 +4,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 
 import { ArticlesModule } from "@/articles/articles.module";
 import { AuthModule } from "@/auth/auth.module";
+import { CommentsModule } from "@/comments/comments.module";
 import { validateEnv } from "@/config/env.validation";
 import { GroupsModule } from "@/groups/groups.module";
 import { HealthModule } from "@/health/health.module";
@@ -30,6 +31,7 @@ import { ReportsModule } from "@/reports/reports.module";
     GroupsModule,
     ReportsModule,
     ArticlesModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}
