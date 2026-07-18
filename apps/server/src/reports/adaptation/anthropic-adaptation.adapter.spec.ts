@@ -13,8 +13,8 @@ const config = {
   get: () => "test-key",
 } as unknown as ConfigService<AppEnv, true>;
 
-function textResponse(text: string) {
-  return { content: [{ type: "text", text }] };
+function textResponse(text: string, stop_reason: string | null = "end_turn") {
+  return { content: [{ type: "text", text }], stop_reason };
 }
 
 function makeAdapter(create: jest.Mock) {
@@ -138,6 +138,34 @@ describe("AnthropicAdaptationAdapter", () => {
 
     const result = await adapter.adaptReport(input);
     expect(result.status).toBe("ok");
+  });
+
+  it("max_tokens 로 잘린 응답은 재시도하지 않고 AdaptationUnavailableError", async () => {
+    // 같은 요청을 다시 보내도 똑같이 잘리므로 재시도가 의미 없다.
+    const create = jest
+      .fn()
+      .mockResolvedValue(textResponse('{"status":"ok","articl', "max_tokens"));
+    const adapter = makeAdapter(create);
+
+    await expect(adapter.adaptReport(input)).rejects.toBeInstanceOf(
+      AdaptationUnavailableError,
+    );
+    expect(create).toHaveBeenCalledTimes(1);
+  });
+
+  it("모델이 안전 정책으로 거부하면(refusal) 도메인 거부로 변환한다", async () => {
+    // 파싱 실패(503)가 아니라 422 adaptation_refused 로 나가야 한다.
+    const create = jest.fn().mockResolvedValue(textResponse("", "refusal"));
+    const adapter = makeAdapter(create);
+
+    const result = await adapter.adaptReport(input);
+
+    expect(result).toEqual({
+      status: "refused",
+      reason: "other",
+      message: expect.any(String),
+    });
+    expect(create).toHaveBeenCalledTimes(1);
   });
 
   it("upstream 이 예외를 던지면 AdaptationUnavailableError 로 변환한다", async () => {
