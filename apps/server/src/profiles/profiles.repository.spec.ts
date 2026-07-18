@@ -7,6 +7,8 @@ const row = {
   display_name: "김건규",
   masked_name: "김*규",
   avatar_url: null,
+  onboarded: true,
+  subscribed_outlets: [],
   created_at: "2026-07-17T00:00:00.000Z",
 };
 
@@ -23,6 +25,14 @@ function makeSupabase(result: { data: unknown; error: unknown }) {
     from,
     builder,
     service: { client: { from } } as unknown as SupabaseService,
+  };
+}
+
+function makeRpcSupabase(result: { data: unknown; error: unknown }) {
+  const rpc = jest.fn().mockResolvedValue(result);
+  return {
+    rpc,
+    service: { client: { rpc } } as unknown as SupabaseService,
   };
 }
 
@@ -92,6 +102,45 @@ describe("ProfilesRepository", () => {
 
       await expect(
         repo.update("x", { avatar_url: "https://x/a.png" }),
+      ).rejects.toBeDefined();
+    });
+  });
+
+  describe("getMemberProfileSummary", () => {
+    const summary = {
+      stats: { reports: 2, reactions: 5, scoops: 1 },
+      reports: [
+        {
+          id: "r1",
+          outlet_key: "emotion",
+          headline: "그날, 회의실엔 침묵만 흘렀다",
+          reaction_count: 3,
+        },
+      ],
+    };
+
+    it("get_member_profile_summary RPC 를 방·사용자로 호출해 요약을 반환한다", async () => {
+      const { rpc, service } = makeRpcSupabase({ data: summary, error: null });
+      const repo = new ProfilesRepository(service);
+
+      const result = await repo.getMemberProfileSummary("g1", row.id);
+
+      expect(rpc).toHaveBeenCalledWith("get_member_profile_summary", {
+        p_group_id: "g1",
+        p_user_id: row.id,
+      });
+      expect(result).toEqual(summary);
+    });
+
+    it("에러가 오면 예외를 던진다", async () => {
+      const { service } = makeRpcSupabase({
+        data: null,
+        error: { message: "boom" },
+      });
+      const repo = new ProfilesRepository(service);
+
+      await expect(
+        repo.getMemberProfileSummary("g1", row.id),
       ).rejects.toBeDefined();
     });
   });
