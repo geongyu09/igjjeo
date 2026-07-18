@@ -15,6 +15,8 @@ describe("앱 HTTP 스모크 (e2e)", () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-role";
     process.env.ANTHROPIC_API_KEY = "test-anthropic";
     process.env.JWT_SECRET = "e2e-test-secret";
+    process.env.GOOGLE_OAUTH_CLIENT_ID = "test-google-client";
+    process.env.APPLE_OAUTH_CLIENT_ID = "test-apple-client";
 
     const { AppModule } = await import("./app.module");
     const { AllExceptionsFilter } =
