@@ -9,7 +9,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.geongyu09.igjjeo",
-      "appleTeamId": "3XD9F9256D"
+      "appleTeamId": "3XD9F9256D",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -22,6 +23,16 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.84706556054-3id8s7h6pqqq03vm9slabuafraikb82a"
+        }
+      ]
+    ]
   }
 }
