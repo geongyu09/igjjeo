@@ -1,0 +1,33 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 32px 24px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--fg, #111827);
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--fg-muted, #6b7280);
+}
+
+.error {
+  font-size: 14px;
+  color: var(--danger, #dc2626);
+}
+
+.submit {
+  margin-top: 4px;
+}

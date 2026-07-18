@@ -1,0 +1,13 @@
+.wrap {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 24px;
+}
+
+.message {
+  font-size: 15px;
+  color: var(--fg-muted, #6b7280);
+}
