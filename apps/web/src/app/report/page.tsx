@@ -1,29 +1,17 @@
 "use client";
 
-import { ArrowRight, Dices, ImageIcon, RefreshCw } from "lucide-react";
+import { ArrowRight, ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { useStackLinkRouter } from "stack-link";
 import { Button } from "@/components/common/shared/ui/Button";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
-import { SegmentedControl } from "@/components/common/shared/ui/SegmentedControl";
 import { TextArea } from "@/components/common/shared/ui/TextArea";
 import { useSession } from "@/components/common/shared/SessionProvider";
-import { AssignedOutletList } from "@/components/feature/widget/AssignedOutletList";
+import { PublisherCheckGroup } from "@/components/feature/widget/PublisherCheckGroup";
 import { useCreateReportMutation } from "@/hooks/features/query/mutations/useCreateReportMutation";
-import { OUTLET_KEYS, type OutletKey } from "@/lib/publishers";
+import { type OutletKey } from "@/lib/publishers";
+import { randomUUID } from "@/lib/uuid";
 import styles from "./page.module.css";
-
-type Mode = "choose" | "random";
-
-function pickThree(): OutletKey[] {
-  const pool = [...OUTLET_KEYS];
-  const picked: OutletKey[] = [];
-  while (picked.length < 3) {
-    const index = Math.floor(Math.random() * pool.length);
-    picked.push(pool.splice(index, 1)[0]);
-  }
-  return picked;
-}
 
 // 헤더(타이틀·닫기)는 네이티브 모달이 그린다 — apps/mobile의 ReportModal 스크린.
 export default function ReportPage() {
@@ -31,22 +19,25 @@ export default function ReportPage() {
   const { activeGroupId } = useSession();
   const createReport = useCreateReportMutation();
   const [text, setText] = useState("");
-  const [mode, setMode] = useState<Mode>("random");
-  const [assigned, setAssigned] = useState<OutletKey[]>(() => pickThree());
+  // 언론사 선택은 제보자의 몫 — 5곳 중 최소 1곳을 직접 고른다(무작위 배정 없음).
+  const [outletKeys, setOutletKeys] = useState<OutletKey[]>([]);
 
   const canSubmit =
-    text.trim().length > 0 && !!activeGroupId && !createReport.isPending;
+    text.trim().length > 0 &&
+    outletKeys.length > 0 &&
+    !!activeGroupId &&
+    !createReport.isPending;
 
   const submit = () => {
     if (!activeGroupId || createReport.isPending) return;
     const rawText = text.trim();
-    if (!rawText) return;
+    if (!rawText || outletKeys.length === 0) return;
     createReport.mutate(
       {
         groupId: activeGroupId,
         rawText,
-        outletKeys: assigned,
-        idempotencyKey: crypto.randomUUID(),
+        outletKeys,
+        idempotencyKey: randomUUID(),
       },
       {
         onSuccess: (draft) => {
@@ -59,6 +50,12 @@ export default function ReportPage() {
     );
   };
 
+  const ctaLabel = createReport.isPending
+    ? "기사 만드는 중…"
+    : outletKeys.length === 0
+      ? "언론사를 골라주세요"
+      : `기사 ${outletKeys.length}개 만들기`;
+
   const footer = (
     <div className={styles.ctaBar}>
       <Button
@@ -67,7 +64,7 @@ export default function ReportPage() {
         disabled={!canSubmit}
         onClick={submit}
       >
-        {createReport.isPending ? "기사 만드는 중…" : "기사 3개 만들기"}
+        {ctaLabel}
         <ArrowRight size={17} aria-hidden />
       </Button>
     </div>
@@ -94,40 +91,13 @@ export default function ReportPage() {
           </div>
         )}
 
-        <div className={styles.sectionLabel}>누가 기사를 쓸까요?</div>
-        <SegmentedControl<Mode>
-          aria-label="각색 방식"
-          value={mode}
-          onChange={setMode}
-          className={styles.modeToggle}
-          options={[
-            { value: "choose", label: "내가 고르기" },
-            { value: "random", label: "무작위 3곳" },
-          ]}
+        <div className={styles.sectionLabel}>어느 언론사가 기사를 쓸까요?</div>
+        <p className={styles.sectionHint}>원하는 곳을 골라주세요 (최소 1곳).</p>
+        <PublisherCheckGroup
+          aria-label="기사를 쓸 언론사"
+          value={outletKeys}
+          onChange={setOutletKeys}
         />
-
-        {mode === "random" ? (
-          <>
-            <div className={styles.infoBox}>
-              이번 제보엔 <b>이 세 곳</b>이 무작위로 붙었어요. 발행하면 서로
-              다른 각도의 기사 3개가 한 번에 나와요.
-            </div>
-            <AssignedOutletList assigned={assigned} />
-            <button
-              type="button"
-              className={styles.reshuffle}
-              onClick={() => setAssigned(pickThree())}
-            >
-              <RefreshCw size={14} aria-hidden />
-              다시 뽑기
-            </button>
-          </>
-        ) : (
-          <div className={styles.infoBox}>
-            <Dices size={14} aria-hidden /> 직접 고르기는 준비 중이에요. 지금은
-            무작위 3곳으로 진행돼요.
-          </div>
-        )}
       </div>
     </MobileScreen>
   );

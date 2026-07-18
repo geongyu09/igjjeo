@@ -132,7 +132,7 @@ export const CORRECTION_THREAD: CorrectionThreadItem[] = [
 ];
 
 /**
- * 발행 확인(03) — 하나의 제보가 무작위 배정된 세 언론사로 각색된 결과.
+ * 발행 확인(03) — 하나의 제보가 제보자가 고른 세 언론사로 각색된 결과.
  * 아직 DB 미저장 상태로 화면에만 표시.
  */
 export const DRAFT_PREVIEW: MockArticle[] = [

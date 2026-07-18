@@ -27,15 +27,16 @@
 }
 
 .sectionLabel {
-  margin: 20px 0 10px;
+  margin: 20px 0 4px;
   font-size: 12.5px;
   font-weight: 700;
   color: var(--ink);
 }
 
-.modeToggle {
-  align-self: flex-start;
-  margin-bottom: 13px;
+.sectionHint {
+  margin: 0 0 12px;
+  font-size: 11px;
+  color: var(--text-2);
 }
 
 .infoBox {
@@ -54,20 +55,6 @@
 
 .infoBox b {
   color: var(--ink);
-}
-
-.reshuffle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 13px;
-  border: none;
-  background: transparent;
-  color: var(--text-2);
-  font-size: 12.5px;
-  font-family: var(--font-sans);
-  cursor: pointer;
 }
 
 .ctaBar {
