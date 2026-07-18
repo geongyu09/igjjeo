@@ -23,6 +23,27 @@ export class CorrectionsRepository {
     return data as Json;
   }
 
+  /**
+   * 일간 정정 한도 카운트 — 본인이 낸 정정 요청(당사자·제3자 모두), `sinceIso`
+   * (KST 오늘 시작) 이후 행 수. data-model.md "하루 정정 한도" 참조.
+   */
+  async countCorrectionRequestsToday(
+    userId: string,
+    sinceIso: string,
+  ): Promise<number> {
+    const { count, error } = await this.supabase.client
+      .from("correction_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("requested_by", userId)
+      .gte("created_at", sinceIso);
+
+    if (error) {
+      throw error;
+    }
+
+    return count ?? 0;
+  }
+
   /** 정정 요청 기록. 반환: 요청 id. */
   async createCorrectionRequest(input: {
     articleId: string;

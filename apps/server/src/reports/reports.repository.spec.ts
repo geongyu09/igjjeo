@@ -2,13 +2,19 @@ import type { SupabaseService } from "@/infra/supabase/supabase.service";
 
 import { ReportsRepository } from "./reports.repository";
 
-function makeSupabase(result: { data: unknown; error: unknown }) {
+function makeSupabase(result: {
+  data?: unknown;
+  count?: unknown;
+  error: unknown;
+}) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: any = {
     select: jest.fn(() => builder),
     insert: jest.fn(() => builder),
     update: jest.fn(() => builder),
     eq: jest.fn(() => builder),
+    is: jest.fn(() => builder),
+    gte: jest.fn(() => builder),
     single: jest.fn().mockResolvedValue(result),
     maybeSingle: jest.fn().mockResolvedValue(result),
     then: (resolve: (value: unknown) => unknown) => resolve(result),
@@ -112,6 +118,39 @@ describe("ReportsRepository", () => {
       expect(patch.draft_articles).toEqual(drafts);
       expect(patch.draft_generated_at).toEqual(expect.any(String));
       expect(builder.eq).toHaveBeenCalledWith("id", "r1");
+    });
+  });
+
+  describe("countReportsToday", () => {
+    it("본인·직접 제보(parent_article_id NULL)·오늘 이후 행을 센다", async () => {
+      const { from, builder, service } = makeSupabase({ count: 3, error: null });
+      const repo = new ReportsRepository(service);
+
+      const result = await repo.countReportsToday(
+        "u1",
+        "2026-07-17T15:00:00.000Z",
+      );
+
+      expect(from).toHaveBeenCalledWith("reports");
+      expect(builder.select).toHaveBeenCalledWith("id", {
+        count: "exact",
+        head: true,
+      });
+      expect(builder.eq).toHaveBeenCalledWith("reporter_id", "u1");
+      expect(builder.is).toHaveBeenCalledWith("parent_article_id", null);
+      expect(builder.gte).toHaveBeenCalledWith(
+        "created_at",
+        "2026-07-17T15:00:00.000Z",
+      );
+      expect(result).toBe(3);
+    });
+
+    it("count 가 null 이면 0 을 반환한다", async () => {
+      const { service } = makeSupabase({ count: null, error: null });
+      const repo = new ReportsRepository(service);
+      await expect(
+        repo.countReportsToday("u1", "2026-07-17T15:00:00.000Z"),
+      ).resolves.toBe(0);
     });
   });
 

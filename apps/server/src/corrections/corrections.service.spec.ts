@@ -56,6 +56,7 @@ function makeService() {
     publishThirdPartyCorrection: jest
       .fn()
       .mockResolvedValue([articleRow("a3", "r2"), articleRow("a4", "r2")]),
+    countCorrectionRequestsToday: jest.fn().mockResolvedValue(0),
   } as unknown as jest.Mocked<CorrectionsRepository>;
   // 기사 접근 인가는 QueryBus, AI 각색은 CommandBus 로 요청한다(모듈 간 통신은 CQRS).
   const queryBus = {
@@ -84,6 +85,48 @@ describe("CorrectionsService", () => {
       );
       expect(corrections.requestDeletion).toHaveBeenCalledWith("a1", "u1");
       expect(result).toEqual({ article_id: "a1", is_active: false });
+    });
+  });
+
+  describe("하루 정정 한도", () => {
+    it("당사자 정정도 5회 채웠으면 429 로 막고 요청·각색을 만들지 않는다", async () => {
+      const { service, corrections, commandBus } = makeService();
+      (
+        corrections.countCorrectionRequestsToday as jest.Mock
+      ).mockResolvedValue(5);
+
+      await expect(
+        service.requestCorrection("u1", "a1", {
+          isSubject: true,
+          correctionText: "사실 9시 58분 도착",
+        }),
+      ).rejects.toMatchObject({ status: 429 });
+
+      expect(corrections.createCorrectionRequest).not.toHaveBeenCalled();
+      expect(commandBus.execute).not.toHaveBeenCalled();
+    });
+
+    it("제3자 정정도 5회 채웠으면 429 로 막는다", async () => {
+      const { service, corrections } = makeService();
+      (
+        corrections.countCorrectionRequestsToday as jest.Mock
+      ).mockResolvedValue(5);
+
+      await expect(
+        service.requestCorrection("u1", "a1", {
+          isSubject: false,
+          correctionText: "그건 사실이 아니다",
+        }),
+      ).rejects.toMatchObject({ status: 429 });
+    });
+
+    it("삭제 요청은 정정 한도와 무관하다", async () => {
+      const { service, corrections } = makeService();
+      (
+        corrections.countCorrectionRequestsToday as jest.Mock
+      ).mockResolvedValue(5);
+
+      await expect(service.requestDeletion("u1", "a1")).resolves.toBeDefined();
     });
   });
 

@@ -44,6 +44,7 @@ function makeService() {
     getReport: jest.fn().mockResolvedValue(reportRow),
     saveDraft: jest.fn().mockResolvedValue(undefined),
     publishReport: jest.fn(),
+    countReportsToday: jest.fn().mockResolvedValue(0),
   } as unknown as jest.Mocked<ReportsRepository>;
 
   const queryBus = {
@@ -84,6 +85,27 @@ describe("ReportsService", () => {
         ["daily"],
         { isSelfReport: true },
       );
+    });
+
+    it("하루 제보 5회를 채웠으면 429 로 막고 각색·생성하지 않는다", async () => {
+      const { service, reports, adaptation } = makeService();
+      (reports.countReportsToday as jest.Mock).mockResolvedValue(5);
+
+      await expect(
+        service.createReport("u1", "g1", { rawText: "원문" }),
+      ).rejects.toMatchObject({ status: 429 });
+
+      expect(adaptation.adapt).not.toHaveBeenCalled();
+      expect(reports.createReport).not.toHaveBeenCalled();
+    });
+
+    it("4회 사용 상태면 5회째 제보를 허용한다", async () => {
+      const { service, reports } = makeService();
+      (reports.countReportsToday as jest.Mock).mockResolvedValue(4);
+
+      await expect(
+        service.createReport("u1", "g1", { rawText: "원문" }),
+      ).resolves.toBeDefined();
     });
 
     it("각색 성공 시 초안을 캐시하고 반환한다", async () => {
