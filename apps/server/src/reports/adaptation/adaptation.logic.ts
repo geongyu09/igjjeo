@@ -23,6 +23,9 @@ export class AdaptationUnavailableError extends Error {
   }
 }
 
+/** 모델이 사유 문구를 주지 않았을 때 사용자에게 보여줄 기본 거부 안내. */
+export const DEFAULT_REFUSAL_MESSAGE = "이 제보는 기사로 만들 수 없어요";
+
 const REFUSAL_REASONS: RefusalReason[] = [
   "appearance_or_ability",
   "harassment",
@@ -91,7 +94,7 @@ export function parseAdaptationResponse(
       message:
         typeof parsed.message === "string" && parsed.message.length > 0
           ? parsed.message
-          : "이 제보는 기사로 만들 수 없어요",
+          : DEFAULT_REFUSAL_MESSAGE,
     };
   }
 
