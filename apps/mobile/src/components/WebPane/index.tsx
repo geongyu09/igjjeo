@@ -22,7 +22,9 @@ export function WebPane({
 }: {
   path: string;
   bridgeRef?: Ref<WebView>;
-  onBridgeMessage?: (message: WebToNativeRequest) => WebToNativeResponse;
+  onBridgeMessage?: (
+    message: WebToNativeRequest,
+  ) => Promise<WebToNativeResponse>;
 }) {
   return (
     <WebviewWithBridge<WebToNativeRequest, WebToNativeResponse>
