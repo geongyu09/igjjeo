@@ -22,6 +22,8 @@ export type Database = {
           display_name: string;
           masked_name: string;
           avatar_url: string | null;
+          onboarded: boolean;
+          subscribed_outlets: string[];
           created_at: string;
         };
         Insert: {
@@ -29,6 +31,8 @@ export type Database = {
           display_name: string;
           masked_name: string;
           avatar_url?: string | null;
+          onboarded?: boolean;
+          subscribed_outlets?: string[];
           created_at?: string;
         };
         Update: {
@@ -36,6 +40,8 @@ export type Database = {
           display_name?: string;
           masked_name?: string;
           avatar_url?: string | null;
+          onboarded?: boolean;
+          subscribed_outlets?: string[];
           created_at?: string;
         };
         Relationships: [];
@@ -99,6 +105,40 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "refresh_tokens_profile_id_fkey";
+            columns: ["profile_id"];
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      oauth_identities: {
+        Row: {
+          id: string;
+          profile_id: string;
+          provider: string;
+          subject: string;
+          email: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          profile_id: string;
+          provider: string;
+          subject: string;
+          email?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          profile_id?: string;
+          provider?: string;
+          subject?: string;
+          email?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "oauth_identities_profile_id_fkey";
             columns: ["profile_id"];
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -418,6 +458,24 @@ export type Database = {
           display_name: string;
           masked_name: string;
           avatar_url: string | null;
+          onboarded: boolean;
+          created_at: string;
+        }[];
+      };
+      create_oauth_account: {
+        Args: {
+          p_provider: string;
+          p_subject: string;
+          p_email: string | null;
+          p_display_name: string;
+          p_masked_name: string;
+        };
+        Returns: {
+          id: string;
+          display_name: string;
+          masked_name: string;
+          avatar_url: string | null;
+          onboarded: boolean;
           created_at: string;
         }[];
       };
@@ -548,6 +606,10 @@ export type Database = {
       };
       get_article_detail: {
         Args: { p_article_id: string; p_user_id: string };
+        Returns: Json;
+      };
+      get_member_profile_summary: {
+        Args: { p_group_id: string; p_user_id: string };
         Returns: Json;
       };
       request_deletion: {
