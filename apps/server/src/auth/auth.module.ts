@@ -6,6 +6,7 @@ import { AuthController } from "./auth.controller";
 import { AuthRepository } from "./auth.repository";
 import { AuthService } from "./auth.service";
 import { JwtUserGuard } from "./jwt-user.guard";
+import { OAuthVerifierService } from "./oauth-verifier.service";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 
@@ -23,6 +24,7 @@ import { TokenService } from "./token.service";
     JwtUserGuard,
     AuthRepository,
     AuthService,
+    OAuthVerifierService,
   ],
   exports: [JwtUserGuard, TokenService],
 })

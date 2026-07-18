@@ -6,6 +6,7 @@ function makeController() {
   const service = {
     signup: jest.fn(),
     login: jest.fn(),
+    oauthLogin: jest.fn(),
     refresh: jest.fn(),
     logout: jest.fn().mockResolvedValue(undefined),
   } as unknown as jest.Mocked<AuthService>;
@@ -39,6 +40,21 @@ describe("AuthController", () => {
     expect(service.login).toHaveBeenCalledWith({
       email: "kim@example.com",
       password: "pw",
+    });
+  });
+
+  it("oauth 는 provider·id_token·name 을 서비스 인자로 넘긴다", async () => {
+    const { controller, service } = makeController();
+    await controller.oauth({
+      provider: "google",
+      id_token: "tok",
+      name: "김건규",
+    });
+
+    expect(service.oauthLogin).toHaveBeenCalledWith({
+      provider: "google",
+      idToken: "tok",
+      name: "김건규",
     });
   });
 

@@ -5,9 +5,11 @@ import type { ProfilesRepository } from "@/profiles/profiles.repository";
 import {
   AuthRepository,
   EmailAlreadyExistsError,
+  OAuthIdentityExistsError,
   type RefreshTokenRow,
 } from "./auth.repository";
 import { AuthService } from "./auth.service";
+import type { OAuthVerifierService } from "./oauth-verifier.service";
 import type { PasswordService } from "./password.service";
 import type { TokenService } from "./token.service";
 
@@ -16,6 +18,7 @@ const profileRow = {
   display_name: "김건규",
   masked_name: "김*규",
   avatar_url: null,
+  onboarded: true,
   created_at: "2026-07-17T00:00:00.000Z",
 };
 
@@ -27,6 +30,8 @@ function makeDeps() {
     findRefreshToken: jest.fn(),
     revokeRefreshToken: jest.fn().mockResolvedValue(undefined),
     revokeAllForProfile: jest.fn().mockResolvedValue(undefined),
+    findProfileByOAuthIdentity: jest.fn(),
+    createOAuthAccount: jest.fn(),
   } as unknown as jest.Mocked<AuthRepository>;
 
   const profilesRepo = {
@@ -54,8 +59,18 @@ function makeDeps() {
     verifyAccessToken: jest.fn(),
   } as unknown as jest.Mocked<TokenService>;
 
-  const service = new AuthService(authRepo, profilesRepo, passwords, tokens);
-  return { service, authRepo, profilesRepo, passwords, tokens };
+  const oauthVerifier = {
+    verify: jest.fn(),
+  } as unknown as jest.Mocked<OAuthVerifierService>;
+
+  const service = new AuthService(
+    authRepo,
+    profilesRepo,
+    passwords,
+    tokens,
+    oauthVerifier,
+  );
+  return { service, authRepo, profilesRepo, passwords, tokens, oauthVerifier };
 }
 
 describe("AuthService", () => {
@@ -149,6 +164,100 @@ describe("AuthService", () => {
       await expect(
         service.login({ email: "kim@example.com", password: "wrong" }),
       ).rejects.toBeInstanceOf(UnauthorizedException);
+    });
+  });
+
+  describe("oauthLogin", () => {
+    const identity = {
+      subject: "google-sub-1",
+      email: "kim@example.com",
+      name: "김건규",
+    };
+
+    it("기존 신원이면 그 프로필로 토큰을 발급하고 새로 만들지 않는다", async () => {
+      const { service, authRepo, oauthVerifier } = makeDeps();
+      (oauthVerifier.verify as jest.Mock).mockResolvedValue(identity);
+      (authRepo.findProfileByOAuthIdentity as jest.Mock).mockResolvedValue(
+        profileRow,
+      );
+
+      const bundle = await service.oauthLogin({
+        provider: "google",
+        idToken: "tok",
+      });
+
+      expect(oauthVerifier.verify).toHaveBeenCalledWith("google", "tok");
+      expect(authRepo.createOAuthAccount).not.toHaveBeenCalled();
+      expect(bundle.profile).toEqual(profileRow);
+      expect(bundle.access_token).toBe("access-tok");
+    });
+
+    it("신규 신원이면 id_token 이름으로 계정을 만들고(onboarded=false) 토큰을 발급한다", async () => {
+      const { service, authRepo, oauthVerifier } = makeDeps();
+      const newProfile = { ...profileRow, onboarded: false };
+      (oauthVerifier.verify as jest.Mock).mockResolvedValue(identity);
+      (authRepo.findProfileByOAuthIdentity as jest.Mock).mockResolvedValue(null);
+      (authRepo.createOAuthAccount as jest.Mock).mockResolvedValue(newProfile);
+
+      const bundle = await service.oauthLogin({
+        provider: "google",
+        idToken: "tok",
+      });
+
+      expect(authRepo.createOAuthAccount).toHaveBeenCalledWith({
+        provider: "google",
+        subject: "google-sub-1",
+        email: "kim@example.com",
+        displayName: "김건규",
+        maskedName: "김*규",
+      });
+      expect(bundle.profile).toEqual(newProfile);
+    });
+
+    it("네이티브가 넘긴 name 을 초기 표시 이름으로 우선한다", async () => {
+      const { service, authRepo, oauthVerifier } = makeDeps();
+      (oauthVerifier.verify as jest.Mock).mockResolvedValue({
+        subject: "apple-sub-1",
+      });
+      (authRepo.findProfileByOAuthIdentity as jest.Mock).mockResolvedValue(null);
+      (authRepo.createOAuthAccount as jest.Mock).mockResolvedValue({
+        ...profileRow,
+        onboarded: false,
+      });
+
+      await service.oauthLogin({
+        provider: "apple",
+        idToken: "tok",
+        name: "박건규",
+      });
+
+      expect(authRepo.createOAuthAccount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          provider: "apple",
+          subject: "apple-sub-1",
+          email: null,
+          displayName: "박건규",
+          maskedName: "박*규",
+        }),
+      );
+    });
+
+    it("생성 경합(OAuthIdentityExistsError)이면 재조회한 프로필로 발급한다", async () => {
+      const { service, authRepo, oauthVerifier } = makeDeps();
+      (oauthVerifier.verify as jest.Mock).mockResolvedValue(identity);
+      (authRepo.findProfileByOAuthIdentity as jest.Mock)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(profileRow);
+      (authRepo.createOAuthAccount as jest.Mock).mockRejectedValue(
+        new OAuthIdentityExistsError(),
+      );
+
+      const bundle = await service.oauthLogin({
+        provider: "google",
+        idToken: "tok",
+      });
+
+      expect(bundle.profile).toEqual(profileRow);
     });
   });
 

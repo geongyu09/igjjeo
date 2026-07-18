@@ -1,12 +1,18 @@
 import type { SupabaseService } from "@/infra/supabase/supabase.service";
 
-import { AuthRepository, EmailAlreadyExistsError } from "./auth.repository";
+import {
+  AuthRepository,
+  EmailAlreadyExistsError,
+  OAuthIdentityExistsError,
+} from "./auth.repository";
 
 const profileRow = {
   id: "11111111-1111-4111-8111-111111111111",
   display_name: "김건규",
   masked_name: "김*규",
   avatar_url: null,
+  onboarded: true,
+  subscribed_outlets: [],
   created_at: "2026-07-17T00:00:00.000Z",
 };
 
@@ -79,6 +85,76 @@ describe("AuthRepository", () => {
 
       await expect(repo.createAccount(input)).rejects.not.toBeInstanceOf(
         EmailAlreadyExistsError,
+      );
+    });
+  });
+
+  describe("findProfileByOAuthIdentity", () => {
+    it("(provider, subject) 로 연결된 프로필을 반환한다", async () => {
+      const { from, builder, service } = makeSupabase({
+        data: { profiles: profileRow },
+        error: null,
+      });
+      const repo = new AuthRepository(service);
+
+      const result = await repo.findProfileByOAuthIdentity(
+        "google",
+        "google-sub-1",
+      );
+
+      expect(from).toHaveBeenCalledWith("oauth_identities");
+      expect(builder.eq).toHaveBeenCalledWith("provider", "google");
+      expect(builder.eq).toHaveBeenCalledWith("subject", "google-sub-1");
+      expect(result).toEqual(profileRow);
+    });
+
+    it("없으면 null 을 반환한다", async () => {
+      const { service } = makeSupabase({ data: null, error: null });
+      const repo = new AuthRepository(service);
+
+      await expect(
+        repo.findProfileByOAuthIdentity("google", "none"),
+      ).resolves.toBeNull();
+    });
+  });
+
+  describe("createOAuthAccount", () => {
+    const input = {
+      provider: "google",
+      subject: "google-sub-1",
+      email: "kim@example.com",
+      displayName: "김건규",
+      maskedName: "김*규",
+    };
+
+    it("create_oauth_account RPC 를 인자로 호출하고 프로필 행을 반환한다", async () => {
+      const { rpc, service } = makeSupabase({
+        data: [{ ...profileRow, onboarded: false }],
+        error: null,
+      });
+      const repo = new AuthRepository(service);
+
+      const result = await repo.createOAuthAccount(input);
+
+      expect(rpc).toHaveBeenCalledWith("create_oauth_account", {
+        p_provider: "google",
+        p_subject: "google-sub-1",
+        p_email: "kim@example.com",
+        p_display_name: "김건규",
+        p_masked_name: "김*규",
+      });
+      expect(result).toEqual({ ...profileRow, onboarded: false });
+    });
+
+    it("(provider, subject) 중복(23505)이면 OAuthIdentityExistsError 를 던진다", async () => {
+      const { service } = makeSupabase({
+        data: null,
+        error: { code: "23505", message: "duplicate" },
+      });
+      const repo = new AuthRepository(service);
+
+      await expect(repo.createOAuthAccount(input)).rejects.toBeInstanceOf(
+        OAuthIdentityExistsError,
       );
     });
   });
