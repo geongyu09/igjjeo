@@ -9,6 +9,10 @@ export interface AppEnv {
   SUPABASE_SERVICE_ROLE_KEY: string;
   ANTHROPIC_API_KEY: string;
   JWT_SECRET: string;
+  /** Google id_token 검증용 audience — Google Cloud 웹 클라이언트 ID. */
+  GOOGLE_OAUTH_CLIENT_ID: string;
+  /** Apple id_token 검증용 audience — iOS 앱 번들 ID(Sign in with Apple). */
+  APPLE_OAUTH_CLIENT_ID: string;
 }
 
 const REQUIRED_KEYS = [
@@ -16,6 +20,8 @@ const REQUIRED_KEYS = [
   "SUPABASE_SERVICE_ROLE_KEY",
   "ANTHROPIC_API_KEY",
   "JWT_SECRET",
+  "GOOGLE_OAUTH_CLIENT_ID",
+  "APPLE_OAUTH_CLIENT_ID",
 ] as const;
 
 export function validateEnv(raw: Record<string, unknown>): AppEnv {
@@ -43,5 +49,7 @@ export function validateEnv(raw: Record<string, unknown>): AppEnv {
     SUPABASE_SERVICE_ROLE_KEY: String(raw.SUPABASE_SERVICE_ROLE_KEY),
     ANTHROPIC_API_KEY: String(raw.ANTHROPIC_API_KEY),
     JWT_SECRET: String(raw.JWT_SECRET),
+    GOOGLE_OAUTH_CLIENT_ID: String(raw.GOOGLE_OAUTH_CLIENT_ID),
+    APPLE_OAUTH_CLIENT_ID: String(raw.APPLE_OAUTH_CLIENT_ID),
   };
 }
