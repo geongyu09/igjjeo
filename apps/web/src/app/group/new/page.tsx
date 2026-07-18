@@ -2,13 +2,13 @@
 
 import { Link2, Share2 } from "lucide-react";
 import { useState } from "react";
-import { useStackLinkRouter } from "stack-link";
 import { Avatar } from "@/components/common/shared/ui/Avatar";
 import { Button } from "@/components/common/shared/ui/Button";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { TextField } from "@/components/common/shared/ui/TextField";
 import { useSession } from "@/components/common/shared/SessionProvider";
+import { useEnterRoom } from "@/hooks/common/useEnterRoom";
 import { useStackBack } from "@/hooks/common/useStackBack";
 import { useCreateGroupMutation } from "@/hooks/features/query/mutations/useCreateGroupMutation";
 import type { Group } from "@/lib/api/types";
@@ -16,7 +16,7 @@ import styles from "./page.module.css";
 
 export default function CreateGroupPage() {
   const back = useStackBack();
-  const { navigate } = useStackLinkRouter({});
+  const enterRoom = useEnterRoom();
   const { me } = useSession();
   const createGroup = useCreateGroupMutation();
   const [name, setName] = useState("");
@@ -33,7 +33,7 @@ export default function CreateGroupPage() {
       <Button
         size="lg"
         className={styles.cta}
-        onClick={() => navigate({ href: "/", animation: "none" })}
+        onClick={() => enterRoom(created.id)}
       >
         뉴스룸 시작하기
       </Button>

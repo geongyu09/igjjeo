@@ -1,7 +1,9 @@
 "use client";
 
 import { Flame, MessageCircle, Newspaper, Search } from "lucide-react";
+import { useStackLinkRouter } from "stack-link";
 import { Avatar } from "@/components/common/shared/ui/Avatar";
+import { Button } from "@/components/common/shared/ui/Button";
 import { EmptyState } from "@/components/common/shared/ui/EmptyState";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
@@ -16,6 +18,7 @@ import styles from "./page.module.css";
 
 export default function FeedPage() {
   const { me, groups, activeGroupId } = useSession();
+  const { navigate } = useStackLinkRouter({});
   const activeGroup =
     groups.find((group) => group.id === activeGroupId) ?? groups[0] ?? null;
 
@@ -50,6 +53,13 @@ export default function FeedPage() {
           icon={<Newspaper size={22} aria-hidden />}
           title="아직 참여한 방이 없어요"
           description="방을 만들거나 초대 코드로 참여하면 이곳에 기사가 발행돼요."
+          action={
+            <Button
+              onClick={() => navigate({ href: "/group", animation: "slide" })}
+            >
+              방 고르기
+            </Button>
+          }
         />
       )}
     </MobileScreen>
