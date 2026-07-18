@@ -39,7 +39,9 @@ export function WebScreen({
   // 웹→네이티브 요청 처리: 스와이프 백 제스처 토글은 이 스크린에서 직접 적용하고,
   // 나머지(push/popScreen)는 공용 handleBridgeMessage에 위임한다.
   const onBridgeMessage = useCallback(
-    (message: WebToNativeRequest): WebToNativeResponse => {
+    async (
+      message: WebToNativeRequest,
+    ): Promise<WebToNativeResponse> => {
       if (message.type === "setSwipeBackEnabled") {
         navigation.setOptions({ gestureEnabled: message.payload.enabled });
         return { success: true };
