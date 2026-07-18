@@ -37,14 +37,6 @@ export interface MockComment {
   body: string;
 }
 
-export interface MockProfile {
-  name: string;
-  badge?: string;
-  stats: { reports: number; reactions: number; scoops: number };
-  subscribed: OutletKey[];
-  myReports: { outlet: OutletKey; headline: string; viewCount: number }[];
-}
-
 export interface MockDigest {
   weekLabel: string;
   roomLabel: string;
