@@ -6,6 +6,8 @@
 
 export const queryKeys = {
   me: () => ["me"] as const,
+  /** 방 안에서의 내 프로필 요약(통계·내 제보) */
+  memberProfile: (groupId: string) => ["me", "profile", groupId] as const,
 
   groups: () => ["groups"] as const,
   group: (groupId: string) => ["groups", groupId] as const,

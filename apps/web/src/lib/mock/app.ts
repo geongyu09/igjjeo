@@ -3,12 +3,7 @@
  */
 
 import type { OutletKey } from "@/lib/publishers";
-import type {
-  MockDigest,
-  MockGroup,
-  MockLockScreen,
-  MockProfile,
-} from "./types";
+import type { MockDigest, MockGroup, MockLockScreen } from "./types";
 
 /** 언론사 구독 초기 상태 (06) — 프로필에 공개되는 취향 */
 export const INITIAL_SUBSCRIPTIONS: Record<OutletKey, boolean> = {
@@ -17,26 +12,6 @@ export const INITIAL_SUBSCRIPTIONS: Record<OutletKey, boolean> = {
   daily: false,
   economy: false,
   science: false,
-};
-
-/** 프로필 (07) */
-export const MOCK_PROFILE: MockProfile = {
-  name: "이*아",
-  badge: "이번 주의 기자",
-  stats: { reports: 9, reactions: 31, scoops: 2 },
-  subscribed: ["shock", "emotion"],
-  myReports: [
-    {
-      outlet: "emotion",
-      headline: "그날, 회의실엔 침묵만 흘렀다",
-      viewCount: 5,
-    },
-    {
-      outlet: "economy",
-      headline: "간식 예산 40% 삭감… 긴축 국면",
-      viewCount: 7,
-    },
-  ],
 };
 
 /** 주간 결산 (08) — 일요일 저녁 자동 발행 */

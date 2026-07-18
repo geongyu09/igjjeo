@@ -35,7 +35,25 @@ export interface Profile {
   display_name: string;
   masked_name: string;
   avatar_url: string | null;
+  /** 온보딩(이름 등 기본 정보 입력) 완료 여부. 소셜 신규 가입만 false 로 시작한다. */
+  onboarded: boolean;
+  /** 구독 중인 언론사 키 목록(프로필에 공개되는 취향). */
+  subscribed_outlets: OutletKey[];
   created_at: string;
+}
+
+/** 프로필 화면(07)의 방-스코프 요약: 통계 + 내가 낸 제보 목록. */
+export interface MemberProfileSummary {
+  stats: { reports: number; reactions: number; scoops: number };
+  reports: MemberReport[];
+}
+
+/** 프로필에 노출되는 내 제보 한 건(대표 기사 기준). */
+export interface MemberReport {
+  id: string;
+  outlet_key: OutletKey;
+  headline: string;
+  reaction_count: number;
 }
 
 export interface TokenBundle {

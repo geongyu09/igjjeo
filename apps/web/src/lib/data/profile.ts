@@ -4,10 +4,24 @@
  */
 
 import { apiClient } from "@/lib/api/client";
-import type { Profile } from "@/lib/api/types";
+import type { MemberProfileSummary, Profile } from "@/lib/api/types";
 
 export async function getMe(): Promise<Profile> {
   const { data } = await apiClient.get<Profile>("/me");
+  return data;
+}
+
+export interface GetMemberProfileParams {
+  groupId: string;
+}
+
+/** 방 안에서의 내 프로필 요약(통계 + 내가 낸 제보). */
+export async function getMemberProfile({
+  groupId,
+}: GetMemberProfileParams): Promise<MemberProfileSummary> {
+  const { data } = await apiClient.get<MemberProfileSummary>(
+    `/groups/${groupId}/me/profile`,
+  );
   return data;
 }
 
