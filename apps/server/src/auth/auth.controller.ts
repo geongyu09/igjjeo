@@ -4,6 +4,7 @@ import { CurrentUser, type AuthUser } from "./current-user.decorator";
 import { AuthService, type AuthBundle, type TokenBundle } from "./auth.service";
 import { JwtUserGuard } from "./jwt-user.guard";
 import { LoginDto } from "./dto/login.dto";
+import { OAuthLoginDto } from "./dto/oauth-login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
 import { SignupDto } from "./dto/signup.dto";
 
@@ -27,6 +28,17 @@ export class AuthController {
   @HttpCode(200)
   login(@Body() dto: LoginDto): Promise<AuthBundle> {
     return this.auth.login({ email: dto.email, password: dto.password });
+  }
+
+  /** POST /v1/auth/oauth — 소셜 로그인(Google/Apple). id_token 검증 후 토큰 번들 발급. */
+  @Post("oauth")
+  @HttpCode(200)
+  oauth(@Body() dto: OAuthLoginDto): Promise<AuthBundle> {
+    return this.auth.oauthLogin({
+      provider: dto.provider,
+      idToken: dto.id_token,
+      name: dto.name,
+    });
   }
 
   /** POST /v1/auth/token/refresh — 리프레시 토큰 회전 재발급. */

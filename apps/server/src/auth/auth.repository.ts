@@ -11,6 +11,22 @@ export class EmailAlreadyExistsError extends Error {
   }
 }
 
+/** (provider, subject) 중복(oauth_identities unique 위반) — 동시 가입 경합. 서비스가 재조회로 처리한다. */
+export class OAuthIdentityExistsError extends Error {
+  constructor() {
+    super("oauth identity already exists");
+    this.name = "OAuthIdentityExistsError";
+  }
+}
+
+export interface CreateOAuthAccountInput {
+  provider: string;
+  subject: string;
+  email: string | null;
+  displayName: string;
+  maskedName: string;
+}
+
 export interface CreateAccountInput {
   email: string;
   passwordHash: string;
@@ -62,7 +78,59 @@ export class AuthRepository {
       throw new Error("create_account 가 행을 반환하지 않았습니다");
     }
 
-    return row;
+    // 신규 계정은 구독 언론사가 비어 있다(컬럼 기본값 '{}').
+    return { ...row, subscribed_outlets: [] };
+  }
+
+  /** (provider, subject) 로 연결된 프로필을 찾는다. 없으면 null(=신규 소셜 가입). */
+  async findProfileByOAuthIdentity(
+    provider: string,
+    subject: string,
+  ): Promise<ProfileRow | null> {
+    const { data, error } = await this.supabase.client
+      .from("oauth_identities")
+      .select(
+        "profiles(id, display_name, masked_name, avatar_url, onboarded, subscribed_outlets, created_at)",
+      )
+      .eq("provider", provider)
+      .eq("subject", subject)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    const row = data as unknown as { profiles: ProfileRow | null } | null;
+    return row?.profiles ?? null;
+  }
+
+  /** 프로필(onboarded=false) + oauth_identities 를 원자 생성(RPC). 경합 시 OAuthIdentityExistsError. */
+  async createOAuthAccount(input: CreateOAuthAccountInput): Promise<ProfileRow> {
+    const { data, error } = await this.supabase.client.rpc(
+      "create_oauth_account",
+      {
+        p_provider: input.provider,
+        p_subject: input.subject,
+        p_email: input.email,
+        p_display_name: input.displayName,
+        p_masked_name: input.maskedName,
+      },
+    );
+
+    if (error) {
+      if ((error as { code?: string }).code === PG_UNIQUE_VIOLATION) {
+        throw new OAuthIdentityExistsError();
+      }
+      throw error;
+    }
+
+    const row = data?.[0];
+    if (!row) {
+      throw new Error("create_oauth_account 가 행을 반환하지 않았습니다");
+    }
+
+    // 신규 소셜 계정도 구독 언론사가 비어 있다(컬럼 기본값 '{}').
+    return { ...row, subscribed_outlets: [] };
   }
 
   async findCredentialByEmail(email: string): Promise<CredentialRow | null> {
