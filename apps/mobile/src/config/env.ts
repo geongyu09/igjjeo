@@ -14,3 +14,17 @@ export const NATIVE_SHELL_UA_TOKEN = "IgjjeoNativeShell";
 // 배경. WebView 기본 배경은 흰색이라 이 색을 주지 않으면 웹 콘텐츠가 그려지기 전
 // 로딩 동안 흰 화면이 깜빡여 색이 끊긴다. 앱은 라이트 모드 고정(app.json).
 export const WEB_BG = "#f9fafb";
+
+// 네이티브 로그인이 소셜 id_token 을 넘길 백엔드(apps/server) 주소. /v1 프리픽스 포함.
+// 실기기·Android 에뮬레이터에서는 localhost가 앱 자신을 가리키므로
+// EXPO_PUBLIC_API_BASE_URL에 개발 머신의 LAN IP(예: http://192.168.0.10:4000/v1)를 지정할 것.
+export const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE_URL ?? "http://localhost:4000/v1";
+
+// Google 로그인 클라이언트 ID. Google Cloud OAuth 자격증명에서 발급.
+// - WEB_CLIENT_ID: id_token 의 audience 가 되는 "웹" 클라이언트 ID. 서버 GOOGLE_OAUTH_CLIENT_ID 와 같아야 한다.
+// - IOS_CLIENT_ID: iOS 앱용 클라이언트 ID. app.json 의 iosUrlScheme(역방향)도 이 값 기준.
+export const GOOGLE_WEB_CLIENT_ID =
+  process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? "";
+export const GOOGLE_IOS_CLIENT_ID =
+  process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? "";
