@@ -16,6 +16,7 @@ import { useReportDraftSuspenseQuery } from "@/hooks/features/query/suspenseQuer
 import { usePublishReportMutation } from "@/hooks/features/query/mutations/usePublishReportMutation";
 import { useRegenerateReportMutation } from "@/hooks/features/query/mutations/useRegenerateReportMutation";
 import { PUBLISHERS, type OutletKey } from "@/lib/publishers";
+import { randomUUID } from "@/lib/uuid";
 import styles from "./page.module.css";
 
 export default function PublishPreviewPage() {
@@ -90,7 +91,7 @@ function PreviewContent({ reportId }: { reportId: string }) {
       {
         reportId,
         outletKeys: drafts.map((item) => item.outlet_key),
-        idempotencyKey: crypto.randomUUID(),
+        idempotencyKey: randomUUID(),
       },
       { onSuccess: () => navigate({ href: "/", animation: "none" }) },
     );
@@ -101,7 +102,7 @@ function PreviewContent({ reportId }: { reportId: string }) {
     regenerate.mutate({
       reportId,
       outletKeys: [article.outlet_key],
-      idempotencyKey: crypto.randomUUID(),
+      idempotencyKey: randomUUID(),
     });
   };
 

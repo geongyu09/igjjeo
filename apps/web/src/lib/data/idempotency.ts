@@ -4,6 +4,8 @@
  * 같은 논리적 작업의 재시도에서 동일 키를 쓰려면 caller가 key를 넘긴다(미지정 시 매 호출 새로 생성).
  */
 
+import { randomUUID } from "@/lib/uuid";
+
 export function idempotencyHeaders(key?: string): Record<string, string> {
-  return { "Idempotency-Key": key ?? crypto.randomUUID() };
+  return { "Idempotency-Key": key ?? randomUUID() };
 }
