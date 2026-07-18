@@ -8,6 +8,8 @@ const row = {
   display_name: "김건규",
   masked_name: "김*규",
   avatar_url: null,
+  onboarded: true,
+  subscribed_outlets: [],
   created_at: "2026-07-17T00:00:00.000Z",
 };
 
@@ -19,6 +21,7 @@ function makeService() {
       .mockImplementation((_id, patch) =>
         Promise.resolve({ ...row, ...patch }),
       ),
+    getMemberProfileSummary: jest.fn(),
   } as unknown as jest.Mocked<ProfilesRepository>;
   return { service: new ProfilesService(repo), repo };
 }
@@ -51,6 +54,7 @@ describe("ProfilesService", () => {
       expect(repo.update).toHaveBeenCalledWith(row.id, {
         display_name: "남궁민수",
         masked_name: "남**수",
+        onboarded: true,
       });
       expect(result.masked_name).toBe("남**수");
     });
@@ -72,6 +76,29 @@ describe("ProfilesService", () => {
 
       expect(repo.update).not.toHaveBeenCalled();
       expect(result).toEqual(row);
+    });
+  });
+
+  describe("getMemberProfileSummary", () => {
+    it("방·사용자로 요약을 조회해 그대로 반환한다", async () => {
+      const { service, repo } = makeService();
+      const summary = {
+        stats: { reports: 2, reactions: 5, scoops: 1 },
+        reports: [
+          {
+            id: "r1",
+            outlet_key: "emotion",
+            headline: "그날, 회의실엔 침묵만 흘렀다",
+            reaction_count: 3,
+          },
+        ],
+      };
+      (repo.getMemberProfileSummary as jest.Mock).mockResolvedValue(summary);
+
+      const result = await service.getMemberProfileSummary(row.id, "g1");
+
+      expect(repo.getMemberProfileSummary).toHaveBeenCalledWith("g1", row.id);
+      expect(result).toEqual(summary);
     });
   });
 });
