@@ -6,6 +6,11 @@ import {
 } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 
+import {
+  DAILY_REPORT_LIMIT,
+  dailyLimitExceeded,
+  startOfSeoulDay,
+} from "@/common/daily-limit";
 import { FindMembershipQuery } from "@/groups/cqrs/find-membership.query";
 
 import { AdaptationService } from "./adaptation/adaptation.service";
@@ -63,6 +68,15 @@ export class ReportsService {
     );
     if (!membership) {
       throw notFound();
+    }
+
+    // 일간 제보 한도 — 각색·row 생성 전에 선제 차단(product.md "하루 제보·정정 한도").
+    const usedToday = await this.reports.countReportsToday(
+      userId,
+      startOfSeoulDay(new Date()),
+    );
+    if (usedToday >= DAILY_REPORT_LIMIT) {
+      throw dailyLimitExceeded("report_daily", DAILY_REPORT_LIMIT);
     }
 
     const report = await this.reports.createReport({

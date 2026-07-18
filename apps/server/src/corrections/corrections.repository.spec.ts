@@ -2,12 +2,19 @@ import type { SupabaseService } from "@/infra/supabase/supabase.service";
 
 import { CorrectionsRepository } from "./corrections.repository";
 
-function makeSupabase(result: { data: unknown; error: unknown }) {
+function makeSupabase(result: {
+  data?: unknown;
+  count?: unknown;
+  error: unknown;
+}) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const builder: any = {
     insert: jest.fn(() => builder),
     select: jest.fn(() => builder),
+    eq: jest.fn(() => builder),
+    gte: jest.fn(() => builder),
     single: jest.fn().mockResolvedValue(result),
+    then: (resolve: (value: unknown) => unknown) => resolve(result),
   };
   const from = jest.fn(() => builder);
   const rpc = jest.fn().mockResolvedValue(result);
@@ -116,5 +123,37 @@ describe("CorrectionsRepository", () => {
       p_articles: drafts,
     });
     expect(result).toEqual(rows);
+  });
+
+  describe("countCorrectionRequestsToday", () => {
+    it("본인·오늘 이후 correction_requests 행을 센다", async () => {
+      const { from, builder, service } = makeSupabase({ count: 2, error: null });
+      const repo = new CorrectionsRepository(service);
+
+      const result = await repo.countCorrectionRequestsToday(
+        "u1",
+        "2026-07-17T15:00:00.000Z",
+      );
+
+      expect(from).toHaveBeenCalledWith("correction_requests");
+      expect(builder.select).toHaveBeenCalledWith("id", {
+        count: "exact",
+        head: true,
+      });
+      expect(builder.eq).toHaveBeenCalledWith("requested_by", "u1");
+      expect(builder.gte).toHaveBeenCalledWith(
+        "created_at",
+        "2026-07-17T15:00:00.000Z",
+      );
+      expect(result).toBe(2);
+    });
+
+    it("count 가 null 이면 0 을 반환한다", async () => {
+      const { service } = makeSupabase({ count: null, error: null });
+      const repo = new CorrectionsRepository(service);
+      await expect(
+        repo.countCorrectionRequestsToday("u1", "2026-07-17T15:00:00.000Z"),
+      ).resolves.toBe(0);
+    });
   });
 });

@@ -63,6 +63,28 @@ export class ReportsRepository {
     return data as unknown as ReportRow;
   }
 
+  /**
+   * 일간 제보 한도 카운트 — 본인이 직접 낸 제보(제3자 정정 파생 제외)만,
+   * `sinceIso`(KST 오늘 시작) 이후 행 수. data-model.md "하루 제보 한도" 참조.
+   */
+  async countReportsToday(
+    reporterId: string,
+    sinceIso: string,
+  ): Promise<number> {
+    const { count, error } = await this.supabase.client
+      .from("reports")
+      .select("id", { count: "exact", head: true })
+      .eq("reporter_id", reporterId)
+      .is("parent_article_id", null)
+      .gte("created_at", sinceIso);
+
+    if (error) {
+      throw error;
+    }
+
+    return count ?? 0;
+  }
+
   async getReport(id: string): Promise<ReportRow | null> {
     const { data, error } = await this.supabase.client
       .from("reports")

@@ -3,6 +3,11 @@ import { CommandBus, QueryBus } from "@nestjs/cqrs";
 
 import { GetArticleAccessQuery } from "@/articles/cqrs/get-article-access.query";
 import type { ArticleRow } from "@/articles/articles.repository";
+import {
+  DAILY_CORRECTION_LIMIT,
+  dailyLimitExceeded,
+  startOfSeoulDay,
+} from "@/common/daily-limit";
 import { AdaptContentCommand } from "@/reports/adaptation/adapt-content.command";
 import {
   OUTLET_KEYS,
@@ -64,6 +69,16 @@ export class CorrectionsService {
     const article = await this.queryBus.execute(
       new GetArticleAccessQuery(userId, articleId),
     );
+
+    // 일간 정정 한도 — 요청 기록·각색 전에 선제 차단(product.md "하루 제보·정정 한도").
+    const usedToday = await this.corrections.countCorrectionRequestsToday(
+      userId,
+      startOfSeoulDay(new Date()),
+    );
+    if (usedToday >= DAILY_CORRECTION_LIMIT) {
+      throw dailyLimitExceeded("correction_daily", DAILY_CORRECTION_LIMIT);
+    }
+
     const requestId = await this.corrections.createCorrectionRequest({
       articleId,
       userId,
