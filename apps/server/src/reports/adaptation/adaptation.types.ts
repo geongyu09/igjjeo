@@ -28,7 +28,7 @@ export type AdaptationResult =
   | { status: "ok"; articles: DraftArticle[] }
   | { status: "refused"; reason: RefusalReason; message: string };
 
-/** AI 각색 어댑터 계약(서버 내부 단일 봉합선). 구현은 Anthropic 어댑터 한 곳. */
+/** AI 각색 어댑터 계약(서버 내부 단일 봉합선). 구현은 ModelAdaptationAdapter 한 곳. */
 export interface AdaptationPort {
   adaptReport(input: AdaptationInput): Promise<AdaptationResult>;
 }
