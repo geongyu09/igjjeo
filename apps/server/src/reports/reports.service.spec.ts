@@ -45,6 +45,8 @@ function makeService() {
     saveDraft: jest.fn().mockResolvedValue(undefined),
     publishReport: jest.fn(),
     countReportsToday: jest.fn().mockResolvedValue(0),
+    latestRefillAt: jest.fn().mockResolvedValue(null),
+    insertRefill: jest.fn().mockResolvedValue("2026-07-17T18:00:00.000Z"),
   } as unknown as jest.Mocked<ReportsRepository>;
 
   const queryBus = {
@@ -201,7 +203,7 @@ describe("ReportsService", () => {
     it("초안에 없는 outlet 을 고르면 400", async () => {
       const { service } = makeService();
       await expect(
-        service.publish("u1", "r1", ["economy"]),
+        service.publish("u1", "r1", ["science"]),
       ).rejects.toMatchObject({ status: 400 });
     });
 
@@ -231,6 +233,78 @@ describe("ReportsService", () => {
       await expect(service.getReport("u1", "r1")).rejects.toBeInstanceOf(
         NotFoundException,
       );
+    });
+  });
+
+  describe("getReportQuota", () => {
+    it("오늘 사용량으로 한도·사용·잔여를 계산한다", async () => {
+      const { service, reports } = makeService();
+      (reports.countReportsToday as jest.Mock).mockResolvedValue(2);
+
+      const quota = await service.getReportQuota("u1");
+
+      expect(quota).toEqual({ limit: 5, used: 2, remaining: 3 });
+      expect(reports.countReportsToday).toHaveBeenCalledWith(
+        "u1",
+        expect.any(String),
+      );
+    });
+
+    it("한도를 다 썼으면 잔여는 0에서 더 내려가지 않는다", async () => {
+      const { service, reports } = makeService();
+      (reports.countReportsToday as jest.Mock).mockResolvedValue(7);
+
+      const quota = await service.getReportQuota("u1");
+
+      expect(quota).toEqual({ limit: 5, used: 7, remaining: 0 });
+    });
+
+    it("오늘 충전한 적이 있으면 그 시각 이후만 센다", async () => {
+      const { service, reports } = makeService();
+      (reports.latestRefillAt as jest.Mock).mockResolvedValue(
+        "2026-07-17T18:00:00.000Z",
+      );
+
+      await service.getReportQuota("u1");
+
+      expect(reports.countReportsToday).toHaveBeenCalledWith(
+        "u1",
+        "2026-07-17T18:00:00.000Z",
+      );
+    });
+  });
+
+  describe("refillReportQuota", () => {
+    it("충전을 기록하고 그 시각 기준으로 다시 계산한 한도를 반환한다", async () => {
+      const { service, reports } = makeService();
+      (reports.countReportsToday as jest.Mock).mockResolvedValue(0);
+
+      const quota = await service.refillReportQuota("u1");
+
+      expect(reports.insertRefill).toHaveBeenCalledWith("u1");
+      expect(reports.countReportsToday).toHaveBeenCalledWith(
+        "u1",
+        "2026-07-17T18:00:00.000Z",
+      );
+      expect(quota).toEqual({ limit: 5, used: 0, remaining: 5 });
+    });
+  });
+
+  describe("createReport", () => {
+    it("충전 이후 제보만 한도로 세어 다시 제보할 수 있다", async () => {
+      const { service, reports } = makeService();
+      (reports.latestRefillAt as jest.Mock).mockResolvedValue(
+        "2026-07-17T18:00:00.000Z",
+      );
+      (reports.countReportsToday as jest.Mock).mockResolvedValue(0);
+
+      await service.createReport("u1", "g1", { rawText: "원문" });
+
+      expect(reports.countReportsToday).toHaveBeenCalledWith(
+        "u1",
+        "2026-07-17T18:00:00.000Z",
+      );
+      expect(reports.createReport).toHaveBeenCalled();
     });
   });
 });

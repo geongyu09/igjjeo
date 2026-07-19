@@ -8,6 +8,8 @@ function makeController() {
     regenerate: jest.fn(),
     publish: jest.fn(),
     getReport: jest.fn(),
+    getReportQuota: jest.fn(),
+    refillReportQuota: jest.fn(),
   } as unknown as jest.Mocked<ReportsService>;
   return { controller: new ReportsController(service), service };
 }
@@ -66,5 +68,21 @@ describe("ReportsController", () => {
     await controller.getOne({ id: "u1" }, "r1");
 
     expect(service.getReport).toHaveBeenCalledWith("u1", "r1");
+  });
+
+  it("getReportQuota 는 현재 사용자의 제보 한도를 조회한다", async () => {
+    const { controller, service } = makeController();
+
+    await controller.getReportQuota({ id: "u1" });
+
+    expect(service.getReportQuota).toHaveBeenCalledWith("u1");
+  });
+
+  it("refillReportQuota 는 현재 사용자의 제보 한도를 충전한다", async () => {
+    const { controller, service } = makeController();
+
+    await controller.refillReportQuota({ id: "u1" });
+
+    expect(service.refillReportQuota).toHaveBeenCalledWith("u1");
   });
 });

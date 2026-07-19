@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from "@/lib/api/client";
-import type { Article, ReportDraft } from "@/lib/api/types";
+import type { Article, ReportDraft, ReportQuota } from "@/lib/api/types";
 import type { OutletKey } from "@/lib/publishers";
 import { idempotencyHeaders } from "./idempotency";
 
@@ -93,5 +93,20 @@ export async function getReportDraft({
   reportId,
 }: ReportIdParams): Promise<ReportDraft> {
   const { data } = await apiClient.get<ReportDraft>(`/reports/${reportId}`);
+  return data;
+}
+
+/** 오늘 제보 한도 사용 현황 조회 (GET /me/report-quota). */
+export async function getReportQuota(): Promise<ReportQuota> {
+  const { data } = await apiClient.get<ReportQuota>("/me/report-quota");
+  return data;
+}
+
+/**
+ * 오늘 제보 한도 충전 (POST /me/report-quota/refill).
+ * 지금은 누르면 즉시 한도가 전량 회복된다(이후 광고 시청 보상으로 대체 예정).
+ */
+export async function refillReportQuota(): Promise<ReportQuota> {
+  const { data } = await apiClient.post<ReportQuota>("/me/report-quota/refill");
   return data;
 }

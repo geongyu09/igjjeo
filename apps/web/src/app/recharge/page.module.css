@@ -1,0 +1,82 @@
+.body {
+  padding: 20px 18px;
+}
+
+.intro {
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.methods {
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  overflow: hidden;
+  list-style: none;
+}
+
+.methods > li + li .method {
+  border-top: 1px solid var(--border);
+}
+
+.method {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 15px 14px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.method[data-disabled] {
+  cursor: default;
+}
+
+.method:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.methodIcon {
+  flex: none;
+  color: var(--accent-ink);
+}
+
+.method[data-disabled] .methodIcon {
+  color: var(--text-3);
+}
+
+.methodInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.methodTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.methodDesc {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+.badge {
+  flex: none;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  background: var(--surface-2, var(--border));
+  color: var(--text-3);
+  font-size: 10.5px;
+  font-weight: 700;
+}
