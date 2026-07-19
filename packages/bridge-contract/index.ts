@@ -56,8 +56,12 @@ export type WebToNativeResponse = {
  *   back을 웹으로 넘겨 뒤로가기의 단일 진실을 웹 스택에 둔다.
  *   웹 스택이 남아 있으면 웹이 한 단계 되돌리고 `consumed: true`를 응답하며,
  *   비었으면 `consumed: false`를 응답해 네이티브가 스크린을 pop하도록 한다.
+ * - `focus`: 다른 스크린이 pop돼 이 WebView가 다시 노출될 때 네이티브가 보낸다.
+ *   네이티브가 WebView를 덮어도 DOM `visibilitychange`/`focus`가 발생하지 않아 웹이 복귀를
+ *   감지하지 못하고, 그 사이 다른 스크린에서 바뀐 서버 상태가 이 화면에 반영되지 않는다.
+ *   이 요청을 받으면 웹은 React Query 캐시를 무효화해 활성 쿼리를 다시 가져온다.
  */
-export type NativeToWebRequest = { type: "back" };
+export type NativeToWebRequest = { type: "back" } | { type: "focus" };
 
 /**
  * 네이티브 → 웹 응답. `consumed: true`면 웹이 뒤로가기를 처리했으니 네이티브는 pop하지 않는다.

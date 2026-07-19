@@ -1,4 +1,11 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { RefreshCw } from "lucide-react";
+import { useRef, type ReactNode } from "react";
+import {
+  PULL_TO_REFRESH_THRESHOLD,
+  usePullToRefresh,
+} from "@/hooks/common/usePullToRefresh";
 import styles from "./MobileScreen.module.css";
 
 export interface MobileScreenProps {
@@ -12,6 +19,8 @@ export interface MobileScreenProps {
   children: ReactNode;
   /** 다크 풀블리드 (잠금화면 등) */
   tone?: "default" | "dark";
+  /** 본문 최상단에서 아래로 당기면 실행할 새로고침. 주지 않으면 제스처가 비활성화된다. */
+  onRefresh?: () => void | Promise<void>;
   className?: string;
 }
 
@@ -25,8 +34,15 @@ export function MobileScreen({
   footer,
   children,
   tone = "default",
+  onRefresh,
   className,
 }: MobileScreenProps) {
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const { pullDistance, isRefreshing } = usePullToRefresh({
+    containerRef: bodyRef,
+    onRefresh,
+  });
+
   return (
     <div
       className={[styles.screen, className].filter(Boolean).join(" ")}
@@ -39,7 +55,28 @@ export function MobileScreen({
           {header}
         </div>
       )}
-      <div className={styles.body}>{children}</div>
+      <div className={styles.body} ref={bodyRef}>
+        {onRefresh && (
+          <div
+            className={styles.refreshIndicator}
+            style={{ height: pullDistance }}
+            data-ready={pullDistance >= PULL_TO_REFRESH_THRESHOLD}
+            data-refreshing={isRefreshing}
+            data-settling={isRefreshing || pullDistance === 0}
+            aria-hidden={!isRefreshing}
+            {...(isRefreshing
+              ? { role: "status", "aria-label": "새로고침 중" }
+              : {})}
+          >
+            <RefreshCw
+              className={styles.refreshIcon}
+              size={18}
+              style={{ rotate: `${pullDistance * 3}deg` }}
+            />
+          </div>
+        )}
+        <div className={styles.bodyContent}>{children}</div>
+      </div>
       {footer && <div className={styles.slot}>{footer}</div>}
     </div>
   );
