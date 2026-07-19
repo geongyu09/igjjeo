@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { QueryBus } from "@nestjs/cqrs";
 
+import { FindGroupKeywordQuery } from "@/groups/cqrs/find-group-keyword.query";
 import { ListGroupMembersQuery } from "@/groups/cqrs/list-group-members.query";
 
 import { AdaptationUnavailableError } from "./adaptation.logic";
@@ -39,7 +40,10 @@ export class AdaptationService {
     outletKeys: OutletKey[],
     options: AdaptOptions = {},
   ): Promise<DraftArticle[]> {
-    const subjects = await this.resolveSubjects(groupId, rawText);
+    const [subjects, keyword] = await Promise.all([
+      this.resolveSubjects(groupId, rawText),
+      this.queryBus.execute(new FindGroupKeywordQuery(groupId)),
+    ]);
 
     let result;
     try {
@@ -49,6 +53,7 @@ export class AdaptationService {
         subjects,
         isSelfReport: options.isSelfReport ?? false,
         isCorrection: options.isCorrection,
+        keyword,
       });
     } catch (err) {
       if (err instanceof AdaptationUnavailableError) {

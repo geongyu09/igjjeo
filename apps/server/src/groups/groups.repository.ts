@@ -47,10 +47,11 @@ export class GroupsRepository {
   async createGroupWithOwner(
     userId: string,
     name: string,
+    keyword: string | null = null,
   ): Promise<GroupRecord> {
     const { data, error } = await this.supabase.client.rpc(
       "create_group_with_owner",
-      { p_user_id: userId, p_name: name },
+      { p_user_id: userId, p_name: name, p_keyword: keyword },
     );
 
     if (error) {
@@ -82,6 +83,21 @@ export class GroupsRepository {
     }
 
     return (data as { role: string } | null) ?? null;
+  }
+
+  /** 방의 각색 키워드(없으면 null). 각색 봉합선이 프롬프트 힌트로 쓴다. */
+  async getKeyword(groupId: string): Promise<string | null> {
+    const { data, error } = await this.supabase.client
+      .from("groups")
+      .select("keyword")
+      .eq("id", groupId)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return (data as { keyword: string | null } | null)?.keyword ?? null;
   }
 
   async getSummary(groupId: string): Promise<GroupSummaryRow | null> {

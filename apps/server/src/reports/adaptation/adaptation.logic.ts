@@ -128,6 +128,12 @@ export function buildUserPrompt(input: AdaptationInput): string {
     `대상 언론사: ${input.outletKeys.join(", ")}`,
     `자기 제보 여부: ${input.isSelfReport ? "예" : "아니오"}`,
   ];
+  const keyword = input.keyword?.trim();
+  if (keyword) {
+    lines.push(
+      `방 키워드(이 방의 톤·소재 힌트, 자연스럽게 반영하되 억지로 끼워 넣지 않는다): ${keyword}`,
+    );
+  }
   if (input.isCorrection) {
     lines.push('정정 각색: "본지는 앞선 보도를 정정합니다" 형식으로 쓴다.');
   }

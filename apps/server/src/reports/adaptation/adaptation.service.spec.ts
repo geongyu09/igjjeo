@@ -4,6 +4,8 @@ import {
 } from "@nestjs/common";
 import type { QueryBus } from "@nestjs/cqrs";
 
+import { FindGroupKeywordQuery } from "@/groups/cqrs/find-group-keyword.query";
+
 import { AdaptationService } from "./adaptation.service";
 import { AdaptationUnavailableError } from "./adaptation.logic";
 import type { AdaptationPort } from "./adaptation.types";
@@ -17,11 +19,14 @@ const draftArticles = [
   },
 ];
 
-function makeService() {
+function makeService(keyword: string | null = null) {
   const queryBus = {
-    execute: jest
-      .fn()
-      .mockResolvedValue([{ display_name: "김건규", masked_name: "김*규" }]),
+    // 멤버 목록 조회와 방 키워드 조회를 쿼리 종류로 구분한다.
+    execute: jest.fn((query: unknown) =>
+      query instanceof FindGroupKeywordQuery
+        ? Promise.resolve(keyword)
+        : Promise.resolve([{ display_name: "김건규", masked_name: "김*규" }]),
+    ),
   } as unknown as jest.Mocked<QueryBus>;
 
   const adapter = {
@@ -70,6 +75,26 @@ describe("AdaptationService", () => {
 
     expect(adapter.adaptReport).toHaveBeenCalledWith(
       expect.objectContaining({ isSelfReport: true, isCorrection: true }),
+    );
+  });
+
+  it("방 키워드를 조회해 어댑터 입력에 넣는다", async () => {
+    const { service, adapter } = makeService("지각 대장들");
+
+    await service.adapt("g1", "원문", ["daily"]);
+
+    expect(adapter.adaptReport).toHaveBeenCalledWith(
+      expect.objectContaining({ keyword: "지각 대장들" }),
+    );
+  });
+
+  it("방 키워드가 없으면 keyword 는 null 로 넘긴다", async () => {
+    const { service, adapter } = makeService(null);
+
+    await service.adapt("g1", "원문", ["daily"]);
+
+    expect(adapter.adaptReport).toHaveBeenCalledWith(
+      expect.objectContaining({ keyword: null }),
     );
   });
 

@@ -40,8 +40,16 @@ const MAX_LIMIT = 50;
 export class GroupsService {
   constructor(private readonly groups: GroupsRepository) {}
 
-  async createGroup(userId: string, name: string): Promise<GroupResponse> {
-    const row = await this.groups.createGroupWithOwner(userId, name);
+  async createGroup(
+    userId: string,
+    name: string,
+    keyword?: string | null,
+  ): Promise<GroupResponse> {
+    const row = await this.groups.createGroupWithOwner(
+      userId,
+      name,
+      keyword ?? null,
+    );
     return toGroupResponse(row);
   }
 

@@ -38,6 +38,8 @@ export interface AdaptationInput {
   isSelfReport: boolean;
   /** 정정 각색일 때 "본지는 앞선 보도를 정정합니다" 프리앰블을 요구한다. */
   isCorrection?: boolean;
+  /** 방 각색 키워드(선택). 기사 톤·소재에 참고 맥락으로 넣는다. */
+  keyword?: string | null;
 }
 
 /** 각색 거부 사유. 엔드포인트가 422 adaptation_refused 로 변환한다. */

@@ -148,6 +148,7 @@ export type Database = {
           name: string;
           invite_code: string;
           created_by: string;
+          keyword: string | null;
           created_at: string;
         };
         Insert: {
@@ -155,6 +156,7 @@ export type Database = {
           name: string;
           invite_code: string;
           created_by: string;
+          keyword?: string | null;
           created_at?: string;
         };
         Update: {
@@ -162,6 +164,7 @@ export type Database = {
           name?: string;
           invite_code?: string;
           created_by?: string;
+          keyword?: string | null;
           created_at?: string;
         };
         Relationships: [];
@@ -477,7 +480,7 @@ export type Database = {
         }[];
       };
       create_group_with_owner: {
-        Args: { p_user_id: string; p_name: string };
+        Args: { p_user_id: string; p_name: string; p_keyword?: string | null };
         Returns: {
           id: string;
           name: string;

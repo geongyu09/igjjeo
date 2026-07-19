@@ -108,6 +108,35 @@ describe("buildUserPrompt", () => {
     expect(prompt).not.toContain("김건규");
     expect(prompt).toContain("daily");
   });
+
+  it("방 키워드가 있으면 프롬프트에 참고 맥락으로 넣는다", () => {
+    const prompt = buildUserPrompt({
+      rawText: "또 지각했다",
+      outletKeys: ["daily"],
+      subjects: [],
+      isSelfReport: false,
+      keyword: "지각 대장들",
+    });
+    expect(prompt).toContain("지각 대장들");
+  });
+
+  it("방 키워드가 없거나 공백뿐이면 키워드 줄을 넣지 않는다", () => {
+    const withoutKeyword = buildUserPrompt({
+      rawText: "또 지각했다",
+      outletKeys: ["daily"],
+      subjects: [],
+      isSelfReport: false,
+    });
+    const blankKeyword = buildUserPrompt({
+      rawText: "또 지각했다",
+      outletKeys: ["daily"],
+      subjects: [],
+      isSelfReport: false,
+      keyword: "   ",
+    });
+    expect(withoutKeyword).not.toContain("방 키워드");
+    expect(blankKeyword).not.toContain("방 키워드");
+  });
 });
 
 describe("parseAdaptationResponse", () => {

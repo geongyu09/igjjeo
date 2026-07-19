@@ -29,17 +29,35 @@ function makeService() {
 
 describe("GroupsService", () => {
   describe("createGroup", () => {
-    it("리포지토리 결과를 Group 응답으로 매핑한다", async () => {
+    it("이름·키워드를 리포지토리에 넘기고 결과를 Group 응답으로 매핑한다", async () => {
       const { service, repo } = makeService();
       (repo.createGroupWithOwner as jest.Mock).mockResolvedValue(record);
 
-      const result = await service.createGroup("user-1", "부트캠프 3조");
+      const result = await service.createGroup(
+        "user-1",
+        "부트캠프 3조",
+        "지각 대장들",
+      );
 
       expect(repo.createGroupWithOwner).toHaveBeenCalledWith(
         "user-1",
         "부트캠프 3조",
+        "지각 대장들",
       );
       expect(result).toEqual(record);
+    });
+
+    it("키워드가 없으면 null 로 넘긴다", async () => {
+      const { service, repo } = makeService();
+      (repo.createGroupWithOwner as jest.Mock).mockResolvedValue(record);
+
+      await service.createGroup("user-1", "부트캠프 3조");
+
+      expect(repo.createGroupWithOwner).toHaveBeenCalledWith(
+        "user-1",
+        "부트캠프 3조",
+        null,
+      );
     });
   });
 
