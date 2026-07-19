@@ -50,6 +50,13 @@ export interface ReportDraftResponse {
   draft_articles: DraftArticle[];
 }
 
+/** 하루 제보 한도 사용 현황(사용자 전역, KST 자정 리셋). */
+export interface ReportQuotaResponse {
+  limit: number;
+  used: number;
+  remaining: number;
+}
+
 @Injectable()
 export class ReportsService {
   constructor(
@@ -73,7 +80,7 @@ export class ReportsService {
     // 일간 제보 한도 — 각색·row 생성 전에 선제 차단(product.md "하루 제보·정정 한도").
     const usedToday = await this.reports.countReportsToday(
       userId,
-      startOfSeoulDay(new Date()),
+      await this.quotaCountedSince(userId),
     );
     if (usedToday >= DAILY_REPORT_LIMIT) {
       throw dailyLimitExceeded("report_daily", DAILY_REPORT_LIMIT);
@@ -142,6 +149,46 @@ export class ReportsService {
 
     const articles = await this.reports.publishReport(reportId, outletKeys);
     return { articles: articles.map(toArticleResponse) };
+  }
+
+  /**
+   * 하루 제보 한도 사용 현황 — 제보 화면에서 남은 횟수를 안내한다.
+   * 카운트 기준은 createReport 의 선제 차단과 동일(본인·KST 오늘·제3자 정정 파생 제외).
+   */
+  async getReportQuota(userId: string): Promise<ReportQuotaResponse> {
+    const used = await this.reports.countReportsToday(
+      userId,
+      await this.quotaCountedSince(userId),
+    );
+    return {
+      limit: DAILY_REPORT_LIMIT,
+      used,
+      remaining: Math.max(0, DAILY_REPORT_LIMIT - used),
+    };
+  }
+
+  /**
+   * 제보 한도 충전 — 지금은 버튼 한 번으로 즉시 한도를 되돌린다(이후 광고 시청 보상 예정).
+   * 충전 시각을 남기면 그 시각 이후 제보만 카운트되므로 남은 횟수가 다시 5회가 된다.
+   */
+  async refillReportQuota(userId: string): Promise<ReportQuotaResponse> {
+    const refilledAt = await this.reports.insertRefill(userId);
+    const used = await this.reports.countReportsToday(userId, refilledAt);
+    return {
+      limit: DAILY_REPORT_LIMIT,
+      used,
+      remaining: Math.max(0, DAILY_REPORT_LIMIT - used),
+    };
+  }
+
+  /**
+   * 일간 한도 카운트의 하한 — KST 자정, 단 오늘 충전했다면 그 시각.
+   * 한도는 저장된 카운터가 아니라 행 수라서, 충전은 "세기 시작하는 시점"을 미루는 것이다.
+   */
+  private async quotaCountedSince(userId: string): Promise<string> {
+    const dayStart = startOfSeoulDay(new Date());
+    const refilledAt = await this.reports.latestRefillAt(userId, dayStart);
+    return refilledAt ?? dayStart;
   }
 
   async getReport(

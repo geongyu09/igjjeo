@@ -284,6 +284,24 @@ export type Database = {
           },
         ];
       };
+      report_quota_refills: {
+        Row: {
+          id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       reactions: {
         Row: {
           id: string;

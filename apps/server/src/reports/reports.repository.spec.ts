@@ -15,6 +15,8 @@ function makeSupabase(result: {
     eq: jest.fn(() => builder),
     is: jest.fn(() => builder),
     gte: jest.fn(() => builder),
+    order: jest.fn(() => builder),
+    limit: jest.fn(() => builder),
     single: jest.fn().mockResolvedValue(result),
     maybeSingle: jest.fn().mockResolvedValue(result),
     then: (resolve: (value: unknown) => unknown) => resolve(result),
@@ -123,7 +125,10 @@ describe("ReportsRepository", () => {
 
   describe("countReportsToday", () => {
     it("본인·직접 제보(parent_article_id NULL)·오늘 이후 행을 센다", async () => {
-      const { from, builder, service } = makeSupabase({ count: 3, error: null });
+      const { from, builder, service } = makeSupabase({
+        count: 3,
+        error: null,
+      });
       const repo = new ReportsRepository(service);
 
       const result = await repo.countReportsToday(
@@ -151,6 +156,56 @@ describe("ReportsRepository", () => {
       await expect(
         repo.countReportsToday("u1", "2026-07-17T15:00:00.000Z"),
       ).resolves.toBe(0);
+    });
+  });
+
+  describe("latestRefillAt", () => {
+    it("기준 시각 이후의 가장 최근 충전 시각을 반환한다", async () => {
+      const { from, builder, service } = makeSupabase({
+        data: { created_at: "2026-07-17T18:00:00.000Z" },
+        error: null,
+      });
+      const repo = new ReportsRepository(service);
+
+      const result = await repo.latestRefillAt(
+        "u1",
+        "2026-07-17T15:00:00.000Z",
+      );
+
+      expect(from).toHaveBeenCalledWith("report_quota_refills");
+      expect(builder.eq).toHaveBeenCalledWith("user_id", "u1");
+      expect(builder.gte).toHaveBeenCalledWith(
+        "created_at",
+        "2026-07-17T15:00:00.000Z",
+      );
+      expect(builder.order).toHaveBeenCalledWith("created_at", {
+        ascending: false,
+      });
+      expect(result).toBe("2026-07-17T18:00:00.000Z");
+    });
+
+    it("충전 기록이 없으면 null", async () => {
+      const { service } = makeSupabase({ data: null, error: null });
+      const repo = new ReportsRepository(service);
+      await expect(
+        repo.latestRefillAt("u1", "2026-07-17T15:00:00.000Z"),
+      ).resolves.toBeNull();
+    });
+  });
+
+  describe("insertRefill", () => {
+    it("report_quota_refills 에 충전을 기록하고 시각을 반환한다", async () => {
+      const { from, builder, service } = makeSupabase({
+        data: { created_at: "2026-07-17T18:00:00.000Z" },
+        error: null,
+      });
+      const repo = new ReportsRepository(service);
+
+      const result = await repo.insertRefill("u1");
+
+      expect(from).toHaveBeenCalledWith("report_quota_refills");
+      expect(builder.insert).toHaveBeenCalledWith({ user_id: "u1" });
+      expect(result).toBe("2026-07-17T18:00:00.000Z");
     });
   });
 

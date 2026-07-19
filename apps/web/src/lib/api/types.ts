@@ -112,6 +112,13 @@ export interface ReportDraft {
   draft_articles: DraftArticle[];
 }
 
+/** 하루 제보 한도 사용 현황 (사용자 전역, KST 자정 리셋) */
+export interface ReportQuota {
+  limit: number;
+  used: number;
+  remaining: number;
+}
+
 // ── 4. 피드·기사 ────────────────────────────────────────────────
 
 export type ReactionCounts = Record<ReactionType, number>;

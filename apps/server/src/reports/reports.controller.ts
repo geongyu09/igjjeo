@@ -19,6 +19,7 @@ import {
   ReportsService,
   type ArticleResponse,
   type ReportDraftResponse,
+  type ReportQuotaResponse,
 } from "./reports.service";
 
 @Controller()
@@ -41,6 +42,21 @@ export class ReportsController {
       outletKeys: dto.outlet_keys,
       isSelfReport: dto.is_self_report,
     });
+  }
+
+  /** GET /v1/me/report-quota — 오늘 제보 한도 사용 현황(사용자 전역). */
+  @Get("me/report-quota")
+  getReportQuota(@CurrentUser() user: AuthUser): Promise<ReportQuotaResponse> {
+    return this.reports.getReportQuota(user.id);
+  }
+
+  /** POST /v1/me/report-quota/refill — 오늘 제보 한도를 충전(즉시 전량 회복). */
+  @Post("me/report-quota/refill")
+  @HttpCode(200)
+  refillReportQuota(
+    @CurrentUser() user: AuthUser,
+  ): Promise<ReportQuotaResponse> {
+    return this.reports.refillReportQuota(user.id);
   }
 
   /** POST /v1/reports/:reportId/regenerate — 초안 재생성(제보자 본인). */

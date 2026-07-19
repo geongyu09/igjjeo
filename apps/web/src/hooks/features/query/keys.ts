@@ -26,4 +26,6 @@ export const queryKeys = {
     ["articles", articleId, "corrections"] as const,
 
   reportDraft: (reportId: string) => ["reports", reportId, "draft"] as const,
+  /** 오늘 제보 한도 사용 현황(사용자 전역) */
+  reportQuota: () => ["reports", "quota"] as const,
 };

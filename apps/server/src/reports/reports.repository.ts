@@ -85,6 +85,45 @@ export class ReportsRepository {
     return count ?? 0;
   }
 
+  /**
+   * `sinceIso`(KST 오늘 시작) 이후 이 사용자의 가장 최근 제보 한도 충전 시각.
+   * 충전이 없으면 null — 그때는 KST 자정이 그대로 카운트 하한이 된다.
+   */
+  async latestRefillAt(
+    userId: string,
+    sinceIso: string,
+  ): Promise<string | null> {
+    const { data, error } = await this.supabase.client
+      .from("report_quota_refills")
+      .select("created_at")
+      .eq("user_id", userId)
+      .gte("created_at", sinceIso)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return data?.created_at ?? null;
+  }
+
+  /** 제보 한도 충전을 기록하고 그 시각을 반환한다(이후 카운트의 하한이 된다). */
+  async insertRefill(userId: string): Promise<string> {
+    const { data, error } = await this.supabase.client
+      .from("report_quota_refills")
+      .insert({ user_id: userId })
+      .select("created_at")
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return data.created_at;
+  }
+
   async getReport(id: string): Promise<ReportRow | null> {
     const { data, error } = await this.supabase.client
       .from("reports")
