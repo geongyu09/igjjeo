@@ -18,10 +18,7 @@ import {
 
 import type { SessionTokens } from "@igjjeo/bridge-contract";
 
-import {
-  GOOGLE_IOS_CLIENT_ID,
-  GOOGLE_WEB_CLIENT_ID,
-} from "../../config/env";
+import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from "../../config/env";
 import { oauthLogin } from "../../lib/authApi";
 import type { RootStackParamList } from "../../navigation/types";
 import { sessionStore } from "../../session/sessionStore";
@@ -92,7 +89,10 @@ export function LoginSection() {
       await finish(tokens);
     } catch (err) {
       console.warn("[Login] Google 로그인 실패", err);
-      Alert.alert("로그인 실패", "구글 로그인에 실패했어요. 다시 시도해 주세요.");
+      Alert.alert(
+        "로그인 실패",
+        "구글 로그인에 실패했어요. 다시 시도해 주세요.",
+      );
     } finally {
       setPending(null);
     }
@@ -118,7 +118,10 @@ export function LoginSection() {
     } catch (err) {
       if (isAppleCanceled(err)) return; // 사용자가 취소
       console.warn("[Login] Apple 로그인 실패", err);
-      Alert.alert("로그인 실패", "애플 로그인에 실패했어요. 다시 시도해 주세요.");
+      Alert.alert(
+        "로그인 실패",
+        "애플 로그인에 실패했어요. 다시 시도해 주세요.",
+      );
     } finally {
       setPending(null);
     }
@@ -138,7 +141,9 @@ export function LoginSection() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>이거 진짜에요?</Text>
-        <Text style={styles.subtitle}>로그인하고 우리 방 뉴스를 확인하세요</Text>
+        <Text style={styles.subtitle}>
+          로그인하고 우리 방 뉴스를 확인하세요
+        </Text>
       </View>
 
       <View style={styles.buttons}>

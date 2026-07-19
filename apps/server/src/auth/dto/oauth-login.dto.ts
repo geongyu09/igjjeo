@@ -1,4 +1,10 @@
-import { IsIn, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import {
+  IsIn,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 
 /** 소셜 로그인 요청. 네이티브가 provider id_token 을 받아 그대로 넘긴다. */
 export class OAuthLoginDto {

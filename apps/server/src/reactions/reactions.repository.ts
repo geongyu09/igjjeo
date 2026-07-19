@@ -15,15 +15,13 @@ export class ReactionsRepository {
     userId: string,
     type: ReactionType,
   ): Promise<void> {
-    const { error } = await this.supabase.client
-      .from("reactions")
-      .upsert(
-        { article_id: articleId, user_id: userId, reaction_type: type },
-        {
-          onConflict: "article_id,user_id,reaction_type",
-          ignoreDuplicates: true,
-        },
-      );
+    const { error } = await this.supabase.client.from("reactions").upsert(
+      { article_id: articleId, user_id: userId, reaction_type: type },
+      {
+        onConflict: "article_id,user_id,reaction_type",
+        ignoreDuplicates: true,
+      },
+    );
 
     if (error) {
       throw error;

@@ -196,7 +196,9 @@ describe("AuthService", () => {
       const { service, authRepo, oauthVerifier } = makeDeps();
       const newProfile = { ...profileRow, onboarded: false };
       (oauthVerifier.verify as jest.Mock).mockResolvedValue(identity);
-      (authRepo.findProfileByOAuthIdentity as jest.Mock).mockResolvedValue(null);
+      (authRepo.findProfileByOAuthIdentity as jest.Mock).mockResolvedValue(
+        null,
+      );
       (authRepo.createOAuthAccount as jest.Mock).mockResolvedValue(newProfile);
 
       const bundle = await service.oauthLogin({
@@ -219,7 +221,9 @@ describe("AuthService", () => {
       (oauthVerifier.verify as jest.Mock).mockResolvedValue({
         subject: "apple-sub-1",
       });
-      (authRepo.findProfileByOAuthIdentity as jest.Mock).mockResolvedValue(null);
+      (authRepo.findProfileByOAuthIdentity as jest.Mock).mockResolvedValue(
+        null,
+      );
       (authRepo.createOAuthAccount as jest.Mock).mockResolvedValue({
         ...profileRow,
         onboarded: false,
