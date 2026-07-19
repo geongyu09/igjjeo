@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Plus, Users } from "lucide-react";
+import { ChevronRight, LogOut, Plus, Users } from "lucide-react";
 import { useState } from "react";
 import { useStackLinkRouter } from "stack-link";
 import { useSession } from "@/components/common/shared/SessionProvider";
@@ -11,6 +11,7 @@ import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { TextField } from "@/components/common/shared/ui/TextField";
 import { useEnterRoom } from "@/hooks/common/useEnterRoom";
 import { useJoinGroupMutation } from "@/hooks/features/query/mutations/useJoinGroupMutation";
+import { useLogoutMutation } from "@/hooks/features/query/mutations/useLogoutMutation";
 import styles from "./GroupHubSection.module.css";
 
 /**
@@ -22,6 +23,7 @@ export function GroupHubSection() {
   const { groups } = useSession();
   const enterRoom = useEnterRoom();
   const joinGroup = useJoinGroupMutation();
+  const logout = useLogoutMutation();
   const { navigate } = useStackLinkRouter({});
   const [inviteCode, setInviteCode] = useState("");
 
@@ -109,6 +111,16 @@ export function GroupHubSection() {
         >
           <Plus size={16} aria-hidden />새 뉴스룸 만들기
         </Button>
+
+        <button
+          type="button"
+          className={styles.logoutButton}
+          disabled={logout.isPending}
+          onClick={() => logout.mutate()}
+        >
+          <LogOut size={13} aria-hidden />
+          {logout.isPending ? "로그아웃 중…" : "로그아웃"}
+        </button>
       </div>
     </MobileScreen>
   );

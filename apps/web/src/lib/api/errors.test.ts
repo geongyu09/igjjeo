@@ -1,6 +1,6 @@
 import { AxiosError, AxiosHeaders } from "axios";
 import { describe, expect, it } from "vitest";
-import { ApiError, isApiError, normalizeApiError } from "./errors";
+import { ApiError, isApiError, isAuthError, normalizeApiError } from "./errors";
 
 function axiosErrorWithResponse(status: number, data: unknown): AxiosError {
   const err = new AxiosError("Request failed");
@@ -72,5 +72,33 @@ describe("isApiError", () => {
     ).toBe(true);
     expect(isApiError(new Error("nope"))).toBe(false);
     expect(isApiError(null)).toBe(false);
+  });
+});
+
+describe("isAuthError", () => {
+  it("unauthorized·token_expired ApiError면 true", () => {
+    expect(
+      isAuthError(
+        new ApiError({ status: 401, code: "unauthorized", message: "x" }),
+      ),
+    ).toBe(true);
+    expect(
+      isAuthError(
+        new ApiError({ status: 401, code: "token_expired", message: "x" }),
+      ),
+    ).toBe(true);
+  });
+
+  it("인증과 무관한 ApiError면 false", () => {
+    expect(
+      isAuthError(
+        new ApiError({ status: 404, code: "not_found", message: "x" }),
+      ),
+    ).toBe(false);
+  });
+
+  it("ApiError가 아니면 false", () => {
+    expect(isAuthError(new Error("nope"))).toBe(false);
+    expect(isAuthError(null)).toBe(false);
   });
 });
