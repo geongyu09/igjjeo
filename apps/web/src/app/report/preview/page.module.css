@@ -54,21 +54,6 @@
   outline-offset: 2px;
 }
 
-.regenerate {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  margin-top: 16px;
-  border: none;
-  background: transparent;
-  color: var(--text-2);
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 .ctaBar {
   display: flex;
   gap: 10px;

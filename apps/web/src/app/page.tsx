@@ -1,8 +1,6 @@
 "use client";
 
-import { Flame, MessageCircle, Newspaper, Search } from "lucide-react";
-import { useStackLinkRouter } from "stack-link";
-import { Avatar } from "@/components/common/shared/ui/Avatar";
+import { Flame, MessageCircle, Newspaper, Search, Share2 } from "lucide-react";
 import { Button } from "@/components/common/shared/ui/Button";
 import { EmptyState } from "@/components/common/shared/ui/EmptyState";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
@@ -11,38 +9,66 @@ import { useSession } from "@/components/common/shared/SessionProvider";
 import { ArticleCard } from "@/components/feature/widget/ArticleCard";
 import { PublisherBadge } from "@/components/feature/widget/PublisherBadge";
 import { useOpenScreen } from "@/hooks/common/useOpenScreen";
+import { useReplaceScreen } from "@/hooks/common/useReplaceScreen";
+import { useRefreshFeed } from "@/hooks/features/feed/useRefreshFeed";
+import { useCopyInviteLink } from "@/hooks/features/group/useCopyInviteLink";
 import { useFeedSuspenseQuery } from "@/hooks/features/query/suspenseQuerys/useFeedSuspenseQuery";
 import { formatRelativeTime } from "@/lib/datetime";
 import { pressable } from "@/lib/interactive";
 import styles from "./page.module.css";
 
 export default function FeedPage() {
-  const { me, groups, activeGroupId } = useSession();
-  const { navigate } = useStackLinkRouter({});
+  const { groups, activeGroupId } = useSession();
+  const replaceScreen = useReplaceScreen();
+  const refreshFeed = useRefreshFeed({ groupId: activeGroupId ?? "" });
+  const copyInviteLink = useCopyInviteLink();
   const activeGroup =
     groups.find((group) => group.id === activeGroupId) ?? groups[0] ?? null;
 
   const header = (
     <div className={styles.appHeader}>
-      <div>
-        <div className={styles.appTitle}>이거 진짜에요?</div>
-        <div className={styles.appSub}>
-          {activeGroup
-            ? `${activeGroup.name} · ${activeGroup.member_count}명`
-            : "방을 만들어 보세요"}
-        </div>
-      </div>
+      <button
+        type="button"
+        className={styles.roomInfo}
+        onClick={() => replaceScreen("/group")}
+      >
+        {activeGroup ? (
+          <>
+            <span className={styles.roomName}>{activeGroup.name}</span>
+            <span className={styles.roomCount}>
+              {activeGroup.member_count}명
+            </span>
+          </>
+        ) : (
+          <span className={styles.roomName}>방을 만들어 보세요</span>
+        )}
+      </button>
       <div className={styles.headerActions}>
         <button type="button" className={styles.iconButton} aria-label="검색">
           <Search size={18} aria-hidden />
         </button>
-        <Avatar name={me.display_name} emphasized />
+        <button
+          type="button"
+          className={styles.iconButton}
+          aria-label="방 공유"
+          disabled={!activeGroup}
+          onClick={
+            activeGroup
+              ? () => copyInviteLink(activeGroup.invite_code)
+              : undefined
+          }
+        >
+          <Share2 size={18} aria-hidden />
+        </button>
       </div>
     </div>
   );
 
   return (
-    <MobileScreen header={header}>
+    <MobileScreen
+      header={header}
+      onRefresh={activeGroupId ? refreshFeed : undefined}
+    >
       {activeGroupId ? (
         <QueryBoundary>
           <FeedList groupId={activeGroupId} />
@@ -54,11 +80,7 @@ export default function FeedPage() {
           title="아직 참여한 방이 없어요"
           description="방을 만들거나 초대 코드로 참여하면 이곳에 기사가 발행돼요."
           action={
-            <Button
-              onClick={() => navigate({ href: "/group", animation: "slide" })}
-            >
-              방 고르기
-            </Button>
+            <Button onClick={() => replaceScreen("/group")}>방 고르기</Button>
           }
         />
       )}

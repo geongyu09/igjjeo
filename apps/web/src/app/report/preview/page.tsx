@@ -1,10 +1,9 @@
 "use client";
 
-import { RefreshCw } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
-import { useStackLinkRouter } from "stack-link";
 import { Button } from "@/components/common/shared/ui/Button";
+import { ConfirmDialog } from "@/components/common/shared/ui/ConfirmDialog";
 import { EmptyState } from "@/components/common/shared/ui/EmptyState";
 import { LoadingScreen } from "@/components/common/shared/ui/LoadingScreen";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
@@ -12,9 +11,9 @@ import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
 import { ArticlePreview } from "@/components/feature/widget/ArticlePreview";
 import { useStackBack } from "@/hooks/common/useStackBack";
+import { useCloseReportModal } from "@/hooks/features/report/useCloseReportModal";
 import { useReportDraftSuspenseQuery } from "@/hooks/features/query/suspenseQuerys/useReportDraftSuspenseQuery";
 import { usePublishReportMutation } from "@/hooks/features/query/mutations/usePublishReportMutation";
-import { useRegenerateReportMutation } from "@/hooks/features/query/mutations/useRegenerateReportMutation";
 import { PUBLISHERS, type OutletKey } from "@/lib/publishers";
 import { randomUUID } from "@/lib/uuid";
 import styles from "./page.module.css";
@@ -69,15 +68,17 @@ function PreviewRoute() {
 
 function PreviewContent({ reportId }: { reportId: string }) {
   const back = useStackBack();
-  const { navigate } = useStackLinkRouter({});
+  const closeReportModal = useCloseReportModal();
   const { data: draft } = useReportDraftSuspenseQuery({ reportId });
   const publish = usePublishReportMutation();
-  const regenerate = useRegenerateReportMutation();
 
   const drafts = draft.draft_articles;
   const [current, setCurrent] = useState<OutletKey>(
     () => drafts[0]?.outlet_key,
   );
+  // 발행 없이 이 화면을 벗어나면 발행 횟수만 차감된다 — 이탈 전 한 번 더 확인받는다.
+  const [exitConfirmOpen, setExitConfirmOpen] = useState(false);
+  const requestExit = () => setExitConfirmOpen(true);
 
   const index = Math.max(
     drafts.findIndex((item) => item.outlet_key === current),
@@ -93,22 +94,14 @@ function PreviewContent({ reportId }: { reportId: string }) {
         outletKeys: drafts.map((item) => item.outlet_key),
         idempotencyKey: randomUUID(),
       },
-      { onSuccess: () => navigate({ href: "/", animation: "none" }) },
+      // 발행 완료 → 네이티브 제보 모달을 닫는다(브라우저는 피드로 폴백).
+      { onSuccess: closeReportModal },
     );
-  };
-
-  const doRegenerate = () => {
-    if (regenerate.isPending || !article) return;
-    regenerate.mutate({
-      reportId,
-      outletKeys: [article.outlet_key],
-      idempotencyKey: randomUUID(),
-    });
   };
 
   const footer = (
     <div className={styles.ctaBar}>
-      <Button variant="secondary" size="lg" onClick={back}>
+      <Button variant="secondary" size="lg" onClick={requestExit}>
         언론사 변경
       </Button>
       <Button
@@ -139,9 +132,22 @@ function PreviewContent({ reportId }: { reportId: string }) {
 
   return (
     <MobileScreen
-      header={<ScreenHeader title="이렇게 나왔어요" onBack={back} />}
+      header={<ScreenHeader title="이렇게 나왔어요" onBack={requestExit} />}
       footer={footer}
     >
+      <ConfirmDialog
+        open={exitConfirmOpen}
+        title="정말 나가시겠어요?"
+        description="여기서 나가도 이미 만든 발행 횟수만 차감돼요. 발행하지 않으면 기사는 방에 올라가지 않아요."
+        confirmLabel="나가기"
+        cancelLabel="계속 작성"
+        confirmVariant="secondary"
+        onConfirm={() => {
+          setExitConfirmOpen(false);
+          back();
+        }}
+        onCancel={() => setExitConfirmOpen(false)}
+      />
       <div className={styles.body}>
         <div className={styles.pager}>
           <span>
@@ -179,16 +185,6 @@ function PreviewContent({ reportId }: { reportId: string }) {
           body={article.body}
           byline={`${article.reporter_name} 기자`}
         />
-
-        <button
-          type="button"
-          className={styles.regenerate}
-          disabled={regenerate.isPending}
-          onClick={doRegenerate}
-        >
-          <RefreshCw size={15} aria-hidden />
-          {regenerate.isPending ? "다시 생성 중…" : "이 기사만 다시 생성"}
-        </button>
       </div>
     </MobileScreen>
   );
