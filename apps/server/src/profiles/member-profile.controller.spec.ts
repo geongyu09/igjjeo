@@ -12,7 +12,10 @@ function makeController() {
 describe("MemberProfileController", () => {
   it("GET /groups/:groupId/me/profile 은 요청자 id·멤버십 방으로 요약을 조회한다", async () => {
     const { controller, service } = makeController();
-    const summary = { stats: { reports: 0, reactions: 0, scoops: 0 }, reports: [] };
+    const summary = {
+      stats: { reports: 0, reactions: 0, scoops: 0 },
+      reports: [],
+    };
     (service.getMemberProfileSummary as jest.Mock).mockResolvedValue(summary);
 
     const result = await controller.getProfileSummary(
@@ -20,7 +23,10 @@ describe("MemberProfileController", () => {
       { groupId: "g1", role: "member" },
     );
 
-    expect(service.getMemberProfileSummary).toHaveBeenCalledWith("user-1", "g1");
+    expect(service.getMemberProfileSummary).toHaveBeenCalledWith(
+      "user-1",
+      "g1",
+    );
     expect(result).toBe(summary);
   });
 });

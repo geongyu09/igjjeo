@@ -90,7 +90,9 @@ function SessionBootstrap({ children }: { children: ReactNode }) {
   const value = useMemo<SessionValue>(() => {
     const groups = groupPages.pages.flatMap((page) => page.items);
     // 방 허브에서 고른 방을 활성 방으로 쓰되, 아직 내 방일 때만 유효로 인정한다.
-    const activeGroupId = groups.some((group) => group.id === storedActiveGroupId)
+    const activeGroupId = groups.some(
+      (group) => group.id === storedActiveGroupId,
+    )
       ? storedActiveGroupId
       : null;
     return { me, groups, activeGroupId };

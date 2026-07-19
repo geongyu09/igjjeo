@@ -31,23 +31,17 @@ vi.mock("./components/OnboardingForm", () => ({
   OnboardingForm: () => <div data-testid="onboarding">이름 입력</div>,
 }));
 
-vi.mock(
-  "@/hooks/features/query/suspenseQuerys/useMeSuspenseQuery",
-  () => ({
-    useMeSuspenseQuery: () => ({
-      data: { id: "u1", display_name: "나", onboarded: state.onboarded },
-    }),
+vi.mock("@/hooks/features/query/suspenseQuerys/useMeSuspenseQuery", () => ({
+  useMeSuspenseQuery: () => ({
+    data: { id: "u1", display_name: "나", onboarded: state.onboarded },
   }),
-);
+}));
 
-vi.mock(
-  "@/hooks/features/query/suspenseQuerys/useGroupsSuspenseQuery",
-  () => ({
-    useGroupsSuspenseQuery: () => ({
-      data: { pages: [{ items: state.groups }] },
-    }),
+vi.mock("@/hooks/features/query/suspenseQuerys/useGroupsSuspenseQuery", () => ({
+  useGroupsSuspenseQuery: () => ({
+    data: { pages: [{ items: state.groups }] },
   }),
-);
+}));
 
 import { SessionProvider, useSession } from ".";
 
