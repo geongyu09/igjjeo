@@ -4,6 +4,7 @@ import { NativeBackListener } from "@/components/common/shared/NativeBackListene
 import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
 import { QueryProvider } from "@/components/common/shared/QueryProvider";
 import { SessionProvider } from "@/components/common/shared/SessionProvider";
+import { ToastProvider } from "@/components/common/shared/ui/Toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -43,7 +44,9 @@ export default function RootLayout({
           <StackLinkProvider>
             <NativeBackListener />
             <QueryBoundary>
-              <SessionProvider>{children}</SessionProvider>
+              <ToastProvider>
+                <SessionProvider>{children}</SessionProvider>
+              </ToastProvider>
             </QueryBoundary>
           </StackLinkProvider>
         </QueryProvider>
