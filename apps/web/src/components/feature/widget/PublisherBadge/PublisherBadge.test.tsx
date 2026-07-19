@@ -9,10 +9,10 @@ describe("PublisherBadge", () => {
   });
 
   it("outlet을 data 속성으로 노출한다", () => {
-    render(<PublisherBadge outlet="economy" />);
-    expect(screen.getByText("스터디경제")).toHaveAttribute(
+    render(<PublisherBadge outlet="science" />);
+    expect(screen.getByText("모임과학")).toHaveAttribute(
       "data-outlet",
-      "economy",
+      "science",
     );
   });
 

@@ -1,7 +1,26 @@
-/** MVP 언론사 3종 (conventions.md §9). */
-export type OutletKey = "daily" | "shock" | "economy";
+/**
+ * 프로토타입 언론사 5종 (ai-rules.md — 제보자가 최소 1곳 직접 선택).
+ * economy(스터디경제)는 잠시 내렸다 — 되살릴 때 아래 주석 두 줄을 함께 푼다.
+ */
+export type OutletKey =
+  | "daily"
+  | "shock"
+  // | "economy"
+  | "science"
+  | "emotion"
+  | "praise";
 
-export const OUTLET_KEYS: OutletKey[] = ["daily", "shock", "economy"];
+export const OUTLET_KEYS: OutletKey[] = [
+  "daily",
+  "shock",
+  // "economy",
+  "science",
+  "emotion",
+  "praise",
+];
+
+/** 제보 한 건에 고를 수 있는 언론사 최대 개수. 웹(publishers.ts)과 같은 값을 유지한다. */
+export const MAX_OUTLET_SELECTION = 3;
 
 /** 각색된 기사 초안(발행 전, articles 로 승격되기 전 형태). */
 export interface DraftArticle {
