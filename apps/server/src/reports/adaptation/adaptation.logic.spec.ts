@@ -7,13 +7,92 @@ import {
 } from "./adaptation.logic";
 
 describe("buildSystemPrompt", () => {
-  it("언론사 3종 성격과 톤·마스킹·JSON 규칙을 담는다", () => {
+  it("언론사 5종 성격과 톤·마스킹·JSON 규칙을 담는다", () => {
     const prompt = buildSystemPrompt();
     expect(prompt).toContain("daily");
     expect(prompt).toContain("shock");
-    expect(prompt).toContain("economy");
+    expect(prompt).toContain("science");
+    expect(prompt).toContain("emotion");
+    expect(prompt).toContain("praise");
     expect(prompt).toContain("놀리되");
     expect(prompt).toContain("JSON");
+  });
+
+  it("소모임일보(daily)는 역피라미드 스트레이트 뉴스 규칙을 담는다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("스트레이트");
+    expect(prompt).toContain("역피라미드");
+    expect(prompt).toContain("육하원칙");
+    expect(prompt).toContain("출처");
+  });
+
+  // 스터디경제(economy)는 5종 체제에서 잠시 내렸다 — 되살릴 때 이 테스트도 함께 복구할 것.
+  // it("스터디경제(economy)는 데이터 저널리즘 규칙을 담는다", () => {
+  //   const prompt = buildSystemPrompt();
+  //   expect(prompt).toContain("데이터 저널리스트");
+  //   expect(prompt).toContain("절대값과 상대값");
+  //   expect(prompt).toContain("상관관계와 인과관계");
+  //   expect(prompt).toContain("중앙값");
+  //   expect(prompt).toContain("표본 크기");
+  //   expect(prompt).toContain("추정치");
+  //   expect(prompt).toContain("방법론");
+  //   expect(prompt).not.toContain("시각화");
+  // });
+
+  it("데일리쇼크(shock)는 자극적 헤드라인 패턴·익명 관계자 멘트 규칙을 담는다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("익명 관계자");
+    expect(prompt).toContain("알고 보니");
+    expect(prompt).toContain("설마");
+  });
+
+  it("모임과학(science)은 연구 형식을 흉내 내되 말도 안 되는 원인을 밝혀내는 규칙을 담는다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("말도 안 되");
+    expect(prompt).toContain("가설");
+    expect(prompt).toContain("없는 연구");
+    expect(prompt).toContain("가짜 수치");
+    expect(prompt).toContain("농담이라는 신호");
+  });
+
+  it("모임과학(science)은 존재하지 않는 물질과 이론을 지어내게 한다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("세상에 없는 물질");
+    expect(prompt).toContain("지어낸다");
+  });
+
+  it("모임과학(science)은 어려운 전문 용어 대신 쉬운 말을 쓰게 한다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("쉬운 단어");
+    expect(prompt).not.toContain("양자역학");
+    expect(prompt).not.toContain("유체역학");
+    expect(prompt).not.toContain("상관계수");
+  });
+
+  it("모임과학(science)은 원인을 인물이 아닌 지어낸 물질·환경 탓으로 돌린다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("지어낸 물질·기운·환경");
+  });
+
+  it("주간감성(emotion)은 감각적 묘사·여백·여운으로 감정을 끌어내는 에세이 규칙을 담는다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("감성 에세이");
+    expect(prompt).toContain("1인칭");
+    expect(prompt).toContain("감각적 묘사");
+    expect(prompt).toContain("여백");
+    expect(prompt).toContain("여운");
+    expect(prompt).toContain("보편적 감정");
+    expect(prompt).toContain("자기계발식");
+  });
+
+  it("일간찬양(praise)은 최상급 남발·영웅 서사·점층 과장 규칙을 담는다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("찬양");
+    expect(prompt).toContain("최상급");
+    expect(prompt).toContain("단점");
+    expect(prompt).toContain("역경");
+    expect(prompt).toContain("감탄을 금치 못했다");
+    expect(prompt).toContain("문단마다");
   });
 });
 
@@ -51,7 +130,7 @@ describe("parseAdaptationResponse", () => {
           reporter_name: "특종",
         },
         {
-          outlet_key: "economy",
+          outlet_key: "science",
           headline: "H3",
           body: "B3",
           reporter_name: "분석",
@@ -124,7 +203,7 @@ describe("parseAdaptationResponse", () => {
     const raw = JSON.stringify({
       status: "ok",
       articles: [
-        { outlet_key: "economy", headline: "H", body: "B", reporter_name: "R" },
+        { outlet_key: "science", headline: "H", body: "B", reporter_name: "R" },
       ],
     });
     expect(() => parseAdaptationResponse(raw, ["daily"])).toThrow(

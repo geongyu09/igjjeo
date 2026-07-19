@@ -2,6 +2,7 @@ import type { CommandBus, QueryBus } from "@nestjs/cqrs";
 
 import { GetArticleAccessQuery } from "@/articles/cqrs/get-article-access.query";
 import { AdaptContentCommand } from "@/reports/adaptation/adapt-content.command";
+import { OUTLET_KEYS } from "@/reports/adaptation/adaptation.types";
 
 import type { CorrectionsRepository } from "./corrections.repository";
 import { CorrectionsService } from "./corrections.service";
@@ -46,13 +47,11 @@ function makeService() {
       .fn()
       .mockResolvedValue({ article_id: "a1", is_active: false }),
     createCorrectionRequest: jest.fn().mockResolvedValue("cr1"),
-    insertSubjectCorrection: jest
-      .fn()
-      .mockResolvedValue({
-        ...articleRow("a2", "r1"),
-        is_correction: true,
-        corrects_article_id: "a1",
-      }),
+    insertSubjectCorrection: jest.fn().mockResolvedValue({
+      ...articleRow("a2", "r1"),
+      is_correction: true,
+      corrects_article_id: "a1",
+    }),
     publishThirdPartyCorrection: jest
       .fn()
       .mockResolvedValue([articleRow("a3", "r2"), articleRow("a4", "r2")]),
@@ -91,9 +90,9 @@ describe("CorrectionsService", () => {
   describe("하루 정정 한도", () => {
     it("당사자 정정도 5회 채웠으면 429 로 막고 요청·각색을 만들지 않는다", async () => {
       const { service, corrections, commandBus } = makeService();
-      (
-        corrections.countCorrectionRequestsToday as jest.Mock
-      ).mockResolvedValue(5);
+      (corrections.countCorrectionRequestsToday as jest.Mock).mockResolvedValue(
+        5,
+      );
 
       await expect(
         service.requestCorrection("u1", "a1", {
@@ -108,9 +107,9 @@ describe("CorrectionsService", () => {
 
     it("제3자 정정도 5회 채웠으면 429 로 막는다", async () => {
       const { service, corrections } = makeService();
-      (
-        corrections.countCorrectionRequestsToday as jest.Mock
-      ).mockResolvedValue(5);
+      (corrections.countCorrectionRequestsToday as jest.Mock).mockResolvedValue(
+        5,
+      );
 
       await expect(
         service.requestCorrection("u1", "a1", {
@@ -122,9 +121,9 @@ describe("CorrectionsService", () => {
 
     it("삭제 요청은 정정 한도와 무관하다", async () => {
       const { service, corrections } = makeService();
-      (
-        corrections.countCorrectionRequestsToday as jest.Mock
-      ).mockResolvedValue(5);
+      (corrections.countCorrectionRequestsToday as jest.Mock).mockResolvedValue(
+        5,
+      );
 
       await expect(service.requestDeletion("u1", "a1")).resolves.toBeDefined();
     });
@@ -174,11 +173,7 @@ describe("CorrectionsService", () => {
       });
 
       expect(commandBus.execute).toHaveBeenCalledWith(
-        new AdaptContentCommand("g1", "그건 사실이 아니다", [
-          "daily",
-          "shock",
-          "economy",
-        ]),
+        new AdaptContentCommand("g1", "그건 사실이 아니다", OUTLET_KEYS),
       );
       expect(corrections.publishThirdPartyCorrection).toHaveBeenCalledWith(
         expect.objectContaining({ parentArticleId: "a1", reporterId: "u1" }),

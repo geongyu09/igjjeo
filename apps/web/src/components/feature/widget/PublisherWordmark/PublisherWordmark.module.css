@@ -34,3 +34,9 @@
   font-weight: 300;
   letter-spacing: 0.1em;
 }
+
+/* 일간찬양 — 과하게 우렁차게 */
+.wordmark[data-outlet="praise"] {
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}

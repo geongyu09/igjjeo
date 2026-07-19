@@ -70,7 +70,7 @@ describe("ArticleCard", () => {
     render(
       <ArticleCard
         variant="list"
-        outlet="economy"
+        outlet="science"
         headline="제목"
         viewCount={7}
         commentCount={2}

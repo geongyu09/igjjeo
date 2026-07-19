@@ -342,7 +342,7 @@ export default function DesignSystemPage() {
               <span className={styles.demoNote}>Soft · 기본</span>
             </div>
             <div className={styles.demoRow}>
-              {(["shock", "economy", "daily"] as const).map((outlet) => (
+              {(["shock", "science", "daily"] as const).map((outlet) => (
                 <PublisherBadge key={outlet} outlet={outlet} variant="solid" />
               ))}
               <span className={styles.demoNote}>Solid · 강조</span>
@@ -564,8 +564,8 @@ export default function DesignSystemPage() {
                 />
                 <ArticleCard
                   variant="list"
-                  outlet="economy"
-                  headline="간식 예산 40% 삭감… 긴축 국면"
+                  outlet="science"
+                  headline="간식 소진 가속의 원인은 실내 기압"
                   viewCount={7}
                   commentCount={2}
                   timeLabel="1시간"

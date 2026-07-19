@@ -4,9 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 import { PublisherRadioGroup } from ".";
 
 describe("PublisherRadioGroup", () => {
-  it("기본으로 MVP 세 언론사를 radio로 렌더링한다", () => {
+  it("기본으로 MVP 다섯 언론사를 radio로 렌더링한다", () => {
     render(<PublisherRadioGroup value={null} onChange={() => {}} />);
-    expect(screen.getAllByRole("radio")).toHaveLength(3);
+    expect(screen.getAllByRole("radio")).toHaveLength(5);
     expect(
       screen.getByRole("radio", { name: "소모임일보" }),
     ).toBeInTheDocument();
@@ -38,8 +38,8 @@ describe("PublisherRadioGroup", () => {
   it("클릭하면 해당 outlet으로 onChange가 호출된다", async () => {
     const onChange = vi.fn();
     render(<PublisherRadioGroup value={null} onChange={onChange} />);
-    await userEvent.click(screen.getByRole("radio", { name: "스터디경제" }));
-    expect(onChange).toHaveBeenCalledWith("economy");
+    await userEvent.click(screen.getByRole("radio", { name: "모임과학" }));
+    expect(onChange).toHaveBeenCalledWith("science");
   });
 
   it("선택된 항목만 tab 순서에 들어가고, 선택이 없으면 첫 항목이 들어간다", () => {
