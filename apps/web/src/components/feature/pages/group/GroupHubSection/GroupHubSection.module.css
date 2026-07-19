@@ -100,3 +100,24 @@
   width: 100%;
   margin-top: 12px;
 }
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  margin-top: 22px;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  cursor: pointer;
+}
+
+.logoutButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

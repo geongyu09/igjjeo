@@ -45,6 +45,17 @@ export function isApiError(value: unknown): value is ApiError {
   return value instanceof ApiError;
 }
 
+/**
+ * 세션이 없거나 만료·무효라 재로그인이 필요한 인증 오류인지 판별한다.
+ * 이 오류는 재시도로 풀리지 않으므로, 호출부는 재시도 대신 로그아웃·로그인 유도로 처리한다.
+ */
+export function isAuthError(value: unknown): boolean {
+  return (
+    isApiError(value) &&
+    (value.code === "unauthorized" || value.code === "token_expired")
+  );
+}
+
 /** HTTP status → 봉투가 없을 때 사용할 fallback code (conventions.md §5). */
 function codeForStatus(status: number): ApiErrorCode {
   switch (status) {

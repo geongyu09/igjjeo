@@ -12,12 +12,14 @@
 
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { Suspense, type ReactNode } from "react";
+import { SessionExpiredScreen } from "@/components/common/shared/SessionExpiredScreen";
 import {
   ErrorBoundary,
   type ErrorBoundaryFallbackProps,
 } from "@/components/common/shared/ui/ErrorBoundary";
 import { ErrorScreen } from "@/components/common/shared/ui/ErrorScreen";
 import { LoadingScreen } from "@/components/common/shared/ui/LoadingScreen";
+import { isAuthError } from "@/lib/api/errors";
 
 interface QueryBoundaryProps {
   children: ReactNode;
@@ -39,9 +41,13 @@ export function QueryBoundary({
           onReset={reset}
           fallback={
             errorFallback ??
-            (({ error, reset: retry }) => (
-              <ErrorScreen error={error} onRetry={retry} />
-            ))
+            (({ error, reset: retry }) =>
+              // 인증 오류(세션 만료·무효)는 재시도로 풀리지 않는다 — 로그아웃 후 로그인 화면으로.
+              isAuthError(error) ? (
+                <SessionExpiredScreen />
+              ) : (
+                <ErrorScreen error={error} onRetry={retry} />
+              ))
           }
         >
           <Suspense fallback={pending ?? <LoadingScreen />}>

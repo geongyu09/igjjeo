@@ -2,10 +2,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { enterRoom, navigate, mutate, state } = vi.hoisted(() => ({
+const { enterRoom, navigate, mutate, logout, state } = vi.hoisted(() => ({
   enterRoom: vi.fn(),
   navigate: vi.fn(),
   mutate: vi.fn(),
+  logout: vi.fn(),
   state: {
     groups: [] as {
       id: string;
@@ -15,6 +16,7 @@ const { enterRoom, navigate, mutate, state } = vi.hoisted(() => ({
     }[],
     isPending: false,
     isError: false,
+    isLoggingOut: false,
   },
 }));
 
@@ -38,6 +40,13 @@ vi.mock("@/hooks/features/query/mutations/useJoinGroupMutation", () => ({
   }),
 }));
 
+vi.mock("@/hooks/features/query/mutations/useLogoutMutation", () => ({
+  useLogoutMutation: () => ({
+    mutate: logout,
+    isPending: state.isLoggingOut,
+  }),
+}));
+
 vi.mock("stack-link", () => ({
   useStackLinkRouter: () => ({ navigate, isNavigating: false }),
 }));
@@ -49,9 +58,11 @@ describe("GroupHubSection", () => {
     enterRoom.mockClear();
     navigate.mockClear();
     mutate.mockClear();
+    logout.mockClear();
     state.groups = [];
     state.isPending = false;
     state.isError = false;
+    state.isLoggingOut = false;
   });
 
   it("방이 없으면 빈 상태를 보여준다", () => {
@@ -105,5 +116,17 @@ describe("GroupHubSection", () => {
       href: "/group/new",
       animation: "slide",
     });
+  });
+
+  it("하단 로그아웃 버튼을 누르면 로그아웃한다", async () => {
+    render(<GroupHubSection />);
+    await userEvent.click(screen.getByRole("button", { name: "로그아웃" }));
+    expect(logout).toHaveBeenCalled();
+  });
+
+  it("로그아웃 중에는 버튼이 비활성이다", () => {
+    state.isLoggingOut = true;
+    render(<GroupHubSection />);
+    expect(screen.getByRole("button", { name: "로그아웃 중…" })).toBeDisabled();
   });
 });

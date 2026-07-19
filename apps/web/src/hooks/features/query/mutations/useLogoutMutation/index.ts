@@ -8,7 +8,13 @@ import { useIsNativeShell } from "@/hooks/common/useIsNativeShell";
 import { logout } from "@/lib/data/auth";
 import { activeGroupStore } from "@/lib/session/activeGroupStore";
 
-/** 로그아웃 (POST /auth/logout). 성공 시 서버 상태 캐시를 전부 비운다. */
+/**
+ * 로그아웃 (POST /auth/logout). 끝나면 서버 상태 캐시를 전부 비운다.
+ *
+ * 정리는 onSettled에서 한다 — logout()은 서버 호출 성공 여부와 무관하게 로컬 토큰을
+ * 비우므로(lib/data/auth), 서버가 실패했을 때만 네이티브 세션이 남으면 웹이 그 세션을
+ * 다시 복원해(useRestoreNativeSession) 로그아웃이 없던 일이 된다.
+ */
 export function useLogoutMutation() {
   const queryClient = useQueryClient();
   const isNativeShell = useIsNativeShell();
@@ -16,7 +22,7 @@ export function useLogoutMutation() {
 
   return useMutation({
     mutationFn: () => logout(),
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.clear();
       // 활성 방 선택도 세션과 함께 비운다(다음 로그인은 방 허브에서 다시 고른다).
       activeGroupStore.clear();
