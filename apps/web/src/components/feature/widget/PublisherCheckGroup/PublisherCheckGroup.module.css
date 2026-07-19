@@ -20,8 +20,14 @@
     border-color 0.15s ease;
 }
 
-.option:hover {
+.option:hover:not(:disabled) {
   background: var(--surface-2);
+}
+
+/* 최대 개수에 도달해 더 고를 수 없는 항목 */
+.option:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .option:focus-visible {

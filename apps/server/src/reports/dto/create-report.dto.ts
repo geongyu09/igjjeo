@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   ArrayNotEmpty,
   IsArray,
   IsBoolean,
@@ -10,7 +11,11 @@ import {
   MaxLength,
 } from "class-validator";
 
-import { OUTLET_KEYS, type OutletKey } from "../adaptation/adaptation.types";
+import {
+  MAX_OUTLET_SELECTION,
+  OUTLET_KEYS,
+  type OutletKey,
+} from "../adaptation/adaptation.types";
 
 export class CreateReportDto {
   @IsString()
@@ -25,6 +30,7 @@ export class CreateReportDto {
   @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
+  @ArrayMaxSize(MAX_OUTLET_SELECTION)
   @IsIn(OUTLET_KEYS, { each: true })
   outlet_keys?: OutletKey[];
 
