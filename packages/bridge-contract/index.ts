@@ -14,6 +14,9 @@
  * 웹 → 네이티브 요청.
  * - `pushScreen`: 탭 WebView에서 상세로 진입할 때 네이티브 풀스크린 WebView 스크린 하나를 push.
  *   `payload.url`은 웹 라우트 경로(예: `/article/1`).
+ * - `replaceScreen`: 현재 네이티브 스크린을 풀스크린 WebView 스크린 하나로 교체(스택에 쌓지 않음).
+ *   방 안(Tabs)에서 방 허브(`/group`)로 나갈 때처럼, 뒤로 돌아갈 대상이 아니라 화면을 갈아끼울 때 쓴다.
+ *   `payload.url`은 웹 라우트 경로(예: `/group`).
  * - `popScreen`: 웹 stack-link 스택이 비었을 때(canGoBack=false) 네이티브 스크린을 pop해 탭으로 복귀.
  * - `setSwipeBackEnabled`: iOS 엣지 스와이프(스크린 전체 pop) 제스처의 활성화 여부를 동기화한다.
  *   네이티브 제스처는 스크린을 통째로 pop하므로 웹 스택이 남아 있을 때 켜 두면 여러 단계를 건너뛴다.
@@ -25,14 +28,25 @@
  * - `enterRoom`: 방 허브(웹 `/group`)에서 방을 골라 방 안으로 들어갈 때, 네이티브가 하단 탭 화면(Tabs)으로
  *   스택을 교체하도록 요청한다. 어떤 방인지(활성 방)는 웹이 소유하므로 네이티브는 `payload.groupId`를
  *   화면 전환 자체에만 참고한다 — 탭 WebView(피드)는 웹의 activeGroupStore에서 활성 방을 읽는다.
+ * - `setReportModalDismissible`: 제보 모달을 닫을 수 있는지를 네이티브에 동기화한다.
+ *   AI 각색처럼 되돌릴 수 없는 요청이 진행 중일 때 웹은 자기 화면을 오버레이로 잠그지만,
+ *   모달 헤더의 X 버튼과 안드로이드 하드웨어 백은 네이티브 소유라 웹이 막을 수 없다.
+ *   `dismissible: false` 동안 네이티브는 닫기 버튼을 비활성화하고 모달 이탈을 차단한다.
+ * - `closeReportModal`: 제보 발행이 끝나면 웹이 네이티브 제보 모달(ReportModal 스크린)을 닫도록 요청한다.
+ *   모달 여닫기는 네이티브 소유(탭에서 열고 X 버튼으로 닫음)라 웹 stack-link 스택과 무관하므로,
+ *   웹 스택이 남아 있어도(preview) 최상단 모달을 pop해 탭으로 복귀시킨다 — 발행 완료 컨텍스트를
+ *   명시하기 위해 "웹 스택이 비었을 때" 용도의 popScreen과 구분한다.
  */
 export type WebToNativeRequest =
   | { type: "pushScreen"; payload: { url: string } }
+  | { type: "replaceScreen"; payload: { url: string } }
   | { type: "popScreen"; payload?: never }
   | { type: "setSwipeBackEnabled"; payload: { enabled: boolean } }
   | { type: "getSession"; payload?: never }
   | { type: "clearSession"; payload?: never }
-  | { type: "enterRoom"; payload: { groupId: string } };
+  | { type: "enterRoom"; payload: { groupId: string } }
+  | { type: "setReportModalDismissible"; payload: { dismissible: boolean } }
+  | { type: "closeReportModal"; payload?: never };
 
 /** 네이티브가 보관하는 세션 토큰 쌍. `getSession` 응답으로 웹에 전달된다. */
 export interface SessionTokens {

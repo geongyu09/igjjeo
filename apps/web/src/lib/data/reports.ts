@@ -41,27 +41,6 @@ export async function createReport({
   return data;
 }
 
-export interface RegenerateReportParams {
-  reportId: string;
-  /** 일부만 재생성할 언론사(미지정 시 전체) */
-  outletKeys?: OutletKey[];
-  idempotencyKey?: string;
-}
-
-/** 동일 제보를 다시 각색(초안 재생성). 제보자 본인·미발행 상태여야 한다. */
-export async function regenerateReport({
-  reportId,
-  outletKeys,
-  idempotencyKey,
-}: RegenerateReportParams): Promise<ReportDraft> {
-  const { data } = await apiClient.post<ReportDraft>(
-    `/reports/${reportId}/regenerate`,
-    { outlet_keys: outletKeys },
-    { headers: idempotencyHeaders(idempotencyKey) },
-  );
-  return data;
-}
-
 export interface PublishReportParams {
   reportId: string;
   /** 캐시 초안 중 발행할 언론사(부분집합 = 일부 제외) */

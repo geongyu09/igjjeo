@@ -4,6 +4,36 @@
   padding: 16px 18px;
 }
 
+/* 제보 화면 최상단 알림 배너 — 인용(좌측 강조 바) + 노티 느낌. */
+.quotaBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 11px 13px;
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  background: var(--accent-weak);
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.quotaIcon {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.quotaBanner[data-empty="true"] {
+  border-left-color: var(--pub-shock);
+  background: var(--pub-shock-bg);
+  color: var(--pub-shock);
+}
+
+.quotaBanner[data-empty="true"] .quotaIcon {
+  color: var(--pub-shock);
+}
+
 .photoAdd {
   display: inline-flex;
   flex-direction: column;
@@ -37,24 +67,6 @@
   margin: 0 0 12px;
   font-size: 11px;
   color: var(--text-2);
-}
-
-.infoBox {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 12px 13px;
-  margin-bottom: 14px;
-  border: 1.5px dashed var(--border-2);
-  border-radius: var(--r-md);
-  background: var(--surface-2);
-  font-size: 11.5px;
-  line-height: 1.55;
-  color: var(--text-2);
-}
-
-.infoBox b {
-  color: var(--ink);
 }
 
 .ctaBar {

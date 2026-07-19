@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { CloseButton } from "./src/components/CloseButton";
 import { LoginScreen } from "./src/components/LoginScreen";
 import { ReportModalScreen } from "./src/components/ReportModalScreen";
 import { TabsScreen } from "./src/components/Tabs";
@@ -26,19 +25,26 @@ export default function App() {
           <RootStack.Screen name="Login" component={LoginScreen} />
           <RootStack.Screen name="Tabs" component={TabsScreen} />
           {/* iOS 엣지 스와이프 제스처는 WebScreen이 웹 canGoBack에 따라 동적으로 켜고 끈다
-              (setSwipeBackEnabled). 기본값(true)은 웹 루트 상태와 일치한다. */}
-          <RootStack.Screen name="WebScreen" component={WebScreen} />
+              (setSwipeBackEnabled). 기본값(true)은 웹 루트 상태와 일치한다.
+              animationTypeForReplace: "pop" — replace(방 허브로 나가기 등)는 뒤로가기(반대 방향)
+              슬라이드로 전환한다. push(상세 진입)에는 영향 없다. */}
+          <RootStack.Screen
+            name="WebScreen"
+            component={WebScreen}
+            options={{ animationTypeForReplace: "pop" }}
+          />
+          {/* 닫기(X) 버튼은 ReportModalScreen이 setOptions로 그린다 — 각색 진행 중에는
+              비활성화해야 하므로 잠금 상태를 아는 스크린이 소유한다. */}
           <RootStack.Screen
             name="ReportModal"
             component={ReportModalScreen}
-            options={({ navigation }) => ({
+            options={{
               presentation: "modal",
+              // 손가락으로 내려서 닫기(스와이프 dismiss) 금지 — 오직 X 버튼으로만 닫는다.
+              gestureEnabled: false,
               headerShown: true,
               title: "제보하기",
-              headerLeft: () => (
-                <CloseButton onPress={() => navigation.goBack()} />
-              ),
-            })}
+            }}
           />
         </RootStack.Navigator>
       </NavigationContainer>
