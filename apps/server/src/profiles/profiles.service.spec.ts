@@ -9,7 +9,6 @@ const row = {
   masked_name: "김*규",
   avatar_url: null,
   onboarded: true,
-  subscribed_outlets: [],
   created_at: "2026-07-17T00:00:00.000Z",
 };
 

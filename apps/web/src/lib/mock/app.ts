@@ -1,18 +1,8 @@
 /**
- * 구독·프로필·주간 결산·그룹·잠금화면 목 데이터.
+ * 주간 결산·그룹·잠금화면 목 데이터.
  */
 
-import type { OutletKey } from "@/lib/publishers";
 import type { MockDigest, MockGroup, MockLockScreen } from "./types";
-
-/** 언론사 구독 초기 상태 (06) — 프로필에 공개되는 취향 */
-export const INITIAL_SUBSCRIPTIONS: Record<OutletKey, boolean> = {
-  shock: true,
-  emotion: true,
-  daily: false,
-  economy: false,
-  science: false,
-};
 
 /** 주간 결산 (08) — 일요일 저녁 자동 발행 */
 export const MOCK_DIGEST: MockDigest = {

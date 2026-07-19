@@ -147,7 +147,7 @@ export default function DesignSystemPage() {
     null,
   );
   const theme = themeOverride ?? (prefersDark ? "dark" : "light");
-  const [subscriptions, setSubscriptions] = useState<Record<string, boolean>>({
+  const [outletToggles, setOutletToggles] = useState<Record<string, boolean>>({
     shock: true,
     daily: false,
   });
@@ -426,7 +426,7 @@ export default function DesignSystemPage() {
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>토글 · 라디오 · 칩</h3>
           <p className={styles.componentDescription}>
-            구독 온/오프, 언론사 선택, 세그먼트 전환에 씁니다.
+            온/오프 설정, 언론사 선택, 세그먼트 전환에 씁니다.
           </p>
           <div className={`${styles.panel} ${styles.inputGrid}`}>
             <div>
@@ -436,19 +436,19 @@ export default function DesignSystemPage() {
                   <div key={outlet} className={styles.toggleRow}>
                     <span
                       className={styles.toggleName}
-                      data-on={subscriptions[outlet] ? "" : undefined}
+                      data-on={outletToggles[outlet] ? "" : undefined}
                     >
-                      {PUBLISHERS[outlet].name} 구독
+                      {PUBLISHERS[outlet].name} 표시
                     </span>
                     <Toggle
-                      checked={subscriptions[outlet]}
+                      checked={outletToggles[outlet]}
                       onChange={(next) =>
-                        setSubscriptions((prev) => ({
+                        setOutletToggles((prev) => ({
                           ...prev,
                           [outlet]: next,
                         }))
                       }
-                      aria-label={`${PUBLISHERS[outlet].name} 구독`}
+                      aria-label={`${PUBLISHERS[outlet].name} 표시`}
                     />
                   </div>
                 ))}
@@ -588,7 +588,7 @@ export default function DesignSystemPage() {
         <section className={styles.componentSection}>
           <h3 className={styles.componentTitle}>아바타 · 프로필</h3>
           <p className={styles.componentDescription}>
-            이니셜 아바타 기본. 프로필엔 구독 목록이 공개돼요 — 취향이 곧 성격.
+            이니셜 아바타 기본. 프로필엔 활동 요약이 함께 붙어요.
           </p>
           <div className={`${styles.panel} ${styles.avatarPanel}`}>
             <div className={styles.avatarRow}>
@@ -607,7 +607,7 @@ export default function DesignSystemPage() {
                   </div>
                 </div>
               </div>
-              <div className={styles.demoLabel}>구독 중</div>
+              <div className={styles.demoLabel}>자주 고른 언론사</div>
               <div className={styles.demoRow}>
                 <PublisherBadge outlet="shock" />
                 <PublisherBadge outlet="emotion" />

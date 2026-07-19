@@ -10,7 +10,6 @@ export interface ProfileRow {
   masked_name: string;
   avatar_url: string | null;
   onboarded: boolean;
-  subscribed_outlets: string[];
   created_at: string;
 }
 
@@ -20,11 +19,10 @@ export interface ProfilePatch {
   masked_name?: string;
   avatar_url?: string | null;
   onboarded?: boolean;
-  subscribed_outlets?: string[];
 }
 
 const COLUMNS =
-  "id, display_name, masked_name, avatar_url, onboarded, subscribed_outlets, created_at";
+  "id, display_name, masked_name, avatar_url, onboarded, created_at";
 
 @Injectable()
 export class ProfilesRepository {
