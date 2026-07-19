@@ -39,6 +39,16 @@ describe("groups 데이터 계층", () => {
     expect(result).toEqual({ id: "g1", name: "3조" });
   });
 
+  it("createGroup은 키워드가 있으면 name과 함께 보낸다", async () => {
+    post.mockResolvedValue({ data: { id: "g1", name: "3조" } });
+    await createGroup({ name: "3조", keyword: "지각 대장들" });
+
+    expect(post).toHaveBeenCalledWith("/groups", {
+      name: "3조",
+      keyword: "지각 대장들",
+    });
+  });
+
   it("listGroups는 페이지 파라미터를 params로 전달한다", async () => {
     post.mockClear();
     get.mockResolvedValue({ data: { items: [], next_cursor: null } });

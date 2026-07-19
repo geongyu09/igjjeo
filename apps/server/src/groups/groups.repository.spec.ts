@@ -33,17 +33,35 @@ function makeSupabase(result: { data: unknown; error: unknown }) {
 
 describe("GroupsRepository", () => {
   describe("createGroupWithOwner", () => {
-    it("create_group_with_owner RPC 를 인자로 호출하고 첫 행을 반환한다", async () => {
+    it("create_group_with_owner RPC 를 인자(키워드 포함)로 호출하고 첫 행을 반환한다", async () => {
       const { rpc, service } = makeSupabase({ data: [groupRow], error: null });
       const repo = new GroupsRepository(service);
 
-      const result = await repo.createGroupWithOwner("user-1", "부트캠프 3조");
+      const result = await repo.createGroupWithOwner(
+        "user-1",
+        "부트캠프 3조",
+        "지각 대장들",
+      );
 
       expect(rpc).toHaveBeenCalledWith("create_group_with_owner", {
         p_user_id: "user-1",
         p_name: "부트캠프 3조",
+        p_keyword: "지각 대장들",
       });
       expect(result).toEqual(groupRow);
+    });
+
+    it("키워드를 넘기지 않으면 p_keyword 는 null 로 호출한다", async () => {
+      const { rpc, service } = makeSupabase({ data: [groupRow], error: null });
+      const repo = new GroupsRepository(service);
+
+      await repo.createGroupWithOwner("user-1", "부트캠프 3조");
+
+      expect(rpc).toHaveBeenCalledWith("create_group_with_owner", {
+        p_user_id: "user-1",
+        p_name: "부트캠프 3조",
+        p_keyword: null,
+      });
     });
 
     it("RPC 에러가 오면 예외를 던진다", async () => {
@@ -107,6 +125,30 @@ describe("GroupsRepository", () => {
 
       expect(from).toHaveBeenCalledWith("group_summaries");
       expect(result).toEqual(summary);
+    });
+  });
+
+  describe("getKeyword", () => {
+    it("groups 에서 keyword 를 조회한다", async () => {
+      const { from, builder, service } = makeSupabase({
+        data: { keyword: "지각 대장들" },
+        error: null,
+      });
+      const repo = new GroupsRepository(service);
+
+      const result = await repo.getKeyword("g1");
+
+      expect(from).toHaveBeenCalledWith("groups");
+      expect(builder.select).toHaveBeenCalledWith("keyword");
+      expect(builder.eq).toHaveBeenCalledWith("id", "g1");
+      expect(result).toBe("지각 대장들");
+    });
+
+    it("행이 없으면 null 을 반환한다", async () => {
+      const { service } = makeSupabase({ data: null, error: null });
+      const repo = new GroupsRepository(service);
+
+      await expect(repo.getKeyword("g1")).resolves.toBeNull();
     });
   });
 

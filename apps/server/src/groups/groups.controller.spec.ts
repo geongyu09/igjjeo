@@ -17,17 +17,21 @@ function makeController() {
 }
 
 describe("GroupsController", () => {
-  it("create 는 요청자 id 와 name 으로 방을 생성한다", async () => {
+  it("create 는 요청자 id·name·키워드로 방을 생성한다", async () => {
     const { controller, service } = makeController();
     const group = { id: "g1" } as never;
     (service.createGroup as jest.Mock).mockResolvedValue(group);
 
     const result = await controller.create(
       { id: "user-1" },
-      { name: "부트캠프 3조" },
+      { name: "부트캠프 3조", keyword: "지각 대장들" },
     );
 
-    expect(service.createGroup).toHaveBeenCalledWith("user-1", "부트캠프 3조");
+    expect(service.createGroup).toHaveBeenCalledWith(
+      "user-1",
+      "부트캠프 3조",
+      "지각 대장들",
+    );
     expect(result).toBe(group);
   });
 

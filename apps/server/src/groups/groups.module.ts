@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 
+import { FindGroupKeywordHandler } from "./cqrs/find-group-keyword.query";
 import { FindMembershipHandler } from "./cqrs/find-membership.query";
 import { ListGroupMembersHandler } from "./cqrs/list-group-members.query";
 import { GroupMembershipGuard } from "./group-membership.guard";
@@ -17,6 +18,7 @@ import { GroupsService } from "./groups.service";
     GroupsService,
     GroupsRepository,
     GroupMembershipGuard,
+    FindGroupKeywordHandler,
     FindMembershipHandler,
     ListGroupMembersHandler,
   ],

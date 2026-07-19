@@ -41,7 +41,7 @@ export class GroupsController {
     @CurrentUser() user: AuthUser,
     @Body() dto: CreateGroupDto,
   ): Promise<GroupResponse> {
-    return this.groups.createGroup(user.id, dto.name);
+    return this.groups.createGroup(user.id, dto.name, dto.keyword);
   }
 
   /** GET /v1/groups — 내가 속한 방 목록(커서 페이지네이션). */

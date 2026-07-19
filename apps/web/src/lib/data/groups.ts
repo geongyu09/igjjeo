@@ -8,10 +8,19 @@ import type { Group, Member, Paginated, PageParams } from "@/lib/api/types";
 
 export interface CreateGroupParams {
   name: string;
+  /** 방 각색 키워드(선택, 최대 100자). 이 방의 뉴스 각색 프롬프트에 반영된다. */
+  keyword?: string;
 }
 
-export async function createGroup({ name }: CreateGroupParams): Promise<Group> {
-  const { data } = await apiClient.post<Group>("/groups", { name });
+export async function createGroup({
+  name,
+  keyword,
+}: CreateGroupParams): Promise<Group> {
+  const body: { name: string; keyword?: string } = { name };
+  if (keyword) {
+    body.keyword = keyword;
+  }
+  const { data } = await apiClient.post<Group>("/groups", body);
   return data;
 }
 
