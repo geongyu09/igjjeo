@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   // 내부 리소스·HMR 웹소켓을 기본 차단하는데, 이게 막히면 클라이언트 런타임이
   // 완성되지 못해 하이드레이션이 끊기고 브리지(useBridge)가 SYN을 못 보낸다.
   // LAN 서브넷을 허용해 실기기에서 정상 하이드레이션되게 한다. IP 대역이 바뀌면 갱신.
-  allowedDevOrigins: ["172.30.1.*"],
+  allowedDevOrigins: ["172.30.1.33"],
   // 모노레포 루트(bun.lock 위치)를 명시해 워크스페이스 루트 추론 경고를 없앤다
   turbopack: {
     root: path.join(__dirname, "../.."),
