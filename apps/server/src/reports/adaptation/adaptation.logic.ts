@@ -15,7 +15,7 @@ export class AdaptationParseError extends Error {
   }
 }
 
-/** 각색 upstream(Anthropic) 장애·재시도 실패. 엔드포인트가 503 ai_unavailable 로 변환. */
+/** 각색 upstream(AI 프로바이더) 장애·재시도 실패. 엔드포인트가 503 ai_unavailable 로 변환. */
 export class AdaptationUnavailableError extends Error {
   constructor(message: string) {
     super(message);
