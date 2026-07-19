@@ -19,9 +19,7 @@ async function hydrate(): Promise<SessionTokens | null> {
     SecureStore.getItemAsync(REFRESH_KEY),
   ]);
   cache =
-    access && refresh
-      ? { access_token: access, refresh_token: refresh }
-      : null;
+    access && refresh ? { access_token: access, refresh_token: refresh } : null;
   hydrated = true;
   return cache;
 }

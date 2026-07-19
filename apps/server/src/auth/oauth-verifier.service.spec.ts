@@ -25,7 +25,11 @@ describe("OAuthVerifierService", () => {
 
   it("google id_token 을 검증해 신원(sub·email·name)을 반환한다", async () => {
     jwtVerifyMock.mockResolvedValue({
-      payload: { sub: "google-sub-1", email: "kim@example.com", name: "김건규" },
+      payload: {
+        sub: "google-sub-1",
+        email: "kim@example.com",
+        name: "김건규",
+      },
     } as never);
 
     const service = makeService();

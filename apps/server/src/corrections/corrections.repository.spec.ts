@@ -127,7 +127,10 @@ describe("CorrectionsRepository", () => {
 
   describe("countCorrectionRequestsToday", () => {
     it("본인·오늘 이후 correction_requests 행을 센다", async () => {
-      const { from, builder, service } = makeSupabase({ count: 2, error: null });
+      const { from, builder, service } = makeSupabase({
+        count: 2,
+        error: null,
+      });
       const repo = new CorrectionsRepository(service);
 
       const result = await repo.countCorrectionRequestsToday(
