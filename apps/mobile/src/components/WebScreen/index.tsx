@@ -12,6 +12,7 @@ import { BackHandler, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { handleBridgeMessage } from "../../bridge/handleBridgeMessage";
+import { useWebFocusRefetch } from "../../bridge/useWebFocusRefetch";
 import { WEB_BG } from "../../config/env";
 import type { RootStackParamList } from "../../navigation/types";
 import { WebPane } from "../WebPane";
@@ -39,9 +40,7 @@ export function WebScreen({
   // 웹→네이티브 요청 처리: 스와이프 백 제스처 토글은 이 스크린에서 직접 적용하고,
   // 나머지(push/popScreen)는 공용 handleBridgeMessage에 위임한다.
   const onBridgeMessage = useCallback(
-    async (
-      message: WebToNativeRequest,
-    ): Promise<WebToNativeResponse> => {
+    async (message: WebToNativeRequest): Promise<WebToNativeResponse> => {
       if (message.type === "setSwipeBackEnabled") {
         navigation.setOptions({ gestureEnabled: message.payload.enabled });
         return { success: true };
@@ -50,6 +49,9 @@ export function WebScreen({
     },
     [navigation],
   );
+
+  // 이 상세 WebView 위에 다른 스크린이 쌓였다 pop돼 재노출되면 웹에 focus를 보내 refetch시킨다.
+  useWebFocusRefetch(() => postMessage({ message: { type: "focus" } }));
 
   // 안드로이드 하드웨어 백: 네이티브 스택을 바로 pop하면 웹 stack-link 여러 단계를 건너뛴다.
   // back을 웹으로 위임하고, 웹이 처리하지 못하거나(consumed:false) 응답이 없으면(폴백)

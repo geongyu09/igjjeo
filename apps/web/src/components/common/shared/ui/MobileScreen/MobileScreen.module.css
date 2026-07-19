@@ -18,6 +18,43 @@
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  /* 브라우저 기본 당김 새로고침·바운스가 자체 제스처와 겹치지 않도록 막는다 */
+  overscroll-behavior-y: contain;
+}
+
+/* 당김 새로고침 — 당긴 만큼 열리는 상단 슬롯 */
+.refreshIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--text-muted, currentColor);
+}
+
+.refreshIndicator[data-ready="true"],
+.refreshIndicator[data-refreshing="true"] {
+  color: var(--accent, currentColor);
+}
+
+.refreshIndicator[data-refreshing="true"] .refreshIcon {
+  animation: refresh-spin 0.8s linear infinite;
+}
+
+/* 손을 뗀 뒤 제자리로 돌아갈 때만 애니메이션 — 당기는 중엔 손가락을 즉시 따라가야 한다 */
+.refreshIndicator[data-settling="true"] {
+  transition: height 0.2s ease-out;
+}
+
+@keyframes refresh-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refreshIndicator[data-refreshing="true"] .refreshIcon {
+    animation-duration: 2s;
+  }
 }
 
 .screen[data-tone="dark"] {
