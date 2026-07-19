@@ -78,8 +78,7 @@ export class AuthRepository {
       throw new Error("create_account 가 행을 반환하지 않았습니다");
     }
 
-    // 신규 계정은 구독 언론사가 비어 있다(컬럼 기본값 '{}').
-    return { ...row, subscribed_outlets: [] };
+    return row;
   }
 
   /** (provider, subject) 로 연결된 프로필을 찾는다. 없으면 null(=신규 소셜 가입). */
@@ -90,7 +89,7 @@ export class AuthRepository {
     const { data, error } = await this.supabase.client
       .from("oauth_identities")
       .select(
-        "profiles(id, display_name, masked_name, avatar_url, onboarded, subscribed_outlets, created_at)",
+        "profiles(id, display_name, masked_name, avatar_url, onboarded, created_at)",
       )
       .eq("provider", provider)
       .eq("subject", subject)
@@ -105,7 +104,9 @@ export class AuthRepository {
   }
 
   /** 프로필(onboarded=false) + oauth_identities 를 원자 생성(RPC). 경합 시 OAuthIdentityExistsError. */
-  async createOAuthAccount(input: CreateOAuthAccountInput): Promise<ProfileRow> {
+  async createOAuthAccount(
+    input: CreateOAuthAccountInput,
+  ): Promise<ProfileRow> {
     const { data, error } = await this.supabase.client.rpc(
       "create_oauth_account",
       {
@@ -129,8 +130,7 @@ export class AuthRepository {
       throw new Error("create_oauth_account 가 행을 반환하지 않았습니다");
     }
 
-    // 신규 소셜 계정도 구독 언론사가 비어 있다(컬럼 기본값 '{}').
-    return { ...row, subscribed_outlets: [] };
+    return row;
   }
 
   async findCredentialByEmail(email: string): Promise<CredentialRow | null> {

@@ -23,7 +23,6 @@ export type Database = {
           masked_name: string;
           avatar_url: string | null;
           onboarded: boolean;
-          subscribed_outlets: string[];
           created_at: string;
         };
         Insert: {
@@ -32,7 +31,6 @@ export type Database = {
           masked_name: string;
           avatar_url?: string | null;
           onboarded?: boolean;
-          subscribed_outlets?: string[];
           created_at?: string;
         };
         Update: {
@@ -41,7 +39,6 @@ export type Database = {
           masked_name?: string;
           avatar_url?: string | null;
           onboarded?: boolean;
-          subscribed_outlets?: string[];
           created_at?: string;
         };
         Relationships: [];

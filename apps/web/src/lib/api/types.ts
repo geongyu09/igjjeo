@@ -37,8 +37,6 @@ export interface Profile {
   avatar_url: string | null;
   /** 온보딩(이름 등 기본 정보 입력) 완료 여부. 소셜 신규 가입만 false 로 시작한다. */
   onboarded: boolean;
-  /** 구독 중인 언론사 키 목록(프로필에 공개되는 취향). */
-  subscribed_outlets: OutletKey[];
   created_at: string;
 }
 
