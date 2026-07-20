@@ -97,7 +97,7 @@ export class ArticlesRepository {
     return (data as Json | null) ?? null;
   }
 
-  /** 원 기사 기준 정정 연쇄(시간순). */
+  /** 정정 연쇄 전체(최초 기사 → 최신 정정, 시간순). 인자 기사도 포함된다. */
   async getCorrectionChain(articleId: string): Promise<ArticleRow[]> {
     const { data, error } = await this.supabase.client.rpc(
       "article_correction_chain",

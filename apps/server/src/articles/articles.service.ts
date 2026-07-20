@@ -75,7 +75,10 @@ export class ArticlesService {
     return detail;
   }
 
-  /** 원 기사 기준 정정 연쇄(선택 엔드포인트). */
+  /**
+   * 정정 연쇄 전체(선택 엔드포인트). 어느 기사에서 물어도 최초 기사부터
+   * 시간순 한 줄기로 돌려준다 — 정정 기사에서 열어도 사건의 시작이 보인다.
+   */
   async listCorrections(
     userId: string,
     articleId: string,

@@ -44,7 +44,7 @@ export class ArticlesController {
     return this.articles.getArticle(user.id, articleId);
   }
 
-  /** GET /v1/articles/:articleId/corrections — 원 기사 기준 정정 연쇄. */
+  /** GET /v1/articles/:articleId/corrections — 최초 기사부터의 정정 연쇄 전체. */
   @Get("articles/:articleId/corrections")
   corrections(
     @CurrentUser() user: AuthUser,
