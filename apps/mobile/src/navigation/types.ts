@@ -16,6 +16,6 @@ export type TabParamList = {
   Feed: undefined;
   Search: undefined;
   Report: undefined;
-  Notifications: undefined;
+  Room: undefined;
   Profile: undefined;
 };

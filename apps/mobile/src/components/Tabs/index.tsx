@@ -9,12 +9,13 @@ import { tabIcon } from "./tabIcon";
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
-// 웹 라우트를 여는 탭 화면 — 피드·프로필만 실제 WebView를 렌더한다.
+// 웹 라우트를 여는 탭 화면 — 피드·뉴스룸·프로필이 실제 WebView를 렌더한다.
 const FeedScreen = createWebTabScreen("/");
+const RoomScreen = createWebTabScreen("/room");
 const ProfileScreen = createWebTabScreen("/profile");
 
-// 하단 탭 바. 5슬롯 — 피드(/)·검색(비활성)·제보(모달)·알림(비활성)·프로필(/profile).
-// 검색·알림은 tabPress를 preventDefault로 막아 둔 자리 표시, 제보는 탭 전환 대신
+// 하단 탭 바. 5슬롯 — 피드(/)·검색(비활성)·제보(모달)·뉴스룸(/room)·프로필(/profile).
+// 검색은 tabPress를 preventDefault로 막아 둔 자리 표시, 제보는 탭 전환 대신
 // 부모 스택의 ReportModal을 연다.
 export function TabsScreen() {
   return (
@@ -55,14 +56,9 @@ export function TabsScreen() {
         })}
       />
       <Tab.Screen
-        name="Notifications"
-        component={PlaceholderScreen}
-        options={{
-          title: "알림",
-          tabBarIcon: tabIcon("notifications-outline"),
-          tabBarItemStyle: styles.inertTab,
-        }}
-        listeners={{ tabPress: (event) => event.preventDefault() }}
+        name="Room"
+        component={RoomScreen}
+        options={{ title: "뉴스룸", tabBarIcon: tabIcon("people-outline") }}
       />
       <Tab.Screen
         name="Profile"
