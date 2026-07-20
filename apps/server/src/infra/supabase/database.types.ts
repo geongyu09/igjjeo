@@ -174,6 +174,7 @@ export type Database = {
           id: string;
           group_id: string;
           reporter_id: string;
+          reporter_masked_name: string;
           raw_text: string;
           photo_url: string | null;
           status: string;
@@ -186,6 +187,8 @@ export type Database = {
           id?: string;
           group_id: string;
           reporter_id: string;
+          // 제보 시점 스냅샷 — 미지정 시 트리거가 profiles.masked_name 으로 채운다.
+          reporter_masked_name?: string | null;
           raw_text: string;
           photo_url?: string | null;
           status?: string;
@@ -198,6 +201,7 @@ export type Database = {
           id?: string;
           group_id?: string;
           reporter_id?: string;
+          reporter_masked_name?: string | null;
           raw_text?: string;
           photo_url?: string | null;
           status?: string;
