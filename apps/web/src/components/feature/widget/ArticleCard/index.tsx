@@ -24,7 +24,7 @@ export interface ArticleCardProps {
   reporterLabel?: string;
   /** 상대 시각 라벨 ("방금", "1시간") — list·compact 메타에 노출 */
   timeLabel?: string;
-  /** hero 상단 배지 슬롯 */
+  /** 상단 배지 슬롯 — hero는 본문 맨 위, large·compact는 언론사 배지 옆 */
   badge?: ReactNode;
   onClick?: () => void;
   className?: string;
@@ -138,7 +138,10 @@ export function ArticleCard({
         data-variant="compact"
         {...interactiveProps}
       >
-        <PublisherBadge outlet={outlet} variant="text" />
+        <div className={styles.badgeRow}>
+          <PublisherBadge outlet={outlet} variant="text" />
+          {badge}
+        </div>
         <h3 className={styles.listHeadline}>{headline}</h3>
         <div className={styles.monoMeta}>
           👀 {viewCount ?? 0} · 댓글 {commentCount ?? 0}
@@ -154,7 +157,10 @@ export function ArticleCard({
       data-variant="large"
       {...interactiveProps}
     >
-      <PublisherBadge outlet={outlet} />
+      <div className={styles.badgeRow}>
+        <PublisherBadge outlet={outlet} />
+        {badge}
+      </div>
       <h3 className={styles.largeHeadline}>{headline}</h3>
       {!hidePhoto && <Photo imageUrl={imageUrl} headline={headline} />}
       {excerpt && <p className={styles.excerpt}>{excerpt}</p>}

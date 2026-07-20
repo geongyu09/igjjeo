@@ -66,6 +66,27 @@ describe("ArticleCard", () => {
     expect(screen.getByText("오늘 가장 뜨거운")).toBeInTheDocument();
   });
 
+  it("large·compact도 언론사 배지 옆에 badge 슬롯을 렌더링한다", () => {
+    const { rerender } = render(
+      <ArticleCard
+        outlet="shock"
+        headline="제목"
+        badge={<span>최신 뉴스</span>}
+      />,
+    );
+    expect(screen.getByText("최신 뉴스")).toBeInTheDocument();
+
+    rerender(
+      <ArticleCard
+        variant="compact"
+        outlet="shock"
+        headline="제목"
+        badge={<span>최신 뉴스</span>}
+      />,
+    );
+    expect(screen.getByText("최신 뉴스")).toBeInTheDocument();
+  });
+
   it("list는 시간 라벨을 메타에 보여준다", () => {
     render(
       <ArticleCard

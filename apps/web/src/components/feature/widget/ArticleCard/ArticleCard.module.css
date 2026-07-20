@@ -38,6 +38,13 @@
   padding: 13px 15px;
 }
 
+.badgeRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
 /* ── large ── */
 
 .largeHeadline {
