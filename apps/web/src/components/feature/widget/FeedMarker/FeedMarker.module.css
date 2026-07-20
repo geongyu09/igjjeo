@@ -1,0 +1,22 @@
+.marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.marker[data-variant="hot"] {
+  background: var(--accent);
+  color: var(--on-action);
+}
+
+/* 톱기사 마크와 같은 형태를 유지하되 hot(붉은색)과 색으로도 구분한다 */
+.marker[data-variant="fresh"] {
+  background: var(--success-weak);
+  color: var(--success);
+}
