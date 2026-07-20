@@ -30,6 +30,14 @@ vi.mock("@/hooks/features/query/mutations/useLogoutMutation", () => ({
   }),
 }));
 
+vi.mock("@/hooks/features/query/mutations/useUpdateProfileMutation", () => ({
+  useUpdateProfileMutation: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+  }),
+}));
+
 vi.mock("@/hooks/features/query/querys/useReportQuotaQuery", () => ({
   useReportQuotaQuery: () => ({ data: quota }),
 }));

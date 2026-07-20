@@ -1,9 +1,9 @@
 "use client";
 
 import { LogOut, Megaphone } from "lucide-react";
-import { Avatar } from "@/components/common/shared/ui/Avatar";
 import { Button } from "@/components/common/shared/ui/Button";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
+import { ProfileIdentitySection } from "@/components/feature/pages/profile/ProfileIdentitySection";
 import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
 import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { useSession } from "@/components/common/shared/SessionProvider";
@@ -26,12 +26,7 @@ export default function ProfilePage() {
   return (
     <MobileScreen header={<ScreenHeader title="프로필" leading="none" />}>
       <div className={styles.body}>
-        <div className={styles.identity}>
-          <Avatar name={me.display_name} size="lg" emphasized />
-          <div>
-            <div className={styles.name}>{me.display_name}</div>
-          </div>
-        </div>
+        <ProfileIdentitySection displayName={me.display_name} />
 
         {activeGroupId ? (
           <QueryBoundary>

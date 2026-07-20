@@ -63,18 +63,6 @@
   color: var(--accent-ink);
 }
 
-.identity {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.name {
-  font-size: 19px;
-  font-weight: 800;
-  color: var(--ink);
-}
-
 .badge {
   display: inline-flex;
   align-items: center;
