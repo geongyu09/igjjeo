@@ -1,6 +1,12 @@
 import { AxiosError, AxiosHeaders } from "axios";
 import { describe, expect, it } from "vitest";
-import { ApiError, isApiError, isAuthError, normalizeApiError } from "./errors";
+import {
+  ApiError,
+  isApiError,
+  isAuthError,
+  isConnectionError,
+  normalizeApiError,
+} from "./errors";
 
 function axiosErrorWithResponse(status: number, data: unknown): AxiosError {
   const err = new AxiosError("Request failed");
@@ -49,6 +55,24 @@ describe("normalizeApiError", () => {
     expect(err.code).toBe("network_error");
   });
 
+  it("응답 대기 중 타임아웃이면 status 0 · timeout", () => {
+    const timeoutErr = new AxiosError(
+      "timeout of 10000ms exceeded",
+      AxiosError.ECONNABORTED,
+    );
+    timeoutErr.request = {};
+    const err = normalizeApiError(timeoutErr);
+
+    expect(err.status).toBe(0);
+    expect(err.code).toBe("timeout");
+  });
+
+  it("ETIMEDOUT 도 timeout 으로 본다", () => {
+    const timeoutErr = new AxiosError("timeout", AxiosError.ETIMEDOUT);
+    timeoutErr.request = {};
+    expect(normalizeApiError(timeoutErr).code).toBe("timeout");
+  });
+
   it("이미 ApiError면 그대로 반환한다", () => {
     const original = new ApiError({
       status: 409,
@@ -72,6 +96,30 @@ describe("isApiError", () => {
     ).toBe(true);
     expect(isApiError(new Error("nope"))).toBe(false);
     expect(isApiError(null)).toBe(false);
+  });
+});
+
+describe("isConnectionError", () => {
+  it("서버에 닿지 못한 오류(network_error·timeout)면 true", () => {
+    expect(
+      isConnectionError(
+        new ApiError({ status: 0, code: "network_error", message: "x" }),
+      ),
+    ).toBe(true);
+    expect(
+      isConnectionError(
+        new ApiError({ status: 0, code: "timeout", message: "x" }),
+      ),
+    ).toBe(true);
+  });
+
+  it("서버가 응답한 오류면 false", () => {
+    expect(
+      isConnectionError(
+        new ApiError({ status: 500, code: "internal_error", message: "x" }),
+      ),
+    ).toBe(false);
+    expect(isConnectionError(new Error("nope"))).toBe(false);
   });
 });
 

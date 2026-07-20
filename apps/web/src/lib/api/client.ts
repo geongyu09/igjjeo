@@ -21,12 +21,20 @@ import { tokenStore, type TokenPair } from "./tokenStore";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000/v1";
 
+/**
+ * 응답 제한 시간. 타임아웃이 없으면 닿지 않는 주소(잘못된 LAN IP·서버 미기동)로 보낸 요청이
+ * OS TCP 타임아웃(수십 초)까지 매달려 화면이 무한 로딩으로 보인다. 실패를 빨리 드러내
+ * 오류 화면으로 넘긴다. AI 각색처럼 오래 걸리는 호출은 개별 요청에서 값을 올려 쓴다.
+ */
+export const API_TIMEOUT_MS = 10_000;
+
 export function getApiBaseUrl(): string {
   return API_BASE_URL;
 }
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  timeout: API_TIMEOUT_MS,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -67,7 +75,10 @@ async function refreshTokens(): Promise<TokenPair> {
     .post<TokenPair>(
       `${API_BASE_URL}/auth/token/refresh`,
       { refresh_token },
-      { headers: { "Content-Type": "application/json" } },
+      {
+        timeout: API_TIMEOUT_MS,
+        headers: { "Content-Type": "application/json" },
+      },
     )
     .then((res) => {
       const pair: TokenPair = {

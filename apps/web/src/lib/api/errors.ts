@@ -18,6 +18,7 @@ export type ApiErrorCode =
   | "internal_error"
   | "ai_unavailable"
   | "network_error"
+  | "timeout"
   | (string & {});
 
 interface ApiErrorInit {
@@ -53,6 +54,18 @@ export function isAuthError(value: unknown): boolean {
   return (
     isApiError(value) &&
     (value.code === "unauthorized" || value.code === "token_expired")
+  );
+}
+
+/**
+ * 서버에 아예 닿지 못한 오류인지 판별한다(응답 없음·타임아웃).
+ * 서버가 응답한 오류와 달리 원인이 대개 클라이언트 쪽 연결 설정(잘못된 API 주소·서버 미기동·
+ * 다른 네트워크)이므로, 호출부는 이 경우에만 개발자용 진단 정보를 덧붙인다.
+ */
+export function isConnectionError(value: unknown): boolean {
+  return (
+    isApiError(value) &&
+    (value.code === "network_error" || value.code === "timeout")
   );
 }
 
@@ -100,6 +113,15 @@ export function normalizeApiError(error: unknown): ApiError {
         code: body?.code ?? codeForStatus(response.status),
         message: body?.message ?? error.message,
         details: body?.details,
+      });
+    }
+
+    // 제한 시간 안에 응답이 없음 → 타임아웃 (연결은 됐지만 서버가 느리거나, 주소가 죽어 있음)
+    if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
+      return new ApiError({
+        status: 0,
+        code: "timeout",
+        message: error.message || "서버 응답이 제한 시간을 넘었습니다",
       });
     }
 

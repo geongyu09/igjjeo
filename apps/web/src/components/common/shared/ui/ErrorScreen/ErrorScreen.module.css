@@ -2,7 +2,18 @@
   display: flex;
   flex: 1;
   min-height: 240px;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--sp-5);
   padding: var(--sp-6);
+}
+
+/* 개발 빌드 전용 진단 — 본문보다 눈에 덜 띄게, 주소가 길어도 줄바꿈되게. */
+.diagnostics {
+  max-width: 32ch;
+  margin: 0;
+  color: var(--text-3);
+  text-align: center;
+  overflow-wrap: anywhere;
 }

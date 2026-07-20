@@ -3,13 +3,16 @@
 import { CloudOff, RotateCw } from "lucide-react";
 import { Button } from "@/components/common/shared/ui/Button";
 import { EmptyState } from "@/components/common/shared/ui/EmptyState";
-import { isApiError } from "@/lib/api/errors";
+import { getApiBaseUrl } from "@/lib/api/client";
+import { isApiError, isConnectionError } from "@/lib/api/errors";
 import styles from "./ErrorScreen.module.css";
 
 export interface ErrorScreenProps {
   error: unknown;
   /** 재시도 핸들러 (ErrorBoundary의 reset 등) */
   onRetry?: () => void;
+  /** 연결 실패 시 개발자용 진단(요청 대상 주소) 노출 여부. 기본값은 개발 빌드에서만 true. */
+  diagnostics?: boolean;
   className?: string;
 }
 
@@ -41,6 +44,11 @@ function messageForError(error: unknown): {
           title: "연결이 불안정해요",
           description: "네트워크 상태를 확인하고 다시 시도해 주세요.",
         };
+      case "timeout":
+        return {
+          title: "서버가 응답하지 않아요",
+          description: "잠시 후 다시 시도해 주세요.",
+        };
       case "rate_limited":
         return {
           title: "잠시 후 다시 시도해 주세요",
@@ -55,8 +63,17 @@ function messageForError(error: unknown): {
 }
 
 /** ErrorBoundary fallback — 오류 안내 + 재시도 버튼. */
-export function ErrorScreen({ error, onRetry, className }: ErrorScreenProps) {
+export function ErrorScreen({
+  error,
+  onRetry,
+  diagnostics = process.env.NODE_ENV !== "production",
+  className,
+}: ErrorScreenProps) {
   const { title, description } = messageForError(error);
+  // 서버에 닿지 못했을 때만 노출한다. 원인이 대개 API 주소 설정(개발 머신 LAN IP 변경 등)이라
+  // 어디로 붙으려다 실패했는지 보여주면 개발자가 바로 판단할 수 있다.
+  const showDiagnostics = diagnostics && isConnectionError(error);
+
   return (
     <div className={[styles.wrap, className].filter(Boolean).join(" ")}>
       <EmptyState
@@ -72,6 +89,16 @@ export function ErrorScreen({ error, onRetry, className }: ErrorScreenProps) {
           )
         }
       />
+      {showDiagnostics && (
+        <p
+          className={`t-mono ${styles.diagnostics}`}
+          data-testid="error-diagnostics"
+        >
+          API {getApiBaseUrl()} 에 연결하지 못했습니다.
+          <br />
+          서버 기동 여부와 API 주소(NEXT_PUBLIC_API_BASE_URL)를 확인하세요.
+        </p>
+      )}
     </div>
   );
 }
