@@ -20,12 +20,17 @@ android/
 .env
 .env.*
 !.env.example
+!.env.production.example
 
 # claude
 .claude/
 CLAUDE.md
 
+# context
+context/
+
 # misc
 .DS_Store
 *.log
 *.tsbuildinfo
+.vercel

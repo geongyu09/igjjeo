@@ -29,6 +29,10 @@ export interface AppEnv {
   GOOGLE_OAUTH_CLIENT_ID: string;
   /** Apple id_token 검증용 audience — iOS 앱 번들 ID(Sign in with Apple). */
   APPLE_OAUTH_CLIENT_ID: string;
+  /** CORS 허용 오리진(쉼표 구분). 배포 환경에서는 반드시 채운다. */
+  CORS_ALLOWED_ORIGINS: string;
+  /** 실행 환경. production 이 아니면 localhost·사설 IP 오리진을 허용한다. */
+  NODE_ENV: string;
 }
 
 const REQUIRED_KEYS = [
@@ -60,11 +64,11 @@ export function validateEnv(raw: Record<string, unknown>): AppEnv {
     );
   }
 
-  const port = Number(raw.API_PORT ?? 4000);
+  // Cloud Run 같은 PaaS 는 리스닝 포트를 PORT 로 주입하므로 그쪽을 우선한다.
+  const rawPort = raw.PORT ?? raw.API_PORT ?? 4000;
+  const port = Number(rawPort);
   if (!Number.isInteger(port) || port <= 0) {
-    throw new Error(
-      `API_PORT 가 올바른 정수가 아닙니다: ${String(raw.API_PORT)}`,
-    );
+    throw new Error(`API_PORT 가 올바른 정수가 아닙니다: ${String(rawPort)}`);
   }
 
   return {
@@ -78,5 +82,7 @@ export function validateEnv(raw: Record<string, unknown>): AppEnv {
     JWT_SECRET: String(raw.JWT_SECRET),
     GOOGLE_OAUTH_CLIENT_ID: String(raw.GOOGLE_OAUTH_CLIENT_ID),
     APPLE_OAUTH_CLIENT_ID: String(raw.APPLE_OAUTH_CLIENT_ID),
+    CORS_ALLOWED_ORIGINS: String(raw.CORS_ALLOWED_ORIGINS ?? ""),
+    NODE_ENV: String(raw.NODE_ENV ?? "development"),
   };
 }

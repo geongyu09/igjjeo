@@ -1,0 +1,26 @@
+# Cloud Build 로 업로드할 소스에서 제외.
+# 이 파일이 있으면 .gitignore 는 참조되지 않으므로 필요한 제외를 여기 모두 적는다.
+# 루트 전용 항목은 앞에 / 를 붙인다 — gitignore 문법에서 슬래시 없는 패턴은
+# 모든 디렉토리 레벨에 매칭되어 apps/server/src/infra/supabase 까지 지워버린다.
+.git
+.gitignore
+node_modules
+**/node_modules
+**/dist
+**/.next
+**/.expo
+/ios
+/android
+# 네이티브 산출물 — 서버 빌드와 무관하고 업로드만 커진다.
+apps/mobile/ios
+apps/mobile/android
+/.claude
+/context
+/supabase
+.env
+**/.env
+**/.env.*
+!**/.env.example
+*.log
+.DS_Store
+**/*.tsbuildinfo

@@ -49,6 +49,43 @@ describe("validateEnv", () => {
     expect(env.AI_MODEL).toBe("");
   });
 
+  it("PORT 가 있으면 API_PORT 보다 우선한다", () => {
+    // Cloud Run 등 PaaS 는 리스닝 포트를 PORT 로 주입한다.
+    const env = validateEnv({
+      ...base,
+      ANTHROPIC_API_KEY: "sk-ant",
+      API_PORT: "4000",
+      PORT: "8080",
+    });
+
+    expect(env.API_PORT).toBe(8080);
+  });
+
+  it("PORT 도 API_PORT 도 없으면 4000 이다", () => {
+    const env = validateEnv({ ...base, ANTHROPIC_API_KEY: "sk-ant" });
+
+    expect(env.API_PORT).toBe(4000);
+  });
+
+  it("CORS_ALLOWED_ORIGINS 를 생략하면 빈 문자열이다", () => {
+    const env = validateEnv({ ...base, ANTHROPIC_API_KEY: "sk-ant" });
+
+    expect(env.CORS_ALLOWED_ORIGINS).toBe("");
+    expect(env.NODE_ENV).toBe("development");
+  });
+
+  it("CORS_ALLOWED_ORIGINS 와 NODE_ENV 를 그대로 싣는다", () => {
+    const env = validateEnv({
+      ...base,
+      ANTHROPIC_API_KEY: "sk-ant",
+      CORS_ALLOWED_ORIGINS: "https://igjjeo-web.vercel.app",
+      NODE_ENV: "production",
+    });
+
+    expect(env.CORS_ALLOWED_ORIGINS).toBe("https://igjjeo-web.vercel.app");
+    expect(env.NODE_ENV).toBe("production");
+  });
+
   it("나머지 필수 키 누락은 그대로 실패한다", () => {
     expect(() =>
       validateEnv({ ...base, SUPABASE_URL: "", ANTHROPIC_API_KEY: "sk-ant" }),
