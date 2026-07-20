@@ -56,6 +56,7 @@ function makeService() {
       .fn()
       .mockResolvedValue([articleRow("a3", "r2"), articleRow("a4", "r2")]),
     countCorrectionRequestsToday: jest.fn().mockResolvedValue(0),
+    findReporterId: jest.fn().mockResolvedValue("u1"),
   } as unknown as jest.Mocked<CorrectionsRepository>;
   // 기사 접근 인가는 QueryBus, AI 각색은 CommandBus 로 요청한다(모듈 간 통신은 CQRS).
   const queryBus = {
@@ -74,16 +75,65 @@ function makeService() {
 
 describe("CorrectionsService", () => {
   describe("requestDeletion", () => {
-    it("멤버십 검사 후 소프트 다운한다", async () => {
+    it("기사를 올린 제보자 본인이면 멤버십 검사 후 소프트 다운한다", async () => {
       const { service, corrections, queryBus } = makeService();
 
       const result = await service.requestDeletion("u1", "a1");
 
       expect(queryBus.execute).toHaveBeenCalledWith(
-        new GetArticleAccessQuery("u1", "a1"),
+        new GetArticleAccessQuery("u1", "a1", true),
       );
+      expect(corrections.findReporterId).toHaveBeenCalledWith("r1");
       expect(corrections.requestDeletion).toHaveBeenCalledWith("a1", "u1");
       expect(result).toEqual({ article_id: "a1", is_active: false });
+    });
+
+    it("제보자가 아니면 403 으로 막고 기사를 내리지 않는다", async () => {
+      const { service, corrections } = makeService();
+      (corrections.findReporterId as jest.Mock).mockResolvedValue("other");
+
+      await expect(service.requestDeletion("u1", "a1")).rejects.toMatchObject({
+        status: 403,
+      });
+
+      expect(corrections.requestDeletion).not.toHaveBeenCalled();
+    });
+
+    it("제보를 찾을 수 없으면 403 으로 막는다", async () => {
+      const { service, corrections } = makeService();
+      (corrections.findReporterId as jest.Mock).mockResolvedValue(null);
+
+      await expect(service.requestDeletion("u1", "a1")).rejects.toMatchObject({
+        status: 403,
+      });
+
+      expect(corrections.requestDeletion).not.toHaveBeenCalled();
+    });
+
+    // 정정 기사는 원 기사와 report_id 를 공유하므로 제보자로 소유자를 따지면
+    // 반박당한 원 제보자가 남의 반박을 내릴 수 있게 된다. 아예 내리지 못하게 막는다.
+    it("정정 기사는 원 제보자라도 내릴 수 없다", async () => {
+      const { service, corrections, queryBus } = makeService();
+      (queryBus.execute as jest.Mock).mockResolvedValue({
+        ...articleAccess,
+        is_correction: true,
+      });
+
+      await expect(service.requestDeletion("u1", "a1")).rejects.toMatchObject({
+        status: 403,
+      });
+
+      expect(corrections.requestDeletion).not.toHaveBeenCalled();
+    });
+
+    it("이미 내려간 기사는 다시 내리지 않는다", async () => {
+      const { service, queryBus } = makeService();
+
+      await service.requestDeletion("u1", "a1").catch(() => undefined);
+
+      expect(queryBus.execute).toHaveBeenCalledWith(
+        new GetArticleAccessQuery("u1", "a1", true),
+      );
     });
   });
 
@@ -126,6 +176,41 @@ describe("CorrectionsService", () => {
       );
 
       await expect(service.requestDeletion("u1", "a1")).resolves.toBeDefined();
+    });
+  });
+
+  // 각색이 실패했는데 요청 행이 남으면, 한 번도 성공 못 한 사람이 하루 한도를 다 잃는다.
+  describe("각색 실패", () => {
+    it("각색이 실패하면 정정 요청을 기록하지 않는다", async () => {
+      const { service, corrections, commandBus } = makeService();
+      (commandBus.execute as jest.Mock).mockRejectedValue(
+        new Error("ai_unavailable"),
+      );
+
+      await expect(
+        service.requestCorrection("u1", "a1", {
+          isSubject: true,
+          correctionText: "사실 9시 58분 도착",
+        }),
+      ).rejects.toThrow();
+
+      expect(corrections.createCorrectionRequest).not.toHaveBeenCalled();
+    });
+
+    it("제3자 정정도 각색이 실패하면 요청을 기록하지 않는다", async () => {
+      const { service, corrections, commandBus } = makeService();
+      (commandBus.execute as jest.Mock).mockRejectedValue(
+        new Error("ai_unavailable"),
+      );
+
+      await expect(
+        service.requestCorrection("u1", "a1", {
+          isSubject: false,
+          correctionText: "그건 사실이 아니다",
+        }),
+      ).rejects.toThrow();
+
+      expect(corrections.createCorrectionRequest).not.toHaveBeenCalled();
     });
   });
 

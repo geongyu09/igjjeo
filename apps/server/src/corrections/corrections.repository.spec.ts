@@ -14,6 +14,7 @@ function makeSupabase(result: {
     eq: jest.fn(() => builder),
     gte: jest.fn(() => builder),
     single: jest.fn().mockResolvedValue(result),
+    maybeSingle: jest.fn().mockResolvedValue(result),
     then: (resolve: (value: unknown) => unknown) => resolve(result),
   };
   const from = jest.fn(() => builder);
@@ -41,6 +42,29 @@ describe("CorrectionsRepository", () => {
       p_requested_by: "u1",
     });
     expect(result).toEqual({ article_id: "a1", is_active: false });
+  });
+
+  describe("findReporterId", () => {
+    it("제보의 reporter_id 를 되짚는다", async () => {
+      const { from, builder, service } = makeSupabase({
+        data: { reporter_id: "u1" },
+        error: null,
+      });
+      const repo = new CorrectionsRepository(service);
+
+      const result = await repo.findReporterId("r1");
+
+      expect(from).toHaveBeenCalledWith("reports");
+      expect(builder.eq).toHaveBeenCalledWith("id", "r1");
+      expect(result).toBe("u1");
+    });
+
+    it("제보가 없으면 null 을 반환한다", async () => {
+      const { service } = makeSupabase({ data: null, error: null });
+      const repo = new CorrectionsRepository(service);
+
+      await expect(repo.findReporterId("r1")).resolves.toBeNull();
+    });
   });
 
   it("createCorrectionRequest 는 요청을 넣고 id 를 반환한다", async () => {

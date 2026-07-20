@@ -24,6 +24,24 @@ export class CorrectionsRepository {
   }
 
   /**
+   * 기사를 올린 제보자 id. 삭제 요청 소유권 검사용 — 기사에는 소유자 컬럼이
+   * 없고 원 제보(reports.reporter_id)에만 있으므로 report_id 로 되짚는다.
+   */
+  async findReporterId(reportId: string): Promise<string | null> {
+    const { data, error } = await this.supabase.client
+      .from("reports")
+      .select("reporter_id")
+      .eq("id", reportId)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return (data as { reporter_id: string } | null)?.reporter_id ?? null;
+  }
+
+  /**
    * 일간 정정 한도 카운트 — 본인이 낸 정정 요청(당사자·제3자 모두), `sinceIso`
    * (KST 오늘 시작) 이후 행 수. data-model.md "하루 정정 한도" 참조.
    */

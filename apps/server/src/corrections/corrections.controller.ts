@@ -22,7 +22,7 @@ import { CorrectionRequestDto } from "./dto/correction-request.dto";
 export class CorrectionsController {
   constructor(private readonly corrections: CorrectionsService) {}
 
-  /** POST /v1/articles/:articleId/deletion-request — 당사자 삭제(이유 불요, 즉시). */
+  /** POST /v1/articles/:articleId/deletion-request — 올린 사람의 기사 내리기(이유 불요, 즉시). */
   @Post("deletion-request")
   @HttpCode(200)
   requestDeletion(
