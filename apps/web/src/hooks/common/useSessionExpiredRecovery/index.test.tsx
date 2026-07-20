@@ -1,30 +1,18 @@
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { request, cacheClear, tokenClear, activeClear, state } = vi.hoisted(
-  () => ({
-    request: vi.fn(),
-    cacheClear: vi.fn(),
-    tokenClear: vi.fn(),
-    activeClear: vi.fn(),
-    state: { isNativeShell: false },
-  }),
-);
-
-vi.mock("@geongyu/react-native-bridge/web", () => ({
-  useBridge: () => ({ request }),
+const { cacheClear, tokenRevoke, activeClear } = vi.hoisted(() => ({
+  cacheClear: vi.fn(),
+  tokenRevoke: vi.fn(),
+  activeClear: vi.fn(),
 }));
 
 vi.mock("@tanstack/react-query", () => ({
   useQueryClient: () => ({ clear: cacheClear }),
 }));
 
-vi.mock("@/hooks/common/useIsNativeShell", () => ({
-  useIsNativeShell: () => state.isNativeShell,
-}));
-
 vi.mock("@/lib/api/tokenStore", () => ({
-  tokenStore: { clear: tokenClear },
+  tokenStore: { revoke: tokenRevoke },
 }));
 
 vi.mock("@/lib/session/activeGroupStore", () => ({
@@ -35,16 +23,14 @@ import { useSessionExpiredRecovery } from ".";
 
 describe("useSessionExpiredRecovery", () => {
   beforeEach(() => {
-    request.mockClear();
     cacheClear.mockClear();
-    tokenClear.mockClear();
+    tokenRevoke.mockClear();
     activeClear.mockClear();
-    state.isNativeShell = false;
   });
 
   it("마운트만으로는 세션을 비우지 않는다", () => {
     renderHook(() => useSessionExpiredRecovery());
-    expect(tokenClear).not.toHaveBeenCalled();
+    expect(tokenRevoke).not.toHaveBeenCalled();
     expect(activeClear).not.toHaveBeenCalled();
     expect(cacheClear).not.toHaveBeenCalled();
   });
@@ -52,23 +38,16 @@ describe("useSessionExpiredRecovery", () => {
   it("반환한 함수를 호출하면 로컬 세션·활성 방·쿼리 캐시를 비운다", () => {
     const { result } = renderHook(() => useSessionExpiredRecovery());
     result.current();
-    expect(tokenClear).toHaveBeenCalledTimes(1);
+    expect(tokenRevoke).toHaveBeenCalledTimes(1);
     expect(activeClear).toHaveBeenCalledTimes(1);
     expect(cacheClear).toHaveBeenCalledTimes(1);
   });
 
-  it("네이티브 셸이면 호출 시 브리지로 clearSession을 요청해 로그인 스크린으로 되돌린다", () => {
-    state.isNativeShell = true;
+  // clear가 아니라 revoke — 폐기 표시가 있어야 네이티브 세션까지 지워지고
+  // (useSyncNativeSessionRevoke) 게이트가 같은 죽은 토큰을 다시 복원하지 않는다.
+  it("clear가 아니라 revoke로 폐기해 네이티브 전파·복원 차단이 걸리게 한다", () => {
     const { result } = renderHook(() => useSessionExpiredRecovery());
     result.current();
-    expect(request).toHaveBeenCalledWith({
-      requestMessage: { type: "clearSession" },
-    });
-  });
-
-  it("브라우저(네이티브 셸 아님)면 clearSession을 요청하지 않는다", () => {
-    const { result } = renderHook(() => useSessionExpiredRecovery());
-    result.current();
-    expect(request).not.toHaveBeenCalled();
+    expect(tokenRevoke).toHaveBeenCalledTimes(1);
   });
 });
