@@ -121,8 +121,10 @@ apiClient.interceptors.response.use(
         config.headers.set("Authorization", `Bearer ${access_token}`);
         return apiClient(config);
       } catch (refreshError) {
-        // 갱신 실패 → 세션 폐기하고 원 오류 계열로 reject
-        tokenStore.clear();
+        // 갱신 실패 → 세션 폐기하고 원 오류 계열로 reject.
+        // clear가 아니라 revoke — 세션 원천인 네이티브도 같은 죽은 토큰을 들고 있어, 표시를
+        // 남기지 않으면 게이트가 그것을 다시 복원해 401 루프에 빠진다(useSyncNativeSessionRevoke).
+        tokenStore.revoke();
         return Promise.reject(
           isApiError(refreshError)
             ? refreshError
