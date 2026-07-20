@@ -5,7 +5,7 @@ import type {
   WebToNativeRequest,
   WebToNativeResponse,
 } from "@igjjeo/bridge-contract";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useStackLinkBack } from "stack-link";
 import { useIsNativeShell } from "@/hooks/common/useIsNativeShell";
 
@@ -25,14 +25,22 @@ export function useSyncSwipeBackGesture() {
   const isNativeShell = useIsNativeShell();
   const { request } = useBridge<WebToNativeRequest, WebToNativeResponse>();
 
+  // useBridge 의 request 는 렌더마다 새 함수 identity 라, effect 의존성에 넣으면 canGoBack 이
+  // 그대로여도 매 렌더 setSwipeBackEnabled 를 재전송한다. 최신 request 만 ref 로 참조하고
+  // 실제 값이 바뀌는 canGoBack/isNativeShell 에만 의존시킨다.
+  const requestRef = useRef(request);
+  useEffect(() => {
+    requestRef.current = request;
+  });
+
   useEffect(() => {
     if (!isNativeShell) return;
     // 응답이 필요 없는 요청 — responseCallback을 넘기지 않아 RWindow 적체를 피한다.
-    request({
+    requestRef.current({
       requestMessage: {
         type: "setSwipeBackEnabled",
         payload: { enabled: !canGoBack },
       },
     });
-  }, [canGoBack, isNativeShell, request]);
+  }, [canGoBack, isNativeShell]);
 }

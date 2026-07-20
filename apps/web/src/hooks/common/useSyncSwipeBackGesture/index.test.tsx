@@ -10,8 +10,12 @@ vi.mock("stack-link", () => ({
   useStackLinkBack: () => ({ goBack: vi.fn(), canGoBack: state.canGoBack }),
 }));
 
+// useBridge 의 request 는 렌더마다 새 함수 identity 를 갖는다(라이브러리가 memoize 하지 않음).
+// 실제 동작을 재현하려고 렌더마다 안정 스파이를 감싼 새 함수를 반환한다.
 vi.mock("@geongyu/react-native-bridge/web", () => ({
-  useBridge: () => ({ request }),
+  useBridge: () => ({
+    request: (args: unknown) => (request as (a: unknown) => unknown)(args),
+  }),
 }));
 
 vi.mock("@/hooks/common/useIsNativeShell", () => ({
@@ -52,5 +56,15 @@ describe("useSyncSwipeBackGesture", () => {
     state.isNativeShell = false;
     renderHook(() => useSyncSwipeBackGesture());
     expect(request).not.toHaveBeenCalled();
+  });
+
+  it("canGoBack 이 그대로면 리렌더에도 재전송하지 않는다", () => {
+    request.mockClear();
+    state.canGoBack = false;
+    state.isNativeShell = true;
+    const { rerender } = renderHook(() => useSyncSwipeBackGesture());
+    rerender();
+    rerender();
+    expect(request).toHaveBeenCalledTimes(1);
   });
 });
