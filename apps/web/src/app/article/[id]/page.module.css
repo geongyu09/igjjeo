@@ -125,3 +125,11 @@
   color: var(--on-action);
   cursor: pointer;
 }
+
+/* 삭제 확인 다이얼로그 안의 실패 안내(권한 없음·네트워크 오류). */
+.deleteError {
+  display: block;
+  margin-top: 10px;
+  color: var(--accent);
+  font-weight: 600;
+}

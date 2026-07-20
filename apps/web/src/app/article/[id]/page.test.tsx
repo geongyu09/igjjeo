@@ -45,11 +45,14 @@ const { useArticleSuspenseQuery } = vi.hoisted(() => ({
 const { useArticleCommentsSuspenseQuery } = vi.hoisted(() => ({
   useArticleCommentsSuspenseQuery: vi.fn(),
 }));
-const { addMutate, removeMutate, commentMutate } = vi.hoisted(() => ({
-  addMutate: vi.fn(),
-  removeMutate: vi.fn(),
-  commentMutate: vi.fn(),
-}));
+const { addMutate, removeMutate, commentMutate, deletionMutate } = vi.hoisted(
+  () => ({
+    addMutate: vi.fn(),
+    removeMutate: vi.fn(),
+    commentMutate: vi.fn(),
+    deletionMutate: vi.fn(),
+  }),
+);
 
 vi.mock(
   "@/hooks/features/query/suspenseQuerys/useArticleSuspenseQuery",
@@ -68,18 +71,26 @@ vi.mock("@/hooks/features/query/mutations/useRemoveReactionMutation", () => ({
 vi.mock("@/hooks/features/query/mutations/useCreateCommentMutation", () => ({
   useCreateCommentMutation: () => ({ mutate: commentMutate, isPending: false }),
 }));
+vi.mock("@/hooks/features/query/mutations/useRequestDeletionMutation", () => ({
+  useRequestDeletionMutation: () => ({
+    mutate: deletionMutate,
+    isPending: false,
+  }),
+}));
 
 import ArticleDetailPage from "./page";
 
-function mockArticle(myReactions: string[] = []) {
+function mockArticle(myReactions: string[] = [], isMine = false) {
   useArticleSuspenseQuery.mockReturnValue({
     data: {
       id: "1",
+      group_id: "g1",
       outlet_key: "shock",
       headline: "【단독】 상습 지각, 이대로 괜찮은가",
       body: "본문",
       reporter_name: "충격 기자",
       reporter: { masked_name: "김*규" },
+      is_mine: isMine,
       published_at: "2026-07-17T10:24:00Z",
       reaction_counts: { ...zeroReactions, scoop: 3 },
       my_reactions: myReactions,
@@ -126,6 +137,30 @@ describe("ArticleDetailPage", () => {
       articleId: "1",
       reactionType: "scoop",
     });
+  });
+
+  it("내가 올린 기사가 아니면 내리기 진입점을 두지 않는다", async () => {
+    mockArticle([], false);
+    await renderPage("1");
+
+    expect(
+      screen.queryByRole("button", { name: "기사 내리기" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("내가 올린 기사는 확인을 받고 내린다", async () => {
+    mockArticle([], true);
+    deletionMutate.mockClear();
+    await renderPage("1");
+
+    await userEvent.click(screen.getByRole("button", { name: "기사 내리기" }));
+    expect(screen.getByText("이 기사를 내릴까요?")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "내리기" }));
+    expect(deletionMutate).toHaveBeenCalledWith(
+      expect.objectContaining({ articleId: "1", groupId: "g1" }),
+      expect.anything(),
+    );
   });
 
   it("정정 요청은 정정 연쇄 화면으로 가는 preLoad StackLink다", async () => {

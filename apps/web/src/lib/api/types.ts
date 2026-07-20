@@ -163,6 +163,8 @@ export interface Article {
   body: string;
   reporter_name: string;
   reporter: { masked_name: string };
+  /** 요청자가 이 기사를 올린 제보자인지 — 기사를 내리는 것은 올린 사람의 몫이다. */
+  is_mine: boolean;
   published_at: string;
   is_correction: boolean;
   corrects_article_id: string | null;

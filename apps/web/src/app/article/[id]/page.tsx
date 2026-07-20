@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowUp, MoreHorizontal } from "lucide-react";
-import { use, useState } from "react";
-import { StackLink } from "stack-link";
+import { ArrowUp, Trash2 } from "lucide-react";
+import { use, useCallback, useState } from "react";
+import { StackLink, useStackLinkBack, useStackLinkRouter } from "stack-link";
+import { ConfirmDialog } from "@/components/common/shared/ui/ConfirmDialog";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
@@ -10,7 +11,9 @@ import { CommentThread } from "@/components/feature/widget/CommentThread";
 import { PublisherBadge } from "@/components/feature/widget/PublisherBadge";
 import { ReactionBar } from "@/components/feature/widget/ReactionBar";
 import { TrustBar } from "@/components/feature/widget/TrustBar";
+import { useIsNativeShell } from "@/hooks/common/useIsNativeShell";
 import { useStackBack } from "@/hooks/common/useStackBack";
+import { useArticleDeletion } from "@/hooks/features/article/useArticleDeletion";
 import { useArticleSuspenseQuery } from "@/hooks/features/query/suspenseQuerys/useArticleSuspenseQuery";
 import { useArticleCommentsSuspenseQuery } from "@/hooks/features/query/suspenseQuerys/useArticleCommentsSuspenseQuery";
 import { useAddReactionMutation } from "@/hooks/features/query/mutations/useAddReactionMutation";
@@ -43,6 +46,26 @@ function ArticleContent({ id }: { id: string }) {
   const removeReaction = useRemoveReactionMutation();
   const createComment = useCreateCommentMutation();
   const [draft, setDraft] = useState("");
+
+  const { canGoBack } = useStackLinkBack();
+  const router = useStackLinkRouter();
+  const isNativeShell = useIsNativeShell();
+
+  // 내려간 기사의 상세는 404가 되므로 반드시 화면을 떠나야 한다. 브라우저에서 상세로 바로
+  // 들어온 경우 useStackBack이 no-op이라 그대로 갇히므로, 그때는 피드로 보낸다.
+  const leaveDeletedArticle = useCallback(() => {
+    if (canGoBack || isNativeShell) {
+      back();
+      return;
+    }
+    router.navigate({ href: "/", animation: "fade" });
+  }, [back, canGoBack, isNativeShell, router]);
+
+  const deletion = useArticleDeletion({
+    articleId: id,
+    groupId: article.group_id,
+    onDeleted: leaveDeletedArticle,
+  });
 
   const counts = article.reaction_counts;
   const myReaction = article.my_reactions[0] ?? null;
@@ -78,9 +101,17 @@ function ArticleContent({ id }: { id: string }) {
       title={<PublisherBadge outlet={article.outlet_key} />}
       onBack={back}
       trailing={
-        <button type="button" className={styles.moreButton} aria-label="더보기">
-          <MoreHorizontal size={22} aria-hidden />
-        </button>
+        // 기사를 내리는 것은 올린 사람의 몫 — 남의 기사에는 진입점을 두지 않는다.
+        article.is_mine ? (
+          <button
+            type="button"
+            className={styles.moreButton}
+            aria-label="기사 내리기"
+            onClick={deletion.open}
+          >
+            <Trash2 size={20} aria-hidden />
+          </button>
+        ) : undefined
       }
     />
   );
@@ -148,6 +179,25 @@ function ArticleContent({ id }: { id: string }) {
           <CommentThread comments={comments} />
         </div>
       </div>
+
+      <ConfirmDialog
+        open={deletion.isOpen}
+        title="이 기사를 내릴까요?"
+        description={
+          <>
+            방 피드에서 사라져 아무도 볼 수 없게 돼요. 되돌릴 수 없어요.
+            {deletion.errorMessage && (
+              <span className={styles.deleteError} role="alert">
+                {deletion.errorMessage}
+              </span>
+            )}
+          </>
+        }
+        confirmLabel={deletion.isPending ? "내리는 중…" : "내리기"}
+        confirmVariant="accent"
+        onConfirm={deletion.submit}
+        onCancel={deletion.close}
+      />
     </MobileScreen>
   );
 }

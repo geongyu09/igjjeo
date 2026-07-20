@@ -9,14 +9,19 @@ interface RequestDeletionVariables {
   groupId?: string;
 }
 
-/** 당사자 기사 삭제 요청 (POST /articles/{articleId}/deletion-request). 즉시 is_active=false. */
+/** 기사 내리기 요청 (POST /articles/{articleId}/deletion-request). 즉시 is_active=false. */
 export function useRequestDeletionMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ articleId, idempotencyKey }: RequestDeletionVariables) =>
       requestDeletion({ articleId, idempotencyKey }),
     onSuccess: (_data, { articleId, groupId }) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.article(articleId) });
+      // 내려간 기사의 상세는 404다. 여기서 refetch를 걸면 화면을 떠나기 전에 에러 바운더리가
+      // 뜨므로, stale 표시만 하고 다시 불러오지는 않는다.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.article(articleId),
+        refetchType: "none",
+      });
       if (groupId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.feed(groupId) });
       }
