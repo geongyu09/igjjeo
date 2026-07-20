@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 #
-# apps/mobile를 iOS 실기기에 dev-client로 로컬 빌드·설치한다.
-# EAS는 절대 사용하지 않는다 — 순수 로컬 빌드(expo run:ios)만.
+# apps/mobile를 Android 실기기에 dev-client로 로컬 빌드·설치한다.
+# EAS는 절대 사용하지 않는다 — 순수 로컬 빌드(expo run:android)만.
 #
 # 사용법:
-#   bun run dev-build:ios              # LAN IP 자동 감지(en0→en1)
-#   bun run dev-build:ios 192.168.0.10 # LAN IP 직접 지정
-#   WEB_PORT=3000 API_PORT=4000 bun run dev-build:ios  # 포트 직접 지정
+#   bun run dev-build:android              # LAN IP 자동 감지(기본 라우트 인터페이스)
+#   bun run dev-build:android 192.168.0.10 # LAN IP 직접 지정
+#   bun run dev-build:android 10.0.2.2     # 에뮬레이터에서 호스트를 가리키는 별칭
+#   WEB_PORT=3000 API_PORT=4000 bun run dev-build:android  # 포트 직접 지정
 #
 # 감지한 LAN IP로 .env.development.local 의 EXPO_PUBLIC_WEB_URL·EXPO_PUBLIC_API_BASE_URL 을
 # 함께 갱신한다 (실기기에서는 web·API 둘 다 localhost가 아니라 개발 머신 LAN IP로 붙어야 함).
 # 이 파일은 dev/Debug 빌드에서만 로드되므로, Release(프로토타입) 빌드의 호스팅 URL과 섞이지 않는다.
-# 프로토타입(Release·standalone) 빌드는 proto-build-ios.sh + .env.production 을 쓴다.
+# 에뮬레이터는 localhost 대신 10.0.2.2 가 호스트를 가리키므로, 그 경우 인자로 10.0.2.2 를 넘긴다.
+# 프로토타입(Release·standalone) 빌드는 proto-build-android.sh + .env.production 을 쓴다.
 #
 set -euo pipefail
 
@@ -23,6 +25,7 @@ PORT="${WEB_PORT:-3000}"
 # 1) LAN IP 확인 (인자 > 기본 라우트 인터페이스 > 전체 인터페이스 스캔).
 #    localhost는 폰 자신을 가리키므로 금지. 폰이 붙을 수 있는 사설 대역만 채택
 #    (VPN·AirDrop·브리지 등 가상 인터페이스와 공인/특수 주소는 제외).
+#    10.0.2.2(에뮬레이터→호스트 별칭)는 인자로 직접 넘겼을 때만 통과시킨다.
 is_private_ip() {
   case "$1" in
     10.*|192.168.*) return 0 ;;
@@ -55,10 +58,12 @@ detect_lan_ip() {
   return 1
 }
 
+# 인자로 넘긴 주소는 그대로 신뢰한다 (에뮬레이터 별칭 10.0.2.2 등 허용).
 IP="${1:-}"
 [ -z "$IP" ] && IP="$(detect_lan_ip || true)"
 if [ -z "$IP" ]; then
-  echo "LAN IP를 찾지 못했습니다. 직접 지정하세요: bun run dev-build:ios 192.168.0.10" >&2
+  echo "LAN IP를 찾지 못했습니다. 직접 지정하세요: bun run dev-build:android 192.168.0.10" >&2
+  echo "  (에뮬레이터라면: bun run dev-build:android 10.0.2.2)" >&2
   exit 1
 fi
 
@@ -83,8 +88,7 @@ upsert_env() {
 upsert_env EXPO_PUBLIC_WEB_URL "$WEB_URL"
 upsert_env EXPO_PUBLIC_API_BASE_URL "$API_URL"
 
-# 3) 실기기 로컬 빌드 (dev-client).
-#    첫 빌드는 수 분 소요. Apple 계정 서명·기기 선택 프롬프트가 대화형으로 뜨고,
-#    빌드 후 기기에서 '설정 > 일반 > VPN 및 기기 관리'로 개발자 앱을 신뢰해야 한다.
-echo "→ 실기기 빌드를 시작합니다. 기기 선택·Apple 서명 프롬프트에 응답하세요."
-exec bunx expo run:ios --device
+# 3) 실기기/에뮬레이터 로컬 빌드 (dev-client, Debug 기본).
+#    Android 기기는 USB 디버깅 허용(adb) 또는 실행 중인 에뮬레이터가 필요하다.
+echo "→ Android 빌드를 시작합니다. 연결된 기기/에뮬레이터를 확인하세요 (adb devices)."
+exec bunx expo run:android --device

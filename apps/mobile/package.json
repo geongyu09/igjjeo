@@ -33,6 +33,10 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "dev-build:ios": "bash scripts/dev-build-ios.sh",
+    "dev-build:ios:proto": "bash scripts/proto-build-ios.sh",
+    "dev-build:android": "bash scripts/dev-build-android.sh",
+    "dev-build:android:proto": "bash scripts/proto-build-android.sh",
+    "build:android:apk": "bash scripts/build-android-apk.sh",
     "typecheck": "tsc --noEmit"
   },
   "private": true
