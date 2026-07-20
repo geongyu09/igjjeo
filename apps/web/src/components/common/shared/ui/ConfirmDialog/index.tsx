@@ -2,7 +2,10 @@
 
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Button, type ButtonVariant } from "@/components/common/shared/ui/Button";
+import {
+  Button,
+  type ButtonVariant,
+} from "@/components/common/shared/ui/Button";
 import styles from "./ConfirmDialog.module.css";
 
 export interface ConfirmDialogProps {

@@ -86,8 +86,8 @@ export default function CreateGroupPage() {
 
         {!created && (
           <p className={styles.hint}>
-            키워드는 이 방의 기사를 각색할 때 참고돼요. 방의 분위기나 자주 나오는
-            소재를 적어 주세요.
+            키워드는 이 방의 기사를 각색할 때 참고돼요. 방의 분위기나 자주
+            나오는 소재를 적어 주세요.
           </p>
         )}
 

@@ -58,9 +58,7 @@ describe("PublishPreviewPage 이탈 확인", () => {
 
     expect(backMock).not.toHaveBeenCalled();
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();
-    expect(
-      screen.getByText(/발행 횟수만 차감/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/발행 횟수만 차감/)).toBeInTheDocument();
   });
 
   it("헤더 뒤로가기를 눌러도 바로 나가지 않고 확인 다이얼로그를 띄운다", async () => {
@@ -90,9 +88,7 @@ describe("PublishPreviewPage 이탈 확인", () => {
 
   it("발행 버튼은 확인 없이 바로 발행한다", async () => {
     render(<PublishPreviewPage />);
-    await userEvent.click(
-      screen.getByRole("button", { name: /모두 발행/ }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: /모두 발행/ }));
 
     expect(publishMutateMock).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();

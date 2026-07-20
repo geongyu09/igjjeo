@@ -1,6 +1,11 @@
 "use client";
 
-import { CreditCard, FlaskConical, type LucideIcon, Megaphone } from "lucide-react";
+import {
+  CreditCard,
+  FlaskConical,
+  type LucideIcon,
+  Megaphone,
+} from "lucide-react";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { useStackBack } from "@/hooks/common/useStackBack";
@@ -8,19 +13,18 @@ import { useRefillReportQuotaMutation } from "@/hooks/features/query/mutations/u
 import styles from "./page.module.css";
 
 /** 아직 구현되지 않은(준비 중) 충전 방법 목록. 프로토타입 테스트용 충전만 실제로 동작한다. */
-const COMING_SOON: { icon: LucideIcon; title: string; desc: string }[] =
-  [
-    {
-      icon: Megaphone,
-      title: "광고 보고 충전",
-      desc: "짧은 광고를 보고 제보 한도를 채워요",
-    },
-    {
-      icon: CreditCard,
-      title: "인앱결제",
-      desc: "결제하고 제보 한도를 채워요",
-    },
-  ];
+const COMING_SOON: { icon: LucideIcon; title: string; desc: string }[] = [
+  {
+    icon: Megaphone,
+    title: "광고 보고 충전",
+    desc: "짧은 광고를 보고 제보 한도를 채워요",
+  },
+  {
+    icon: CreditCard,
+    title: "인앱결제",
+    desc: "결제하고 제보 한도를 채워요",
+  },
+];
 
 /**
  * 충전 화면 — 제보 한도를 채울 방법을 고른다. 지금은 최상단 "프로토타입 테스트용 충전"만
