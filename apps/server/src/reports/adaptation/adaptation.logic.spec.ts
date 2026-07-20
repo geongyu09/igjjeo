@@ -25,6 +25,14 @@ describe("buildSystemPrompt", () => {
     expect(prompt).toContain("우선");
   });
 
+  it("방 배경은 제보와 맞닿을 때만 쓰고 매번 넣지는 않도록 규칙에 명시한다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("방 배경");
+    expect(prompt).toContain("각색 대상은 오직 제보 원문");
+    expect(prompt).toContain("맞닿을 때만");
+    expect(prompt).toContain("매 기사마다");
+  });
+
   it("소모임일보(daily)는 역피라미드 스트레이트 뉴스 규칙을 담는다", () => {
     const prompt = buildSystemPrompt();
     expect(prompt).toContain("스트레이트");
@@ -116,7 +124,7 @@ describe("buildUserPrompt", () => {
     expect(prompt).toContain("daily");
   });
 
-  it("방 키워드가 있으면 프롬프트에 참고 맥락으로 넣는다", () => {
+  it("방 키워드가 있으면 조건부로 쓰라는 참고용 지시와 함께 넣는다", () => {
     const prompt = buildUserPrompt({
       rawText: "또 지각했다",
       outletKeys: ["daily"],
@@ -125,6 +133,8 @@ describe("buildUserPrompt", () => {
       keyword: "지각 대장들",
     });
     expect(prompt).toContain("지각 대장들");
+    expect(prompt).toContain("참고용");
+    expect(prompt).toContain("맞닿을 때만");
   });
 
   it("방 키워드가 없거나 공백뿐이면 키워드 줄을 넣지 않는다", () => {
@@ -141,8 +151,8 @@ describe("buildUserPrompt", () => {
       isSelfReport: false,
       keyword: "   ",
     });
-    expect(withoutKeyword).not.toContain("방 키워드");
-    expect(blankKeyword).not.toContain("방 키워드");
+    expect(withoutKeyword).not.toContain("방 배경");
+    expect(blankKeyword).not.toContain("방 배경");
   });
 });
 
