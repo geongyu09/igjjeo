@@ -65,4 +65,44 @@ describe("tokenStore", () => {
       expect(calls).toBe(0);
     });
   });
+
+  describe("revoke", () => {
+    it("토큰을 비우고 폐기 상태로 표시한다", () => {
+      tokenStore.set({ access_token: "a", refresh_token: "r" });
+      expect(tokenStore.isRevoked()).toBe(false);
+
+      tokenStore.revoke();
+
+      expect(tokenStore.getAccessToken()).toBeNull();
+      expect(tokenStore.getRefreshToken()).toBeNull();
+      expect(tokenStore.isRevoked()).toBe(true);
+    });
+
+    it("구독자에게 알린다", () => {
+      let calls = 0;
+      const unsubscribe = tokenStore.subscribe(() => {
+        calls += 1;
+      });
+
+      tokenStore.revoke();
+      expect(calls).toBe(1);
+
+      unsubscribe();
+    });
+
+    it("새 세션을 set 하면 폐기 상태가 풀린다", () => {
+      tokenStore.revoke();
+      tokenStore.set({ access_token: "a2", refresh_token: "r2" });
+
+      expect(tokenStore.isRevoked()).toBe(false);
+    });
+
+    // 정상 로그아웃은 폐기(무효 토큰)와 다르다 — 재로그인 경로를 막지 않아야 한다.
+    it("clear 는 폐기 상태로 표시하지 않는다", () => {
+      tokenStore.set({ access_token: "a", refresh_token: "r" });
+      tokenStore.clear();
+
+      expect(tokenStore.isRevoked()).toBe(false);
+    });
+  });
 });
