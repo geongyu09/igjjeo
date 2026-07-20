@@ -18,6 +18,13 @@ describe("buildSystemPrompt", () => {
     expect(prompt).toContain("JSON");
   });
 
+  it("모든 기사 본문을 3~5문장으로 짧게 쓰도록 제한한다", () => {
+    const prompt = buildSystemPrompt();
+    expect(prompt).toContain("3~5문장");
+    // 길이 제한이 언론사별 구조·문단 지침보다 우선함을 명시한다.
+    expect(prompt).toContain("우선");
+  });
+
   it("소모임일보(daily)는 역피라미드 스트레이트 뉴스 규칙을 담는다", () => {
     const prompt = buildSystemPrompt();
     expect(prompt).toContain("스트레이트");
@@ -92,7 +99,7 @@ describe("buildSystemPrompt", () => {
     expect(prompt).toContain("단점");
     expect(prompt).toContain("역경");
     expect(prompt).toContain("감탄을 금치 못했다");
-    expect(prompt).toContain("문단마다");
+    expect(prompt).toContain("문장마다");
   });
 });
 
