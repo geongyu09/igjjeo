@@ -17,7 +17,7 @@ import { JwtUserGuard } from "@/auth/jwt-user.guard";
 import { CreateGroupDto } from "./dto/create-group.dto";
 import { JoinGroupDto } from "./dto/join-group.dto";
 import { ListGroupsQuery } from "./dto/list-groups.query";
-import { RenameGroupDto } from "./dto/rename-group.dto";
+import { UpdateGroupDto } from "./dto/update-group.dto";
 import {
   CurrentMembership,
   GroupMembershipGuard,
@@ -73,14 +73,14 @@ export class GroupsController {
     return this.groups.getGroup(membership.groupId, membership.role);
   }
 
-  /** PATCH /v1/groups/:groupId — 방 이름 변경(owner). */
+  /** PATCH /v1/groups/:groupId — 방 이름·키워드 부분 변경(owner). */
   @Patch(":groupId")
   @UseGuards(GroupMembershipGuard)
-  rename(
+  update(
     @CurrentMembership() membership: Membership,
-    @Body() dto: RenameGroupDto,
+    @Body() dto: UpdateGroupDto,
   ): Promise<GroupResponse> {
-    return this.groups.rename(membership.groupId, membership.role, dto.name);
+    return this.groups.update(membership.groupId, membership.role, dto);
   }
 
   /** POST /v1/groups/:groupId/invite-code/rotate — 초대 코드 재발급(owner). */

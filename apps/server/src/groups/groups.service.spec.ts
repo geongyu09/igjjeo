@@ -17,10 +17,12 @@ function makeService() {
     createGroupWithOwner: jest.fn(),
     findMembership: jest.fn(),
     getSummary: jest.fn(),
+    getKeyword: jest.fn().mockResolvedValue(null),
     listMyGroups: jest.fn(),
     rotateInviteCode: jest.fn(),
     joinGroup: jest.fn(),
     updateName: jest.fn().mockResolvedValue(undefined),
+    updateKeyword: jest.fn().mockResolvedValue(undefined),
     listMembers: jest.fn(),
     deleteMembership: jest.fn(),
   } as unknown as jest.Mocked<GroupsRepository>;
@@ -98,7 +100,7 @@ describe("GroupsService", () => {
   });
 
   describe("getGroup", () => {
-    it("요약 + 요청자 역할로 Group 응답을 만든다", async () => {
+    it("요약 + 역할 + 키워드로 Group 응답을 만든다", async () => {
       const { service, repo } = makeService();
       (repo.getSummary as jest.Mock).mockResolvedValue({
         id: "g1",
@@ -108,10 +110,33 @@ describe("GroupsService", () => {
         created_at: record.created_at,
         member_count: 5,
       });
+      (repo.getKeyword as jest.Mock).mockResolvedValue("지각 대장들");
 
       const result = await service.getGroup("g1", "member");
 
-      expect(result).toEqual({ ...record, role: "member", member_count: 5 });
+      expect(result).toEqual({
+        ...record,
+        role: "member",
+        member_count: 5,
+        keyword: "지각 대장들",
+      });
+    });
+
+    it("키워드가 없으면 keyword 는 null", async () => {
+      const { service, repo } = makeService();
+      (repo.getSummary as jest.Mock).mockResolvedValue({
+        id: "g1",
+        name: "부트캠프 3조",
+        invite_code: "AB12CD",
+        created_by: "u1",
+        created_at: record.created_at,
+        member_count: 1,
+      });
+      (repo.getKeyword as jest.Mock).mockResolvedValue(null);
+
+      const result = await service.getGroup("g1", "owner");
+
+      expect(result.keyword).toBeNull();
     });
 
     it("요약이 없으면 404", async () => {
@@ -124,31 +149,56 @@ describe("GroupsService", () => {
     });
   });
 
-  describe("rename", () => {
-    it("owner 는 이름을 바꾸고 갱신된 Group 을 반환한다", async () => {
-      const { service, repo } = makeService();
+  describe("update", () => {
+    function mockSummary(repo: jest.Mocked<GroupsRepository>, name: string) {
       (repo.getSummary as jest.Mock).mockResolvedValue({
         id: "g1",
-        name: "새 이름",
+        name,
         invite_code: "AB12CD",
         created_by: "u1",
         created_at: record.created_at,
         member_count: 1,
       });
+    }
 
-      const result = await service.rename("g1", "owner", "새 이름");
+    it("owner 는 이름만 바꾼다(키워드는 건드리지 않음)", async () => {
+      const { service, repo } = makeService();
+      mockSummary(repo, "새 이름");
+
+      const result = await service.update("g1", "owner", { name: "새 이름" });
 
       expect(repo.updateName).toHaveBeenCalledWith("g1", "새 이름");
+      expect(repo.updateKeyword).not.toHaveBeenCalled();
       expect(result.name).toBe("새 이름");
     });
 
-    it("owner 가 아니면 403", async () => {
+    it("owner 는 키워드만 바꾼다(이름은 건드리지 않음)", async () => {
+      const { service, repo } = makeService();
+      mockSummary(repo, "부트캠프 3조");
+
+      await service.update("g1", "owner", { keyword: "밤샘 코딩" });
+
+      expect(repo.updateKeyword).toHaveBeenCalledWith("g1", "밤샘 코딩");
+      expect(repo.updateName).not.toHaveBeenCalled();
+    });
+
+    it("빈(공백) 키워드는 null 로 지운다", async () => {
+      const { service, repo } = makeService();
+      mockSummary(repo, "부트캠프 3조");
+
+      await service.update("g1", "owner", { keyword: "   " });
+
+      expect(repo.updateKeyword).toHaveBeenCalledWith("g1", null);
+    });
+
+    it("owner 가 아니면 403 이고 아무것도 갱신하지 않는다", async () => {
       const { service, repo } = makeService();
 
       await expect(
-        service.rename("g1", "member", "새 이름"),
+        service.update("g1", "member", { name: "새 이름" }),
       ).rejects.toBeInstanceOf(ForbiddenException);
       expect(repo.updateName).not.toHaveBeenCalled();
+      expect(repo.updateKeyword).not.toHaveBeenCalled();
     });
   });
 

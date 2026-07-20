@@ -219,6 +219,31 @@ describe("GroupsRepository", () => {
     });
   });
 
+  describe("updateKeyword", () => {
+    it("groups.keyword 를 갱신한다", async () => {
+      const { from, builder, service } = makeSupabase({
+        data: null,
+        error: null,
+      });
+      const repo = new GroupsRepository(service);
+
+      await repo.updateKeyword("g1", "밤샘 코딩");
+
+      expect(from).toHaveBeenCalledWith("groups");
+      expect(builder.update).toHaveBeenCalledWith({ keyword: "밤샘 코딩" });
+      expect(builder.eq).toHaveBeenCalledWith("id", "g1");
+    });
+
+    it("null 을 넘기면 키워드를 지운다", async () => {
+      const { builder, service } = makeSupabase({ data: null, error: null });
+      const repo = new GroupsRepository(service);
+
+      await repo.updateKeyword("g1", null);
+
+      expect(builder.update).toHaveBeenCalledWith({ keyword: null });
+    });
+  });
+
   describe("listMembers", () => {
     it("list_group_members RPC 결과를 반환한다", async () => {
       const members = [

@@ -8,7 +8,7 @@ function makeController() {
     listMyGroups: jest.fn(),
     join: jest.fn(),
     getGroup: jest.fn(),
-    rename: jest.fn(),
+    update: jest.fn(),
     rotateInvite: jest.fn(),
     listMembers: jest.fn(),
     removeMember: jest.fn().mockResolvedValue(undefined),
@@ -59,14 +59,17 @@ describe("GroupsController", () => {
     expect(service.getGroup).toHaveBeenCalledWith("g1", "member");
   });
 
-  it("rename 은 멤버십 역할과 새 이름을 넘긴다", async () => {
+  it("update 는 멤버십 역할과 변경 필드(이름·키워드)를 넘긴다", async () => {
     const { controller, service } = makeController();
-    await controller.rename(
+    await controller.update(
       { groupId: "g1", role: "owner" },
-      { name: "새 이름" },
+      { name: "새 이름", keyword: "밤샘 코딩" },
     );
 
-    expect(service.rename).toHaveBeenCalledWith("g1", "owner", "새 이름");
+    expect(service.update).toHaveBeenCalledWith("g1", "owner", {
+      name: "새 이름",
+      keyword: "밤샘 코딩",
+    });
   });
 
   it("rotate 는 멤버십 역할로 초대 코드를 재발급한다", async () => {

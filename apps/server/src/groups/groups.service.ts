@@ -21,6 +21,14 @@ export interface GroupResponse {
   role: string;
   member_count: number;
   created_at: string;
+  /** 방 각색 키워드. 상세(GET/PATCH) 응답에만 실린다(목록·생성·참여 응답엔 없음). */
+  keyword?: string | null;
+}
+
+/** PATCH /groups/:groupId 로 바꿀 수 있는 필드(부분 갱신). */
+export interface UpdateGroupInput {
+  name?: string;
+  keyword?: string;
 }
 
 export interface GroupListResponse {
@@ -82,6 +90,8 @@ export class GroupsService {
       throw notFound();
     }
 
+    const keyword = await this.groups.getKeyword(groupId);
+
     return {
       id: summary.id,
       name: summary.name,
@@ -89,16 +99,29 @@ export class GroupsService {
       role,
       member_count: Number(summary.member_count),
       created_at: summary.created_at,
+      keyword,
     };
   }
 
-  async rename(
+  /**
+   * 방 이름·키워드 부분 갱신(owner 전용). 온 필드만 반영한다.
+   * keyword 는 공백만이거나 빈 문자열이면 null(제거)로 정규화한다.
+   */
+  async update(
     groupId: string,
     role: string,
-    name: string,
+    input: UpdateGroupInput,
   ): Promise<GroupResponse> {
     assertOwner(role);
-    await this.groups.updateName(groupId, name);
+
+    if (input.name !== undefined) {
+      await this.groups.updateName(groupId, input.name);
+    }
+    if (input.keyword !== undefined) {
+      const normalized = input.keyword.trim() === "" ? null : input.keyword;
+      await this.groups.updateKeyword(groupId, normalized);
+    }
+
     return this.getGroup(groupId, role);
   }
 

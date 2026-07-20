@@ -173,6 +173,18 @@ export class GroupsRepository {
     }
   }
 
+  /** 방의 각색 키워드를 갱신한다. null 이면 키워드를 지운다. */
+  async updateKeyword(groupId: string, keyword: string | null): Promise<void> {
+    const { error } = await this.supabase.client
+      .from("groups")
+      .update({ keyword })
+      .eq("id", groupId);
+
+    if (error) {
+      throw error;
+    }
+  }
+
   async listMembers(groupId: string): Promise<MemberRow[]> {
     const { data, error } = await this.supabase.client.rpc(
       "list_group_members",
