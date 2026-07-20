@@ -17,6 +17,11 @@ export interface MobileScreenProps {
   footer?: ReactNode;
   /** 스크롤되는 본문 */
   children: ReactNode;
+  /**
+   * 본문 래퍼에 붙일 클래스. 본문을 화면 높이만큼 채워야 하는 화면(세로 중앙 정렬 등)에서
+   * `min-height: 100%` + flex를 주는 용도.
+   */
+  bodyClassName?: string;
   /** 다크 풀블리드 (잠금화면 등) */
   tone?: "default" | "dark";
   /** 본문 최상단에서 아래로 당기면 실행할 새로고침. 주지 않으면 제스처가 비활성화된다. */
@@ -33,6 +38,7 @@ export function MobileScreen({
   headerClassName,
   footer,
   children,
+  bodyClassName,
   tone = "default",
   onRefresh,
   className,
@@ -75,7 +81,13 @@ export function MobileScreen({
             />
           </div>
         )}
-        <div className={styles.bodyContent}>{children}</div>
+        <div
+          className={[styles.bodyContent, bodyClassName]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {children}
+        </div>
       </div>
       {footer && <div className={styles.slot}>{footer}</div>}
     </div>

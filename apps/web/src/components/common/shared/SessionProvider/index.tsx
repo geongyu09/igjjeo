@@ -24,6 +24,7 @@ import {
   type ReactNode,
 } from "react";
 import { LoadingScreen } from "@/components/common/shared/ui/LoadingScreen";
+import { PendingInviteConsumer } from "@/components/feature/pages/invite/PendingInviteConsumer";
 import { useActiveGroupId } from "@/hooks/common/useActiveGroupId";
 import { useHasSession } from "@/hooks/common/useHasSession";
 import { useRestoreNativeSession } from "@/hooks/common/useRestoreNativeSession";
@@ -103,7 +104,13 @@ function SessionBootstrap({ children }: { children: ReactNode }) {
     return <OnboardingForm defaultName={me.display_name} />;
   }
 
-  return <SessionContext value={value}>{children}</SessionContext>;
+  return (
+    <SessionContext value={value}>
+      {/* 초대 딥링크로 들어왔다면 세션이 준비된 이 시점에 방에 자동 참여시킨다. */}
+      <PendingInviteConsumer />
+      {children}
+    </SessionContext>
+  );
 }
 
 /** 세션 컨텍스트 소비 훅. SessionProvider 밖에서 호출하면 던진다. */

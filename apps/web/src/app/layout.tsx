@@ -1,15 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { StackLinkProvider } from "stack-link";
+import { AuthGate } from "@/components/common/shared/AuthGate";
+import { InviteGate } from "@/components/common/shared/InviteGate";
 import { NativeBackListener } from "@/components/common/shared/NativeBackListener";
 import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
 import { QueryProvider } from "@/components/common/shared/QueryProvider";
-import { SessionProvider } from "@/components/common/shared/SessionProvider";
 import { ToastProvider } from "@/components/common/shared/ui/Toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "이거 진짜에요?",
+  title: "이거 진짜예요?",
   description:
     "소모임 안의 사소한 일을 AI가 언론사 시각으로 각색해 방 안에만 발행하는 뉴스",
 };
@@ -167,7 +168,9 @@ export default function RootLayout({
             <NativeBackListener />
             <QueryBoundary>
               <ToastProvider>
-                <SessionProvider>{children}</SessionProvider>
+                <InviteGate>
+                  <AuthGate>{children}</AuthGate>
+                </InviteGate>
               </ToastProvider>
             </QueryBoundary>
           </StackLinkProvider>

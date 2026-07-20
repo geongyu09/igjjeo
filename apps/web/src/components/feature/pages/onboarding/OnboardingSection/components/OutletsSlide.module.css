@@ -1,0 +1,83 @@
+.slide {
+  flex: 1;
+  padding-top: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.24;
+  color: var(--ink);
+}
+
+.quote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0 16px;
+  padding: 10px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.quote b {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.quoteIcon {
+  flex: none;
+  color: var(--text-3);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.card {
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--pub);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+
+.outletName {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--pub);
+}
+
+.tone {
+  font-size: 10.5px;
+  color: var(--text-3);
+}
+
+.headline {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.note {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-3);
+}

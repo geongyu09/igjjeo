@@ -31,6 +31,10 @@ vi.mock("./components/OnboardingForm", () => ({
   OnboardingForm: () => <div data-testid="onboarding">이름 입력</div>,
 }));
 
+vi.mock("@/components/feature/pages/invite/PendingInviteConsumer", () => ({
+  PendingInviteConsumer: () => null,
+}));
+
 vi.mock("@/hooks/features/query/suspenseQuerys/useMeSuspenseQuery", () => ({
   useMeSuspenseQuery: () => ({
     data: { id: "u1", display_name: "나", onboarded: state.onboarded },

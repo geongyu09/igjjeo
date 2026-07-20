@@ -1,0 +1,68 @@
+.slide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+  padding-bottom: 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  flex: none;
+  border-radius: var(--r-xl);
+  background: var(--action);
+  color: var(--on-action);
+  box-shadow: var(--shadow-md);
+}
+
+.eyebrow {
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.title {
+  margin: 0;
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  color: var(--ink);
+}
+
+.rule {
+  display: block;
+  width: 38px;
+  height: 3px;
+  margin: 18px 0 14px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-2);
+}
+
+.lead b {
+  font-weight: 700;
+  color: var(--text-1);
+}

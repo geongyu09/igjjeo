@@ -1,0 +1,85 @@
+.slide {
+  flex: 1;
+  padding-top: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.24;
+  color: var(--ink);
+}
+
+.lead {
+  margin: 12px 0 22px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.guards {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.guard {
+  display: flex;
+  gap: 13px;
+}
+
+.guardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: var(--r-md);
+  background: var(--surface-3);
+  color: var(--accent-ink);
+}
+
+.guardTitle {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.guardDesc {
+  margin-top: 2px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.pledge {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 13px 14px;
+  border-radius: var(--r-md);
+  background: var(--accent-weak);
+}
+
+.pledgeIcon {
+  flex: none;
+  margin-top: 1px;
+  color: var(--accent-ink);
+}
+
+.pledgeText {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-1);
+}
+
+.pledgeText b {
+  font-weight: 700;
+  color: var(--accent-ink);
+}

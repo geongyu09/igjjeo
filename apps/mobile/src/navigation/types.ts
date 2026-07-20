@@ -1,5 +1,8 @@
 export type RootStackParamList = {
-  // 로그인 — 앱이 직접 그리는 네이티브 화면(Google/Apple). 초기 라우트.
+  // 첫 진입 온보딩 — 웹 /onboarding 을 띄우는 풀스크린 WebView. 앱을 처음 열었을 때만
+  // 초기 라우트가 되고(useInitialRouteName), 다 보면 Login 으로 교체된다.
+  Onboarding: undefined;
+  // 로그인 — 앱이 직접 그리는 네이티브 화면(Google/Apple). 온보딩을 이미 봤으면 초기 라우트.
   // 로그인 성공(또는 기존 세션 감지) 시 네이티브가 Tabs로 스택을 교체한다.
   Login: undefined;
   Tabs: undefined;

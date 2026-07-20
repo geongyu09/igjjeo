@@ -5,6 +5,7 @@ import type {
 import { StackActions } from "@react-navigation/native";
 
 import { navigationRef } from "../navigation/navigationRef";
+import { onboardingStore } from "../session/onboardingStore";
 import { sessionStore } from "../session/sessionStore";
 
 // 웹 → 네이티브 브리지 요청 처리 (탭 WebView·상세 WebScreen 공용, @geongyu/react-native-bridge).
@@ -21,10 +22,10 @@ export async function handleBridgeMessage(
       return { success: true, session };
     }
     case "clearSession":
-      // 웹 로그아웃 → 네이티브 세션까지 비우고 로그인 스크린으로 되돌린다.
-      await sessionStore.clear();
+      // 웹 로그아웃 → 네이티브 세션·온보딩 기록까지 비우고 온보딩 화면부터 다시 보게 한다.
+      await Promise.all([sessionStore.clear(), onboardingStore.clear()]);
       if (navigationRef.isReady()) {
-        navigationRef.reset({ index: 0, routes: [{ name: "Login" }] });
+        navigationRef.reset({ index: 0, routes: [{ name: "Onboarding" }] });
       }
       return { success: true };
     case "pushScreen":

@@ -1,0 +1,141 @@
+.slide {
+  flex: 1;
+  padding-top: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.24;
+  color: var(--ink);
+}
+
+.lead {
+  margin: 12px 0 26px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.step {
+  display: flex;
+  gap: 14px;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--action);
+  color: var(--on-action);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.marker[data-accent] {
+  background: var(--accent);
+  color: var(--on-action);
+}
+
+.line {
+  width: 2px;
+  flex: 1;
+  margin: 6px 0;
+  background: var(--border-2);
+}
+
+.stepBody {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 16px;
+}
+
+.stepTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.stepDesc {
+  margin: 3px 0 9px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.reportBox {
+  padding: 11px 13px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  font-size: 13.5px;
+  color: var(--text-1);
+}
+
+.aiBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.aiIcon {
+  flex: none;
+  color: var(--accent-ink);
+}
+
+.articleCard {
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.outletBadge {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--pub-bg);
+  color: var(--pub);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.headline {
+  margin: 9px 0 6px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.byline {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+}

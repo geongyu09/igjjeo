@@ -1,16 +1,18 @@
 {
   "expo": {
-    "name": "이거 진짜에요?",
+    "name": "이거진짜예요?",
     "slug": "igjjeo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "igjjeo",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.geongyu09.igjjeo",
       "appleTeamId": "3XD9F9256D",
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "associatedDomains": ["applinks:igjjeo-web.vercel.app"]
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +21,22 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.geongyu09.igjjeo",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "igjjeo-web.vercel.app",
+              "pathPrefix": "/invite"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

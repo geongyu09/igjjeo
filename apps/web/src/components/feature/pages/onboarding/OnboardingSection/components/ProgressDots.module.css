@@ -1,0 +1,19 @@
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--border-2);
+  transition: width 0.2s ease;
+}
+
+.dot[data-active] {
+  width: 22px;
+  background: var(--action);
+}

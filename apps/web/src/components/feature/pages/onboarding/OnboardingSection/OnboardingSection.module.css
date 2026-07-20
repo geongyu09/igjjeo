@@ -1,0 +1,41 @@
+/* 본문 래퍼를 화면 높이만큼 채운다 — 웰컴 장의 세로 중앙 정렬이 성립하려면 필요하다. */
+.bodyFill {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 26px 8px;
+}
+
+/* 온보딩 헤더는 건너뛰기만 있는 빈 줄이라 구분선을 지운다(클래스를 겹쳐 특이성을 올린다). */
+.header.header {
+  padding: 8px 26px 0;
+  border-bottom: none;
+}
+
+.skip {
+  padding: 4px 2px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-3);
+  cursor: pointer;
+}
+
+.footer {
+  padding: 12px 26px 30px;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}

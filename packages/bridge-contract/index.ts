@@ -24,7 +24,7 @@
  * - `getSession`: 로그인은 네이티브(Google/Apple)가 담당하고 세션 토큰을 네이티브가 보관한다.
  *   탭 WebView(웹)는 마운트 시 이 요청으로 네이티브가 가진 세션 토큰을 받아 자신의 저장소에 넣는다.
  *   응답 `session` 에 토큰을 실어 준다(없으면 null). 로그인 자체가 네이티브 게이트라 보통 non-null.
- * - `clearSession`: 웹에서 로그아웃할 때, 네이티브가 보관한 세션까지 지우고 로그인 스크린으로 돌아가게 한다.
+ * - `clearSession`: 웹에서 로그아웃할 때, 네이티브가 보관한 세션과 온보딩 기록까지 지우고 온보딩 화면부터 다시 보게 한다.
  * - `enterRoom`: 방 허브(웹 `/group`)에서 방을 골라 방 안으로 들어갈 때, 네이티브가 하단 탭 화면(Tabs)으로
  *   스택을 교체하도록 요청한다. 어떤 방인지(활성 방)는 웹이 소유하므로 네이티브는 `payload.groupId`를
  *   화면 전환 자체에만 참고한다 — 탭 WebView(피드)는 웹의 activeGroupStore에서 활성 방을 읽는다.
@@ -36,6 +36,10 @@
  *   모달 여닫기는 네이티브 소유(탭에서 열고 X 버튼으로 닫음)라 웹 stack-link 스택과 무관하므로,
  *   웹 스택이 남아 있어도(preview) 최상단 모달을 pop해 탭으로 복귀시킨다 — 발행 완료 컨텍스트를
  *   명시하기 위해 "웹 스택이 비었을 때" 용도의 popScreen과 구분한다.
+ * - `finishOnboarding`: 첫 진입 온보딩(웹 `/onboarding`)을 끝까지 봤거나 건너뛰었을 때 웹이 보낸다.
+ *   온보딩은 로그인 전에 뜨는 화면이라 웹 localStorage는 매 실행 신뢰하기 어렵고, 다음 실행에서
+ *   건너뛸지는 네이티브가 초기 라우트를 정할 때 알아야 한다 — 네이티브가 완료를 영속 기록하고
+ *   로그인 스크린으로 넘어간다.
  */
 export type WebToNativeRequest =
   | { type: "pushScreen"; payload: { url: string } }
@@ -46,7 +50,8 @@ export type WebToNativeRequest =
   | { type: "clearSession"; payload?: never }
   | { type: "enterRoom"; payload: { groupId: string } }
   | { type: "setReportModalDismissible"; payload: { dismissible: boolean } }
-  | { type: "closeReportModal"; payload?: never };
+  | { type: "closeReportModal"; payload?: never }
+  | { type: "finishOnboarding"; payload?: never };
 
 /** 네이티브가 보관하는 세션 토큰 쌍. `getSession` 응답으로 웹에 전달된다. */
 export interface SessionTokens {

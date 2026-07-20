@@ -1,6 +1,5 @@
 import {
   GoogleSignin,
-  GoogleSigninButton,
   isSuccessResponse,
 } from "@react-native-google-signin/google-signin";
 import { useNavigation } from "@react-navigation/native";
@@ -19,8 +18,11 @@ import {
 import type { SessionTokens } from "@igjjeo/bridge-contract";
 
 import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from "../../config/env";
+import { GoogleSignInButton } from "./GoogleSignInButton";
+import { inviteWebPath } from "../../lib/deepLink";
 import { oauthLogin } from "../../lib/authApi";
 import type { RootStackParamList } from "../../navigation/types";
+import { pendingInviteStore } from "../../session/pendingInviteStore";
 import { sessionStore } from "../../session/sessionStore";
 
 // GoogleSignin 은 모듈 로드 시 한 번만 설정한다. webClientId 가 id_token 의 audience 가 되며
@@ -47,9 +49,16 @@ export function LoginSection() {
 
   const enterApp = useCallback(() => {
     // 로그인 후 방 허브(/group)로 랜딩 — 방을 고르면 그 안에서 enterRoom 으로 탭 화면에 진입한다.
+    // 초대 딥링크로 들어왔다면(pendingInviteStore) 초대 코드를 실어 웹이 방에 자동 참여하게 한다.
+    const invite = pendingInviteStore.take();
     navigation.reset({
       index: 0,
-      routes: [{ name: "WebScreen", params: { url: "/group" } }],
+      routes: [
+        {
+          name: "WebScreen",
+          params: { url: invite ? inviteWebPath(invite) : "/group" },
+        },
+      ],
     });
   }, [navigation]);
 
@@ -140,7 +149,7 @@ export function LoginSection() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>이거 진짜에요?</Text>
+        <Text style={styles.title}>이거 진짜예요?</Text>
         <Text style={styles.subtitle}>
           로그인하고 우리 방 뉴스를 확인하세요
         </Text>
@@ -160,13 +169,7 @@ export function LoginSection() {
             onPress={busy ? () => {} : signInWithApple}
           />
         )}
-        <GoogleSigninButton
-          size={GoogleSigninButton.Size.Wide}
-          color={GoogleSigninButton.Color.Light}
-          disabled={busy}
-          onPress={signInWithGoogle}
-          style={styles.googleButton}
-        />
+        <GoogleSignInButton disabled={busy} onPress={signInWithGoogle} />
         {busy && <ActivityIndicator style={styles.busy} />}
       </View>
     </View>
@@ -221,10 +224,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   appleButton: {
-    width: "100%",
-    height: 48,
-  },
-  googleButton: {
     width: "100%",
     height: 48,
   },
