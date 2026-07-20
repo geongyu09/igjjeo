@@ -5,7 +5,7 @@ import type {
   WebToNativeRequest,
   WebToNativeResponse,
 } from "@igjjeo/bridge-contract";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIsNativeShell } from "@/hooks/common/useIsNativeShell";
 import { tokenStore } from "@/lib/api/tokenStore";
 
@@ -34,9 +34,26 @@ export function useRestoreNativeSession({
   const { request } = useBridge<WebToNativeRequest, WebToNativeResponse>();
   const [status, setStatus] = useState<RestoreStatus>("restoring");
 
+  // useBridge 의 request 는 렌더마다 새 함수 identity 를 갖는다(라이브러리가 memoize 하지 않음).
+  // 이를 effect 의존성에 넣으면 리렌더(핸드셰이크 완료 등)마다 effect 가 재실행되며 재시도
+  // 카운터·settled 가 리셋돼 MAX_ATTEMPTS 안전장치가 무력화되고, 진행 중 응답이 유실돼
+  // "restoring"(세션 확인 중)에 영구히 갇힐 수 있다. 최신 request 만 ref 로 참조하고 effect 는
+  // enabled/isNativeShell 에만 의존시켜 재시도 루프가 한 번만 끝까지 돌게 한다.
+  const requestRef = useRef(request);
+  useEffect(() => {
+    requestRef.current = request;
+  });
+
   useEffect(() => {
     if (!enabled) return;
     if (!isNativeShell) {
+      setStatus("unavailable");
+      return;
+    }
+    // 서버가 거부한 세션을 방금 폐기했다면 복원하지 않는다. 네이티브 secure-store 에는 아직
+    // 같은 죽은 토큰이 남아 있어, 지금 요청하면 그것을 되받아 401 → 폐기 → 복원 루프에
+    // 빠진다("세션 확인 중" 무한 로딩). 네이티브 세션은 useSyncNativeSessionRevoke 가 지운다.
+    if (tokenStore.isRevoked()) {
       setStatus("unavailable");
       return;
     }
@@ -55,7 +72,7 @@ export function useRestoreNativeSession({
     const attempt = () => {
       if (settled) return;
       attempts += 1;
-      request({
+      requestRef.current({
         requestMessage: { type: "getSession" },
         responseCallback: (res) => {
           if (settled) return;
@@ -84,7 +101,7 @@ export function useRestoreNativeSession({
       settled = true;
       clearTimeout(timer);
     };
-  }, [enabled, isNativeShell, request]);
+  }, [enabled, isNativeShell]);
 
   return status;
 }
