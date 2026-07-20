@@ -103,7 +103,7 @@ describe("FeedPage", () => {
     render(<FeedPage />);
     expect(screen.getByText("3조 뉴스룸")).toBeInTheDocument();
     expect(screen.getByText("9명")).toBeInTheDocument();
-    expect(screen.queryByText("이거 진짜에요?")).not.toBeInTheDocument();
+    expect(screen.queryByText("이거 진짜예요?")).not.toBeInTheDocument();
   });
 
   it("헤더 제일 오른쪽에 프로필 대신 방 공유 버튼을 둔다", () => {

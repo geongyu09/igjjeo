@@ -43,7 +43,7 @@ export default function LockScreenPage() {
                 <span className={styles.appIcon}>
                   <Flame size={12} aria-hidden />
                 </span>
-                <span className={styles.appName}>이거 진짜에요?</span>
+                <span className={styles.appName}>이거 진짜예요?</span>
                 <span className={styles.noteTime}>{note.timeAgo}</span>
               </div>
               <div className={styles.noteHeadline}>{note.headline}</div>

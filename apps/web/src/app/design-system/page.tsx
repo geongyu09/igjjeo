@@ -52,7 +52,7 @@ const SEMANTIC_SWATCHES = [
 const TYPE_SCALE = [
   {
     className: "t-display",
-    sample: "이거 진짜에요?",
+    sample: "이거 진짜예요?",
     spec: "Display · 40 / 800",
   },
   {
@@ -169,7 +169,7 @@ export default function DesignSystemPage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <div className={styles.brand}>
-          <span className={styles.brandName}>이거 진짜에요?</span>
+          <span className={styles.brandName}>이거 진짜예요?</span>
           <span className={styles.brandSub}>DESIGN&nbsp;SYSTEM</span>
         </div>
         <Button variant="secondary" size="sm" pill onClick={toggleTheme}>
@@ -182,7 +182,7 @@ export default function DesignSystemPage() {
         <header className={styles.hero}>
           <div className={styles.heroKicker}>소모임 뉴스 앱 · v1</div>
           <h1 className={styles.heroTitle}>
-            이거 진짜에요?
+            이거 진짜예요?
             <br />
             디자인 시스템
           </h1>
