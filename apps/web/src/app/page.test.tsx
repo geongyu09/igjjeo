@@ -1,7 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import type { ReactionCounts } from "@/lib/api/types";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { FeedArticle, ReactionCounts } from "@/lib/api/types";
 
 const { navigate, replaceScreen, refreshFeed, copyInviteLink } = vi.hoisted(
   () => ({
@@ -96,6 +96,134 @@ function mockFeed() {
     },
   });
 }
+
+const NOW = new Date("2026-07-20T12:00:00Z");
+
+function hoursAgo(hours: number): string {
+  return new Date(NOW.getTime() - hours * 60 * 60 * 1000).toISOString();
+}
+
+/** 하나의 제보 묶음에 원하는 기사들을 담아 피드를 고정한다. */
+function mockFeedWith(articles: FeedArticle[]) {
+  vi.setSystemTime(NOW);
+  useFeedSuspenseQuery.mockReturnValue({
+    data: {
+      pages: [
+        {
+          items: [
+            {
+              report_id: "r1",
+              reporter: { masked_name: "김*규" },
+              articles,
+            },
+          ],
+          next_cursor: null,
+        },
+      ],
+    },
+  });
+}
+
+function headlinesInOrder(): string[] {
+  return screen
+    .getAllByRole("heading")
+    .map((heading) => heading.textContent ?? "");
+}
+
+describe("FeedPage 피드 배치", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("24시간 안에서 반응이 가장 뜨거운 기사를 최상단에 올린다", () => {
+    mockFeedWith([
+      { ...feedArticle("1", "잔잔한 소식"), published_at: hoursAgo(1) },
+      {
+        ...feedArticle("2", "뜨거운 소식"),
+        published_at: hoursAgo(20),
+        reaction_counts: { ...zeroReactions, really: 12 },
+      },
+    ]);
+    render(<FeedPage />);
+
+    expect(headlinesInOrder()[0]).toBe("뜨거운 소식");
+    expect(screen.getByText("오늘 가장 뜨거운")).toBeInTheDocument();
+  });
+
+  it("24시간이 지난 기사는 반응이 많아도 최상단으로 올리지 않는다", () => {
+    mockFeedWith([
+      {
+        ...feedArticle("1", "지난주 특종"),
+        published_at: hoursAgo(40),
+        reaction_counts: { ...zeroReactions, really: 99 },
+      },
+      {
+        ...feedArticle("2", "어제 소식"),
+        published_at: hoursAgo(10),
+        reaction_counts: { ...zeroReactions, really: 1 },
+      },
+    ]);
+    render(<FeedPage />);
+
+    expect(headlinesInOrder()[0]).toBe("어제 소식");
+  });
+
+  it("최상단을 뺀 나머지는 최신순으로 보여준다", () => {
+    mockFeedWith([
+      { ...feedArticle("1", "12시간 전"), published_at: hoursAgo(12) },
+      {
+        ...feedArticle("2", "톱기사"),
+        published_at: hoursAgo(8),
+        reaction_counts: { ...zeroReactions, shock: 9 },
+      },
+      { ...feedArticle("3", "2시간 전"), published_at: hoursAgo(2) },
+      { ...feedArticle("4", "6시간 전"), published_at: hoursAgo(6) },
+    ]);
+    render(<FeedPage />);
+
+    expect(headlinesInOrder()).toEqual([
+      "톱기사",
+      "2시간 전",
+      "6시간 전",
+      "12시간 전",
+    ]);
+  });
+
+  it("4시간 안에 올라온 기사에는 '최신 뉴스' 마크를 단다", () => {
+    mockFeedWith([
+      {
+        ...feedArticle("1", "톱기사"),
+        published_at: hoursAgo(20),
+        reaction_counts: { ...zeroReactions, shock: 9 },
+      },
+      { ...feedArticle("2", "방금 올라온 소식"), published_at: hoursAgo(1) },
+      { ...feedArticle("3", "어제 소식"), published_at: hoursAgo(12) },
+    ]);
+    render(<FeedPage />);
+
+    expect(screen.getAllByText("최신 뉴스")).toHaveLength(1);
+  });
+
+  it("반응이 아직 없으면 최신 기사를 올리고 뜨거운 마크는 달지 않는다", () => {
+    mockFeedWith([
+      {
+        ...feedArticle("1", "오래된 소식"),
+        published_at: hoursAgo(9),
+        comment_count: 0,
+      },
+      {
+        ...feedArticle("2", "방금 올라온 소식"),
+        published_at: hoursAgo(1),
+        comment_count: 0,
+      },
+    ]);
+    render(<FeedPage />);
+
+    expect(headlinesInOrder()[0]).toBe("방금 올라온 소식");
+    expect(screen.queryByText("오늘 가장 뜨거운")).not.toBeInTheDocument();
+    expect(screen.getByText("최신 뉴스")).toBeInTheDocument();
+  });
+});
 
 describe("FeedPage", () => {
   it("헤더에 로고 대신 방 이름과 인원수만 보여준다", () => {

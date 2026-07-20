@@ -1,12 +1,13 @@
 "use client";
 
-import { Flame, MessageCircle, Newspaper, Search, Share2 } from "lucide-react";
+import { MessageCircle, Newspaper, Search, Share2 } from "lucide-react";
 import { Button } from "@/components/common/shared/ui/Button";
 import { EmptyState } from "@/components/common/shared/ui/EmptyState";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
 import { useSession } from "@/components/common/shared/SessionProvider";
 import { ArticleCard } from "@/components/feature/widget/ArticleCard";
+import { FeedMarker } from "@/components/feature/widget/FeedMarker";
 import { PublisherBadge } from "@/components/feature/widget/PublisherBadge";
 import { useOpenScreen } from "@/hooks/common/useOpenScreen";
 import { useReplaceScreen } from "@/hooks/common/useReplaceScreen";
@@ -14,6 +15,7 @@ import { useRefreshFeed } from "@/hooks/features/feed/useRefreshFeed";
 import { useCopyInviteLink } from "@/hooks/features/group/useCopyInviteLink";
 import { useFeedSuspenseQuery } from "@/hooks/features/query/suspenseQuerys/useFeedSuspenseQuery";
 import { formatRelativeTime } from "@/lib/datetime";
+import { isFreshArticle, rankFeed, toFeedItems } from "@/lib/feedRanking";
 import { pressable } from "@/lib/interactive";
 import styles from "./page.module.css";
 
@@ -93,17 +95,12 @@ function FeedList({ groupId }: { groupId: string }) {
   const open = (id: string) => openScreen(`/article/${id}`);
   const { data } = useFeedSuspenseQuery({ groupId });
 
-  // 제보 묶음(FeedBundle)을 펼쳐 기사 단위 목록으로 만들고, 제보자 라벨을 함께 실어 둔다.
-  const items = data.pages
-    .flatMap((page) => page.items)
-    .flatMap((bundle) =>
-      bundle.articles.map((article) => ({
-        article,
-        reporterLabel: bundle.reporter.masked_name,
-      })),
-    );
+  // 제보 묶음(FeedBundle)을 기사 단위로 펼친 뒤, 톱기사 하나 + 최신순 나머지로 재배열한다.
+  const items = toFeedItems(data.pages.flatMap((page) => page.items));
+  const now = new Date();
+  const { hero, rest, isHeroHot } = rankFeed(items, now);
 
-  if (items.length === 0) {
+  if (!hero) {
     return (
       <EmptyState
         className={styles.empty}
@@ -114,9 +111,14 @@ function FeedList({ groupId }: { groupId: string }) {
     );
   }
 
-  const [hero, ...rest] = items;
   const largeCards = rest.slice(0, 3);
   const compactCards = rest.slice(3);
+  // 톱기사 마크는 "뜨거운" 쪽이 우선 — 둘 다 붙이면 서열이 흐려진다.
+  const heroMarker = isHeroHot
+    ? "hot"
+    : isFreshArticle(hero.article.published_at, now)
+      ? "fresh"
+      : null;
 
   return (
     <div className={styles.feed}>
@@ -125,12 +127,11 @@ function FeedList({ groupId }: { groupId: string }) {
         data-outlet={hero.article.outlet_key}
         {...pressable(() => open(hero.article.id))}
       >
-        <div className={styles.heroPhoto} aria-hidden>
-          사진
-          <span className={styles.hotBadge}>
-            <Flame size={12} aria-hidden />
-            오늘 가장 뜨거운
-          </span>
+        <div className={styles.heroPhoto}>
+          <span aria-hidden>사진</span>
+          {heroMarker && (
+            <FeedMarker variant={heroMarker} className={styles.heroMarker} />
+          )}
         </div>
         <div className={styles.heroBody}>
           <PublisherBadge outlet={hero.article.outlet_key} />
@@ -156,6 +157,11 @@ function FeedList({ groupId }: { groupId: string }) {
           excerpt={article.excerpt}
           commentCount={article.comment_count}
           reporterLabel={reporterLabel}
+          badge={
+            isFreshArticle(article.published_at, now) ? (
+              <FeedMarker variant="fresh" />
+            ) : undefined
+          }
           onClick={() => open(article.id)}
         />
       ))}
@@ -168,6 +174,11 @@ function FeedList({ groupId }: { groupId: string }) {
           headline={article.headline}
           commentCount={article.comment_count}
           timeLabel={formatRelativeTime(article.published_at)}
+          badge={
+            isFreshArticle(article.published_at, now) ? (
+              <FeedMarker variant="fresh" />
+            ) : undefined
+          }
           onClick={() => open(article.id)}
         />
       ))}
