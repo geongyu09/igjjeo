@@ -1,17 +1,20 @@
 "use client";
 
-import { Flag, MoreHorizontal } from "lucide-react";
+import { Flag } from "lucide-react";
 import { use } from "react";
+import { BlockingOverlay } from "@/components/common/shared/ui/BlockingOverlay";
 import { EmptyState } from "@/components/common/shared/ui/EmptyState";
 import { MobileScreen } from "@/components/common/shared/ui/MobileScreen";
 import { ScreenHeader } from "@/components/common/shared/ui/ScreenHeader";
 import { QueryBoundary } from "@/components/common/shared/QueryBoundary";
+import { CorrectionRequestSheet } from "@/components/feature/widget/CorrectionRequestSheet";
 import {
   CorrectionThread,
   type CorrectionKind,
   type CorrectionThreadItem,
 } from "@/components/feature/widget/CorrectionThread";
 import { useStackBack } from "@/hooks/common/useStackBack";
+import { useCorrectionRequest } from "@/hooks/features/article/useCorrectionRequest";
 import { useArticleCorrectionsSuspenseQuery } from "@/hooks/features/query/suspenseQuerys/useArticleCorrectionsSuspenseQuery";
 import type { Article } from "@/lib/api/types";
 import { formatRelativeTime } from "@/lib/datetime";
@@ -24,22 +27,17 @@ export default function CorrectionThreadPage({
 }) {
   const { id } = use(params);
   const back = useStackBack();
+  const correction = useCorrectionRequest({ articleId: id });
 
-  const header = (
-    <ScreenHeader
-      title="정정 연쇄"
-      onBack={back}
-      trailing={
-        <button type="button" className={styles.moreButton} aria-label="더보기">
-          <MoreHorizontal size={22} aria-hidden />
-        </button>
-      }
-    />
-  );
+  const header = <ScreenHeader title="정정 연쇄" onBack={back} />;
 
   const footer = (
     <div className={styles.ctaBar}>
-      <button type="button" className={styles.requestButton}>
+      <button
+        type="button"
+        className={styles.requestButton}
+        onClick={correction.open}
+      >
         <Flag size={16} aria-hidden />
         나도 정정 요청
       </button>
@@ -51,6 +49,19 @@ export default function CorrectionThreadPage({
       <QueryBoundary>
         <ThreadContent id={id} />
       </QueryBoundary>
+
+      <CorrectionRequestSheet
+        open={correction.isOpen}
+        pending={correction.isPending}
+        errorMessage={correction.errorMessage}
+        onSubmit={correction.submit}
+        onClose={correction.close}
+      />
+      <BlockingOverlay
+        open={correction.isPending}
+        message="정정 기사를 쓰는 중이에요"
+        description="언론사가 정정 보도를 준비하고 있어요."
+      />
     </MobileScreen>
   );
 }
@@ -71,7 +82,8 @@ function ThreadContent({ id }: { id: string }) {
   const { data } = useArticleCorrectionsSuspenseQuery({ articleId: id });
   const articles = data.items;
 
-  if (articles.length === 0) {
+  // 연쇄는 최초 기사부터 내려오므로 길이 1은 "원본만 있고 정정은 아직 없음"이다.
+  if (articles.length <= 1) {
     return (
       <div className={styles.body}>
         <EmptyState
