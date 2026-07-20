@@ -74,6 +74,8 @@ export interface Group {
   role: MemberRole;
   member_count: number;
   created_at: string;
+  /** 방 각색 키워드. 상세(GET/PATCH) 응답에만 실린다(목록·생성·참여 응답엔 없음). */
+  keyword?: string | null;
 }
 
 export interface Member {

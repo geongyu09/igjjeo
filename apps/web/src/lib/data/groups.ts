@@ -42,14 +42,26 @@ export async function getGroup({ groupId }: GroupIdParams): Promise<Group> {
 }
 
 export interface UpdateGroupParams extends GroupIdParams {
-  name: string;
+  /** 방 이름(선택). 온 필드만 갱신된다. */
+  name?: string;
+  /** 방 각색 키워드(선택). 빈 문자열("")을 보내면 키워드를 지운다. */
+  keyword?: string;
 }
 
+/** 방 이름·키워드 부분 변경(PATCH /groups/{groupId}, owner 전용). */
 export async function updateGroup({
   groupId,
   name,
+  keyword,
 }: UpdateGroupParams): Promise<Group> {
-  const { data } = await apiClient.patch<Group>(`/groups/${groupId}`, { name });
+  const body: { name?: string; keyword?: string } = {};
+  if (name !== undefined) {
+    body.name = name;
+  }
+  if (keyword !== undefined) {
+    body.keyword = keyword;
+  }
+  const { data } = await apiClient.patch<Group>(`/groups/${groupId}`, body);
   return data;
 }
 
